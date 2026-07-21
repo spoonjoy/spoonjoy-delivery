@@ -189,12 +189,12 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: 100% coverage, zero warnings, workflow contracts green.
 
 ### ⬜ Unit 9a: Rebaseline, Handoff, and Cleanup - Tests
-**What**: Add red tests for protected handoff/acknowledgment, exact main/task SHAs, in-flight run detection, cleanup ownership, worktree status, exact-manifest D1/R2/OAuth/media fingerprints, reference checks, dry-run/apply parity, non-deletable provider dispositions, and deletion refusal.
+**What**: Add red tests for outbound-owner-release ingestion, strict receiver-ack projection, protected `ReceiverAcknowledged` ledger binding, byte-identical protected-field equivalence, remote commit reachability, exact main/task SHAs, in-flight run detection, cleanup ownership, worktree status, exact-manifest D1/R2/OAuth/media fingerprints, reference checks, dry-run/apply parity, non-deletable provider dispositions, and deletion refusal.
 **Output**: `test/rebaseline.test.ts`, `test/cleanup.test.ts`, fixtures, and red logs.
 **Acceptance**: Missing/mismatched handoff, dirty/ambiguous ownership, broad deletes, drifted fingerprints, and unclassified retained records fail.
 
 ### ⬜ Unit 9b: Rebaseline, Handoff, and Cleanup - Implementation
-**What**: Implement `src/rebaseline.ts`, `src/cleanup.ts`, `rebaseline verify`, and `cleanup plan|verify|apply` with apply adapters disabled unless an exact claimed operation invokes them.
+**What**: Implement `src/rebaseline.ts`, `src/handoff.ts`, `src/cleanup.ts`, `handoff acknowledge|verify`, `rebaseline verify`, and `cleanup plan|verify|apply`. `handoff acknowledge` generates a strict receiver-ack projection from exact outbound artifact/commit and protected ledger event; `handoff verify` re-queries both remotes and equivalence. Cleanup apply adapters remain disabled unless an exact claimed operation invokes them.
 **Output**: Source-ownership gate and exact-manifest cleanup engine.
 **Acceptance**: Fixture dry-run/apply/verify receipts match; no broad production cleanup exists.
 
@@ -258,20 +258,30 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Output**: Append run/attempt ID, ledger parent/fixture/containment commits, actor/workflow identity, direct-push rejection, and post-query.
 **Acceptance**: Only merged protected workflow can append; fixture is non-shipping and terminally contained; no provider mutation.
 
+### ⬜ Unit 13a0: Cross-Task Handoff Contract Interoperability
+**What**: Without touching source code/provider state, wait for the release owner to push its tests-first handoff repair: canonical `outbound-owner-release.json` usage, strict `receiver-ack.schema.json`, `scripts/verify-release-ownership-handoff.rb`, consistent cleanup/evidence-index paths, and tests that bind a receiver projection to the protected `ReceiverAcknowledged` ledger event. Inspect the exact remote commit and run its fixture/verifier gates read-only.
+**Output**: Upstream repair commit/PR/main reachability, changed path inventory, exact test commands/results, schema/verifier digests, and coordination receipt.
+**Acceptance**: Upstream owner confirms it still owns source; one canonical outbound filename exists; receiver schema/verifier bind outbound commit/digest, delivery projection commit, ledger commit/payload, exact protected fields, receiver IDs, and remote reachability; all tests pass with zero warnings. No source/provider mutation by this task.
+
 ### ⬜ Unit 13a1: Upstream Source Owner Handoff Ingestion
 **What**: Wait in-turn for task `019f2e25-2fc3-75b2-8ba3-335f3777115a` and ingest its terminal protected outbound handoff naming this cross-client task without touching source repositories.
-**Output**: Upstream handoff commit/artifact, release-task commit, exact web/native/provider state, zero-in-flight fields, and cleanup owner.
-**Acceptance**: Handoff explicitly transfers source ownership to this task and is terminal/protected; no source mutation is performed.
+**Output**: Upstream `outbound-owner-release.json` commit/path/SHA-256, release-task commit, exact web/native/provider state, zero-in-flight fields, and cleanup owner.
+**Acceptance**: Artifact validates against the exact Unit 13a0 schema/verifier and names this task, but ownership remains upstream until Units 13a2-13a3 validate; no source mutation is performed.
 
 ### ⬜ Unit 13a2: Cross-Client Receiver Acknowledgment
-**What**: Validate Unit 13a1, then use exact merged `.github/workflows/ledger-append.yml` in `spoonjoy/spoonjoy-delivery` to expected-parent append a non-shipping `ReceiverAcknowledged` event to protected `refs/heads/release-ledger`; independently query the remote ref, workflow run/attempt/SHA, triggering actor ID, and payload digest; send those exact locators back to the releasing task. The records branch may reference this event but is not authoritative.
-**Output**: Protected append run/attempt, prior ledger parent, remote-reachable acknowledgment commit/payload digest, actor/workflow identity, authoritative post-query, and coordination receipt.
-**Acceptance**: Remote `release-ledger` head is the matching acknowledgment produced by the exact merged protected workflow; predecessor was quiescent with no active claim; payload exactly matches handoff SHAs/provider/in-flight/cleanup fields and names both tasks; same-payload retry resolves idempotently to the same commit while mismatch is rejected; upstream schema validation succeeds; no source mutation is performed.
+**What**: Validate Unit 13a1, use exact merged `.github/workflows/ledger-append.yml` to append non-shipping `ReceiverAcknowledged` to protected `release-ledger`, independently verify it, then run `handoff acknowledge` to write `records/handoffs/<outbound-sha256>/receiver-ack.json` on `records-r0`. Commit/push that projection, verify its remote reachability, and send outbound/projection/ledger locators to the release owner. The projection is not authoritative without the ledger event.
+**Output**: Protected append run/parent/ledger commit/payload; actor/workflow proof; receiver-ack path/SHA-256 and delivery projection commit; remote post-queries; coordination receipt.
+**Acceptance**: Ledger event and projection both bind exact outbound commit/path/digest, protected fields, receiver IDs, and each other; same retry idempotent, mismatch rejected; delivery projection commit remote-reachable; upstream schema passes; source/provider untouched.
+
+### ⬜ Unit 13a3: Upstream Two-Sided Handoff Verification
+**What**: Wait for the release owner to ingest the exact Unit 13a2 projection, commit/push byte-identical `receiver-ack.json` in its canonical release task tree, run its repaired verifier against `outbound-owner-release.json` plus that acknowledgment, and send the exact upstream commit/output. Independently rerun delivery `handoff verify` against both remotes and protected ledger.
+**Output**: Upstream receiver-ack commit/path/digest, verifier output/digest, delivery verification output, all remote-reachability queries, and explicit ownership-transfer receipt.
+**Acceptance**: Both verifiers agree byte-for-byte on every protected field and exact commits/digests; ledger event/projection/upstream copy are mutually bound and remote-reachable; upstream explicitly releases ownership only now; any mismatch leaves ownership upstream and blocks Unit 13b.
 
 ### ⬜ Unit 13b: Source Rebaseline Verification
 **What**: Query exact web/native remote main, open PRs, active workflow runs, deployments, TestFlight mutations, worktrees, and cleanup ownership; run `rebaseline verify`.
 **Output**: Rebaseline bundle and validator report.
-**Acceptance**: Unit 13a1 terminal handoff and Unit 13a2 remote protected-ledger acknowledgment both validate by independent GitHub queries; zero in-flight source mutation/deploy/release work, exact SHAs, explicit cleanup ownership, and green validator. A branch-only acknowledgment cannot unlock source work.
+**Acceptance**: Units 13a0-13a3 all validate by independent GitHub queries; zero in-flight source mutation/deploy/release work, exact SHAs, explicit cleanup ownership, and green validator. Neither outbound artifact, ledger-only event, nor branch-only projection can unlock source work alone.
 
 ### ⬜ Unit 13c: Source Worktree Creation
 **What**: Create isolated `worker/cross-client-delivery` web/native worktrees from the exact validated mains and record branch/upstream state.
@@ -1164,3 +1174,4 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 - 2026-07-20 22:59: Ambiguity Round 3 made replay evaluations re-entrant/latest-pass-only, separated durable proof from batched renewable observations, total-ordered rollback candidates, and isolated delivery code-repair branches from records branches.
 - 2026-07-20 23:12: Ambiguity Round 4 closed renewable replay routing, serialized delivery repair PRs on fresh bases, added protected finalization-abort records checkpoints, and made queue-before-deploy proof a replayable compatibility-generation barrier.
 - 2026-07-20 23:19: Ambiguity converged with no remaining BLOCKER or MAJOR finding.
+- 2026-07-20 23:27: Cold validation added an upstream-owned canonical receiver-ack schema/verifier repair plus delivery ledger/projection and two-sided verification stages before source rebaseline.
