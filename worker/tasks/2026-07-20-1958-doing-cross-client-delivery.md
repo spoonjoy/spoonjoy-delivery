@@ -16,7 +16,7 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 
 ## Upstream Work Items
 
-- None.
+- Codex task `019f2e25-2fc3-75b2-8ba3-335f3777115a`: its protected source-owner handoff and receiver acknowledgment are Unit 13's prerequisite; it retains the active TestFlight/source lane until validation succeeds.
 
 ## Completion Criteria
 
@@ -129,14 +129,14 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: 100% coverage, mutation testing spot checks reject removed guards, zero warnings.
 
 ### ⬜ Unit 5a: Typed Operation DAGs - Tests
-**What**: Add red tests for static templates, typed topological dataflow, authoritative-query/prior-receipt inputs, branch cardinality, template/resolved digests, per-request drift, idempotency, retry, compensation, partial failure, and the exact current web/TestFlight operation alternatives.
-**Output**: `test/operation-graph.test.ts`, `operations/web-production-v1.yaml`, `operations/native-testflight-v1.yaml`, fixtures, and red logs.
+**What**: Add source-agnostic red tests for static templates, typed topological dataflow, authoritative-query/prior-receipt inputs, branch cardinality, template/resolved digests, per-request drift, idempotency, retry, compensation, and partial failure. Use fictional provider fixtures only; exact web/native operation inventories wait for the validated Unit 13 rebaseline.
+**Output**: `test/operation-graph.test.ts`, generic operation fixtures, and red logs.
 **Acceptance**: Unknown methods/paths/nodes, unresolved/multiple/out-of-graph values, stale pre-state, and ambiguous POST/PATCH/skip branches fail.
 
 ### ⬜ Unit 5b: Typed Operation DAGs - Implementation
 **What**: Implement `src/operation-graph.ts`, `src/receipts.ts`, canonical expression resolution, dry-run plans, apply-time revalidation, receipt chaining, and containment planning.
 **Output**: Validated static DAG and runtime receipt APIs plus `operation dry-run|verify-receipts` CLI.
-**Acceptance**: Exact web/native fixtures resolve one authorized branch per node and preserve hash-linked provenance.
+**Acceptance**: Generic fixtures resolve one authorized branch per node and preserve hash-linked provenance without embedding assumptions about unvalidated source workflows.
 
 ### ⬜ Unit 5c: Typed Operation DAGs - Coverage
 **What**: Cover every graph node/alternative, retry/compensation branch, and receipt-link failure.
@@ -218,20 +218,60 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Output**: Full delivery validation artifact set.
 **Acceptance**: Format, lint, typecheck, test, 100% coverage, build, advisory/security scan, warning scan, and docs drift all green.
 
-### ⬜ Unit 11: Delivery CI and Repository Governance
-**What**: TDD the CI/settings contracts, add SHA-pinned `.github/workflows/ci.yml`, artifact attestation permissions, dependency review/advisory checks, then configure repository Actions permissions, auto-delete branches, protected `main`, protected `release-ledger`, required checks/admin enforcement, no force/delete, workflow-only ledger bypass, and environments used by delivery mutations.
-**Output**: Green protected PR checks plus before/after settings JSON.
-**Acceptance**: Settings verifier independently matches the plan; workflow tokens default read-only/cannot approve PRs; direct ledger update fails while protected append workflow succeeds in a disposable non-shipping fixture.
+### ⬜ Unit 11a: Delivery CI and Settings Contracts - Tests
+**What**: Add red tests for CI jobs, SHA-pinned Actions, artifact-attestation permissions, dependency/advisory gates, protected main/ledger rules, workflow-only ledger bypass, environment reviewers, token permissions, and automatic branch deletion.
+**Output**: CI/settings contract tests and red logs.
+**Acceptance**: Tests fail against the repository's current permissive Actions/settings state.
 
-### ⬜ Unit 12: Delivery Implementation Hostile Review and Merge
-**What**: Run fresh architecture, security, privacy, test, and release reviewers over the entire delivery diff; repair findings with tests; open a non-draft PR; require protected CI and final harsh review; merge; verify exact `main`; retire only the delivery implementation worktree/branch after terminal proof.
-**Output**: Merged delivery SHA, PR/run URLs, reviewer verdicts, exact-main gates, and clean delivery worktree inventory.
-**Acceptance**: No BLOCKER/MAJOR findings, protected checks green, exact main verified, no delivery residue beyond canonical clone and protected ledger.
+### ⬜ Unit 11b: Delivery CI and Settings Contracts - Implementation
+**What**: Add SHA-pinned `.github/workflows/ci.yml`, settings verifier/apply-plan commands, dependency/advisory checks, and non-mutating fixture support for branch/ruleset/environment contracts.
+**Output**: Reviewable CI and governance code.
+**Acceptance**: Focused contracts pass against fixtures; no live repository setting changes yet.
 
-### ⬜ Unit 13: Source Ownership Rebaseline Gate
-**What**: Wait in-turn for task `019f2e25-2fc3-75b2-8ba3-335f3777115a`; ingest its protected handoff and acknowledgment; query exact web/native main, active runs/deployments/TestFlight mutations, and cleanup ownership; run `rebaseline verify`; only then create isolated `worker/cross-client-delivery` source worktrees.
-**Output**: Protected rebaseline record, verified handoff bundle, exact source SHAs, and source worktree paths.
-**Acceptance**: Zero in-flight source mutation/deploy/release work, explicit cleanup ownership, validator green; no source edit occurs earlier.
+### ⬜ Unit 11c: Delivery CI and Settings Contracts - Coverage
+**What**: Cover missing checks, unpinned actions, permission escalation, wrong reviewer/bypass, failed API reads, pagination, and settings drift.
+**Output**: Coverage and warning logs.
+**Acceptance**: 100% coverage, all delivery gates green, zero warnings.
+
+### ⬜ Unit 11d: Delivery Repository Settings - Apply and Verify
+**What**: Capture settings-before, apply automatic branch deletion, read-only workflow tokens, no PR approval, selected SHA-pinned Actions, protected main, protected `release-ledger`, no force/delete, required checks/admin enforcement, workflow-only ledger bypass, and delivery environments; capture settings-after.
+**Output**: Before/apply/after JSON and protected append/direct-push fixture receipts.
+**Acceptance**: Settings verifier passes against live GitHub; direct ledger update fails; disposable protected-workflow append succeeds; run ID, ledger parent/commit, and post-query are recorded.
+
+### ⬜ Unit 12a: Delivery Hostile Review and TDD Repair
+**What**: Run fresh architecture, security, privacy, test, and release reviewers over the delivery diff and repair every BLOCKER/MAJOR through new red tests and green implementation.
+**Output**: Review verdicts and atomic repair commits.
+**Acceptance**: All reviewers converge; full local gates remain green at 100% coverage with zero warnings.
+
+### ⬜ Unit 12b: Delivery Pull Request and Protected CI
+**What**: Open the delivery PR, complete self-review, run protected CI, and repair any PR-only failure without merging.
+**Output**: PR URL, exact head SHA, CI run IDs, and terminal reviewer verdict.
+**Acceptance**: All required checks succeed on the exact head; no unresolved review thread or in-flight run.
+
+### ⬜ Unit 12c: Delivery Merge and Exact-Main Proof
+**What**: Merge the protected PR, verify exact delivery main and CI, then retire only the merged delivery implementation branch/worktree.
+**Output**: Merge SHA, exact-main run IDs, settings post-query, and worktree/branch cleanup receipt.
+**Acceptance**: Main is clean/green; no in-flight delivery mutation; only canonical clone and protected ledger remain.
+
+### ⬜ Unit 13a: Source Owner Handoff Receipt
+**What**: Wait in-turn for task `019f2e25-2fc3-75b2-8ba3-335f3777115a` and ingest its protected owner-release handoff plus receiver acknowledgment without touching source repositories.
+**Output**: Handoff/acknowledgment commits, task commit, and stated cleanup owner.
+**Acceptance**: Both protected records agree on exact ownership and no source mutation is performed.
+
+### ⬜ Unit 13b: Source Rebaseline Verification
+**What**: Query exact web/native remote main, open PRs, active workflow runs, deployments, TestFlight mutations, worktrees, and cleanup ownership; run `rebaseline verify`.
+**Output**: Rebaseline bundle and validator report.
+**Acceptance**: Zero in-flight source mutation/deploy/release work, exact SHAs, explicit cleanup ownership, and green validator.
+
+### ⬜ Unit 13c: Source Worktree Creation
+**What**: Create isolated `worker/cross-client-delivery` web/native worktrees from the exact validated mains and record branch/upstream state.
+**Output**: Source worktree paths, branches, base SHAs, and clean-status proof.
+**Acceptance**: Both worktrees are clean, agent-scoped, and based on rebaseline SHAs; pre-existing/dirty worktrees remain untouched.
+
+### ⬜ Unit 13d: Pre-Edit Compatibility Freeze
+**What**: Freeze pre-edit web/native SHAs plus current/previous ASC build IDs, versions, source SHAs, release runs, bundle metadata, and available installed identities before any source edit.
+**Output**: Protected compatibility-freeze artifact consumed by Units 14-25.
+**Acceptance**: Independent GitHub/ASC queries agree; transitional provenance fields are complete; freeze digest is stable and protected.
 
 ### ⬜ Unit 14a: Web Product Contract and Pack - Tests
 **What**: In the web worktree, add red tests for `contracts/photo-studio-v1.json`, OpenAPI/MCP/fixture/scenario projection hashes, Product Contract completeness, generated pack determinism, runtime digest exposure, stale projection rejection, and delivery validator exact-SHA pinning.
@@ -248,135 +288,410 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Output**: Web coverage/warning logs.
 **Acceptance**: 100% changed-code coverage, full web suite green, zero warnings.
 
-### ⬜ Unit 15a: Web Authorization and Attestor - Tests
-**What**: Add red tests for non-environment preflight, one protected mutation job/environment, authorization/claim verification, exact DAG nodes, no legacy unbound auto-deploy, sanitized provider output, source-owned read-only attestor dispatch, artifact attestation, and all production workflow partial failures.
-**Output**: Web workflow/security red tests.
+### ⬜ Unit 15a: Web Release Authorization - Tests
+**What**: Add red tests for non-environment preflight, one protected mutation job/environment, authorization/claim verification, no legacy unbound auto-deploy, DAG receipt/containment hooks, and private provider capture.
+**Output**: Web release workflow red tests.
 **Acceptance**: Current automatic/unbound deploy and mixed protected-job behavior are rejected by tests.
 
-### ⬜ Unit 15b: Web Authorization and Attestor - Implementation
-**What**: Split `.github/workflows/production-deploy.yml` into preflight plus singleton protected mutation job; pin exact delivery validator; gate the full D1/deploy/canary/report/artifact DAG on authorization/claim; add `.github/workflows/delivery-attest-production.yml`; capture provider output privately and attest sanitized evidence.
-**Output**: Authorized production workflow and independent read-only Cloudflare/D1/GitHub attestor.
+### ⬜ Unit 15b: Web Release Authorization - Implementation
+**What**: Split `.github/workflows/production-deploy.yml` into preflight plus singleton claimed mutation operations, pin exact delivery validator, and gate D1/deploy/canary/report/artifact nodes with private output and receipts.
+**Output**: Authorized production workflow.
 **Acceptance**: Workflow contract tests, security tests, typecheck/build, and dry-run fixtures pass; no provider mutation occurs in validation.
 
-### ⬜ Unit 15c: Web Authorization and Attestor - Coverage
-**What**: Cover absent/stale/revoked claims, environment mismatch, each operation alternative/receipt/containment, attestor pagination/provider errors, and log leaks.
+### ⬜ Unit 15c: Web Release Authorization - Coverage
+**What**: Cover absent/stale/revoked claims, environment mismatch, each operation alternative/receipt/containment, and log leaks.
 **Output**: Web workflow coverage and warning logs.
 **Acceptance**: 100% changed-code coverage, full suite green, zero warnings.
 
-### ⬜ Unit 16a: Web Exact Cleanup and Shared Scenarios - Tests
-**What**: Add red tests for run-owned Photo Studio user/recipe/spoon/cover/media manifests, D1/R2/OAuth reference-safe cleanup, dry-run/apply/verify receipts, browser and MCP backend oracle scenarios, bounded agent trial transcript schema, and stale digest negative proof.
-**Output**: Web cleanup/scenario red tests.
+### ⬜ Unit 16a: Web Provider Attestor - Tests
+**What**: Add red tests for source-owned exact-delivery-SHA dispatch, least-privilege Cloudflare/D1/GitHub queries, pagination/errors, sanitized output, artifact attestation, expiry, and wrong run/ref/event.
+**Output**: Web attestor red tests.
+**Acceptance**: Self-authored deploy summaries and broad/mutable evidence fail verification.
+
+### ⬜ Unit 16b: Web Provider Attestor - Implementation
+**What**: Add the source-owned production attestor workflow and scripts that capture raw responses privately and emit only allowlisted attested evidence.
+**Output**: Independent web/Cloudflare/D1/GitHub attestor.
+**Acceptance**: Mock and live read-only dry runs plus artifact verification pass without mutation.
+
+### ⬜ Unit 16c: Web Provider Attestor - Coverage
+**What**: Cover provider/API/attestation/redaction/retry/expiry branches.
+**Output**: Attestor coverage and warning logs.
+**Acceptance**: 100% changed-code coverage, full web gates green.
+
+### ⬜ Unit 17a: Web Exact Cleanup - Tests
+**What**: Add red tests for run-owned D1/R2/OAuth/media fingerprints, reference-safe plan/apply/verify, drift, partial failure, preserved records, and broad/non-owned deletion refusal.
+**Output**: Web cleanup red tests.
 **Acceptance**: Broad cleanup and non-run-owned deletion are impossible; existing QA/local cleanup behavior remains intact.
 
-### ⬜ Unit 16b: Web Exact Cleanup and Shared Scenarios - Implementation
-**What**: Add exact claimed production cleanup adapter and shared Photo Studio seed/action/oracle/cleanup harness reusing current cover/spoon/MCP APIs; keep raw browser/media/agent evidence private and emit sanitized proof.
-**Output**: Authorized cleanup operation and reusable scenario harness.
+### ⬜ Unit 17b: Web Exact Cleanup - Implementation
+**What**: Add exact-manifest cleanup adapters and receipts while leaving broad production cleanup disabled.
+**Output**: Claimed D1/R2/OAuth/media cleanup operations.
 **Acceptance**: Local/QA fixture apply proves parity and zero run-owned residue; production adapter cannot apply without claim.
 
-### ⬜ Unit 16c: Web Exact Cleanup and Shared Scenarios - Coverage
-**What**: Cover provider drift, partial cleanup, reference conflict, image generation/editorialization failure/retry, Spoon optional fields, agent threshold, and cleanup retry.
-**Output**: Web scenario/cleanup coverage logs.
+### ⬜ Unit 17c: Web Exact Cleanup - Coverage
+**What**: Cover provider drift, retries, reference conflicts, partial cleanup, preserved records, and claim refusal.
+**Output**: Web cleanup coverage logs.
 **Acceptance**: 100% changed-code coverage, full suite/build green, zero warnings.
 
-### ⬜ Unit 17a: Native Contract Lock and Provenance - Tests
-**What**: Add red Swift tests for semantic/pack/provenance golden vectors, lock mismatch, Photo Studio codecs/scenarios, generated provenance resource/Info.plist fields, source/tree/build/validator identities, archive/IPA/app hash binding, code signature extraction, pre-provenance transitional attestation, and stale source rejection.
-**Output**: Native red tests and cross-language fixtures.
-**Acceptance**: Tests fail only on missing lock/provenance implementation.
+### ⬜ Unit 18a: Web Shared Scenarios - Tests
+**What**: Add red tests for run-owned Photo Studio seed/action/oracle/cleanup, browser/MCP actor manifests, bounded agent trial schema, editorialize/Spoon options, retries, private evidence, and stale-digest negative proof.
+**Output**: Web scenario red tests.
+**Acceptance**: Unbound actors, wrong digests, duplicate effects, and leaking evidence fail.
 
-### ⬜ Unit 17b: Native Contract Lock and Provenance - Implementation
-**What**: Add delivery contract/provenance types/resources to `Sources/SpoonjoyCore`, build-time exact identities in code-signed app metadata, package/archive attestation generation, and Contract Pack validation integrated with current cover controls/offline queue/scenario verifier.
-**Output**: Native expected-pack lock and signed-in-binary provenance.
-**Acceptance**: Focused Swift tests, scenarios, iOS/macOS builds, signature extraction, and cross-language vectors pass.
+### ⬜ Unit 18b: Web Shared Scenarios - Implementation
+**What**: Implement shared Photo Studio browser/MCP/agent harness using current cover/spoon APIs and one deterministic backend oracle.
+**Output**: Reusable actor scenario harness.
+**Acceptance**: Local/QA fixture runs pass and clean only run-owned state.
 
-### ⬜ Unit 17c: Native Contract Lock and Provenance - Coverage
-**What**: Cover all decoding/mismatch/resource/build/attestation errors and run full Swift coverage/warning gates.
-**Output**: Native coverage and build logs.
+### ⬜ Unit 18c: Web Shared Scenarios - Coverage
+**What**: Cover upload/generate/editorialize/Spoon/error/retry/oracle/agent-threshold/cleanup paths.
+**Output**: Scenario coverage and warning logs.
+**Acceptance**: 100% changed-code coverage, full web suite/build green.
+
+### ⬜ Unit 19a: Native Contract Lock - Tests
+**What**: Add red Swift tests for three digest golden vectors, expected-pack mismatch, Photo Studio codecs/scenarios, transitional pre-provenance identity, and stale source using Unit 13d.
+**Output**: Native contract red tests and cross-language fixtures.
+**Acceptance**: Tests fail only on absent lock/codec integration.
+
+### ⬜ Unit 19b: Native Contract Lock - Implementation
+**What**: Add contract/digest types/resources and integrate expected-pack validation with current cover controls, offline queue, and scenario verifier.
+**Output**: Native Contract Pack lock and parity scenarios.
+**Acceptance**: Focused Swift tests/scenarios and cross-language vectors pass.
+
+### ⬜ Unit 19c: Native Contract Lock - Coverage
+**What**: Cover decoding/mismatch/resource/scenario errors and run full Swift coverage/warning gates.
+**Output**: Native contract coverage logs.
 **Acceptance**: 100% core coverage, full suite/scenarios/builds green, zero warnings.
 
-### ⬜ Unit 18a: Native Authorization and ASC Attestor - Tests
-**What**: Add red tests for preflight/singleton internal-testflight environment job, required reviewer/self-review/no-bypass settings, claim/run/attempt verification, exact TestFlight DAG alternatives, private provider output, approval-history actor, receipts/containment, source-owned read-only ASC attestor, artifact attestations, and legacy unbound dispatch rejection.
-**Output**: Native workflow/security red tests.
+### ⬜ Unit 20a: Native Archive Provenance - Tests
+**What**: Add red tests for generated code-signed metadata, source/tree/build/validator identities, app/archive/IPA hashes, signature extraction, ASC binding, and self-hash prohibition.
+**Output**: Native provenance red tests.
+**Acceptance**: Tests fail only on missing provenance generation/binding.
+
+### ⬜ Unit 20b: Native Archive Provenance - Implementation
+**What**: Add build-time exact metadata and external package/archive attestation generation.
+**Output**: Code-signed in-binary provenance and external archive binding.
+**Acceptance**: iOS/macOS fixture builds and signature/hash extraction pass.
+
+### ⬜ Unit 20c: Native Archive Provenance - Coverage
+**What**: Cover missing/malformed build values, signature/hash mismatch, archive errors, and ASC mismatch.
+**Output**: Provenance coverage/build logs.
+**Acceptance**: 100% core/changed-script coverage, full builds green.
+
+### ⬜ Unit 21a: Native TestFlight Authorization - Tests
+**What**: Add red workflow tests for non-environment preflight, singleton internal-testflight mutation job, reviewer/self-review/no-bypass settings, claim/run/attempt validation, legacy dispatch rejection, receipts, and containment.
+**Output**: Native workflow red tests.
 **Acceptance**: Current unbound/mixed TestFlight path and raw `tee` output fail the new contracts.
 
-### ⬜ Unit 18b: Native Authorization and ASC Attestor - Implementation
-**What**: Refactor `.github/workflows/testflight.yml` and `scripts/ci-publish-testflight.sh` to exact authorization/claim DAG execution, singleton protected mutation job, private stdout/stderr, sanitized receipts, and no raw replay; add `.github/workflows/delivery-attest-asc.yml` using exact delivery SHA and least-privilege ASC credentials.
-**Output**: Authorized TestFlight lifecycle and independent ASC attestor.
+### ⬜ Unit 21b: Native TestFlight Authorization - Implementation
+**What**: Refactor `.github/workflows/testflight.yml` into exact preflight and claimed singleton mutation operations pinned to the delivery validator.
+**Output**: Authorized TestFlight workflow shell.
 **Acceptance**: Focused contracts, full Swift suite, scenarios, builds, shell syntax, and warning scans pass.
 
-### ⬜ Unit 18c: Native Authorization and ASC Attestor - Coverage
-**What**: Cover each ASC POST/PATCH/skip/409 branch, drift, partial failure/containment, claim/environment mismatch, provider/log failure, and attestor response.
-**Output**: Native workflow matrix and coverage logs.
+### ⬜ Unit 21c: Native TestFlight Authorization - Coverage
+**What**: Cover claim/environment/run/retry/containment and settings drift paths.
+**Output**: Native workflow coverage logs.
 **Acceptance**: 100% core/changed-script contract coverage, full gates green, zero warnings.
 
-### ⬜ Unit 19a: Compatibility and Installed Scenario Harness - Tests
-**What**: Add red tests for frozen current/previous build/source identities, previous-source debug routing to staged Worker, exact previous installed queue seed, post-deploy replay, transitional attestation, browser/iPhone/iPad/macOS/MCP actor manifests, deterministic backend oracle, bounded agent trials, private evidence, and cleanup.
-**Output**: Cross-client scenario red tests.
+### ⬜ Unit 22a: Native Publisher Privacy and DAG - Tests
+**What**: Add red tests for every current ASC upload/PATCH/POST/skip/409 alternative, typed receipt dataflow, drift, idempotency, partial failure, private stdout/stderr, and no `tee`/raw replay.
+**Output**: Publisher red tests.
+**Acceptance**: Current raw-output and ambiguous runtime-ID behavior fails.
+
+### ⬜ Unit 22b: Native Publisher Privacy and DAG - Implementation
+**What**: Refactor the publisher into authorized graph operations with private capture, sanitized receipts, typed runtime IDs, per-request revalidation, and containment.
+**Output**: Receipt-producing TestFlight publisher.
+**Acceptance**: Fixture dry-runs resolve exactly one branch per node; shell/Ruby/Swift contracts pass.
+
+### ⬜ Unit 22c: Native Publisher Privacy and DAG - Coverage
+**What**: Cover all provider alternatives, failures, retries, redaction, and containment.
+**Output**: Publisher matrix and coverage logs.
+**Acceptance**: Full native gates green, zero warnings.
+
+### ⬜ Unit 23a: Native ASC Attestor - Tests
+**What**: Add red tests for exact delivery SHA, least-privilege ASC queries, app/build/group/metadata/notification state, pagination/errors, sanitization, artifact attestation, expiry, and wrong run/ref.
+**Output**: ASC attestor red tests.
+**Acceptance**: Publisher summaries and raw tester responses cannot verify.
+
+### ⬜ Unit 23b: Native ASC Attestor - Implementation
+**What**: Add source-owned read-only ASC attestor with private raw capture and allowlisted evidence.
+**Output**: Independent ASC attestor.
+**Acceptance**: Fixture/read-only dry run and attestation verification pass without mutation.
+
+### ⬜ Unit 23c: Native ASC Attestor - Coverage
+**What**: Cover query/pagination/state/redaction/attestation/error branches.
+**Output**: ASC attestor coverage logs.
+**Acceptance**: Full native gates green, zero warnings.
+
+### ⬜ Unit 24a: Previous-Client Queue Compatibility - Tests
+**What**: Add red tests for Unit 13d identities, previous-source staged routing, exact previous-installed queue seed/export, post-deploy replay, idempotent backend effect, transitional attestation, and cleanup.
+**Output**: Queue compatibility red tests.
 **Acceptance**: Tests reject simulator-as-TestFlight, source-token-as-installed-proof, unbound queue data, and mismatched actors/digests.
 
-### ⬜ Unit 19b: Compatibility and Installed Scenario Harness - Implementation
-**What**: Implement shared scenario IDs/fixtures, previous-source staged harness, native queue seed/export/replay proof, installed app provenance capture, platform-specific actor adapters, backend oracle, and sanitized evidence manifests.
-**Output**: Executable compatibility and Photo Studio actor scenario matrix.
+### ⬜ Unit 24b: Previous-Client Queue Compatibility - Implementation
+**What**: Implement previous-source staged adapter and previous-installed queue seed/export/replay proof.
+**Output**: Executable two-stage compatibility harness.
 **Acceptance**: Local/staged fixture runs pass without production mutation and clean all run-owned fixture state.
 
-### ⬜ Unit 19c: Compatibility and Installed Scenario Harness - Coverage and Visual QA
-**What**: Cover actor/queue/offline/error/retry/private-evidence paths; run `visual-qa-dogfood` on all touched Photo Studio native/web surfaces across desktop/mobile/iPhone/iPad/macOS fixtures and close the absurdity ledger.
-**Output**: Cross-client coverage, sanitized screenshot digests/verdicts, and visual ledger.
+### ⬜ Unit 24c: Previous-Client Queue Compatibility - Coverage
+**What**: Cover queue/offline/error/retry/replay/duplicate/provenance/cleanup paths.
+**Output**: Compatibility coverage logs.
+**Acceptance**: Full native gates green at 100% core coverage.
+
+### ⬜ Unit 25a: Native Actor Adapters and Oracle - Tests
+**What**: Add red tests for iPhone/iPad/macOS actor manifests, installed provenance, shared scenario IDs, backend oracle, accessibility/performance/visual evidence, private artifact classification, and hardware blockers.
+**Output**: Actor adapter red tests.
+**Acceptance**: Mismatched platform/digest/proof type and simulated installed proof fail.
+
+### ⬜ Unit 25b: Native Actor Adapters and Oracle - Implementation
+**What**: Implement platform actor adapters, installed provenance capture, backend oracle integration, and sanitized evidence manifests.
+**Output**: Native Photo Studio actor matrix.
+**Acceptance**: Fixture scenarios pass on built apps without production mutation.
+
+### ⬜ Unit 25c: Native Actor Adapters - Coverage and Visual QA
+**What**: Cover actor/error/offline/private-evidence paths and run visual QA on all touched web/native fixtures.
+**Output**: Coverage, sanitized visual verdict/digests, and closed absurdity ledger.
 **Acceptance**: Full web/native gates green, 100% changed-code coverage, no warnings, no open visual finding.
 
-### ⬜ Unit 20: Source Integration Hostile Review and Merge
-**What**: Run independent contract, security, privacy, compatibility, test, release, and visual reviews over both source diffs; fix by TDD; open separate web/native PRs; serialize merges with the release owner; verify exact source mains and full protected CI. Do not deploy or publish yet.
-**Output**: Merged exact web/native SHAs, PR/run URLs, review verdicts, and zero in-flight merge proof.
-**Acceptance**: No BLOCKER/MAJOR findings; main checks green; no source provider mutation occurred; source worktrees retained for pilot only if explicitly owned.
+### ⬜ Unit 26a: Web Source Hostile Review and Repair
+**What**: Run contract, security, privacy, test, release, and visual reviewers on the web diff and repair through TDD.
+**Output**: Converged web verdicts and repair commits.
+**Acceptance**: No BLOCKER/MAJOR; full web gates green.
 
-### ⬜ Unit 21: Pilot Freeze and Credential/Environment Proof
-**What**: Create/validate the Photo Studio Product Change; classify every surface; freeze current/previous ASC build/source identities and exact web/native mains; inventory attestor/mutator credential scopes without values; configure/verify singleton protected environments and authority actor; classify hardware/model/host capabilities; append operation authorizations through protected ledger workflow.
-**Output**: Product Change, authority/credential/environment/hardware/model evidence, static DAG authorizations, and exact freeze record.
-**Acceptance**: All required/no-op/deferred dispositions valid; no unsafe credential scope; no human-only blocker hidden; authorization appends bind provider actor/workflow evidence.
+### ⬜ Unit 26b: Web Pull Request and Protected CI
+**What**: Open the web PR, self-review, run protected CI, and repair PR-only failures without merge or deploy.
+**Output**: PR/head/run IDs and terminal review state.
+**Acceptance**: Exact head green; no unresolved or in-flight check.
 
-### ⬜ Unit 22: Previous-Source Staged Compatibility
-**What**: Dispatch authorized web staging at 0%/version override as supported by the current deploy orchestrator; validate previous-source debug/simulator Photo Studio and queued mutation creation against the staged Worker; capture receipts and clean staged run-owned state.
-**Output**: Staged Worker identity, previous-source compatibility proof, queue seed manifest, and cleanup receipt.
-**Acceptance**: Exact previous source/pack passes; stale/mismatch negative case fails; no installed TestFlight proof is falsely claimed; production traffic unchanged.
+### ⬜ Unit 26c: Web Merge and Exact-Main Proof
+**What**: Coordinate merge, verify exact web main/CI, and prove no production deployment started.
+**Output**: Merge SHA, exact-main runs, deployment query, and worktree ownership.
+**Acceptance**: Main green, zero in-flight deploy, no source cleanup yet.
 
-### ⬜ Unit 23: Authorized Production Web Release
-**What**: Dispatch the exact web preflight, append/approve the Execution Claim, execute the authorized production DAG, record per-node receipts/containment, query Worker/D1/R2/GitHub authorities with the independent attestor, and verify runtime pack digest plus migrations/capability state.
-**Output**: Exact Worker/version/source/digest, provider receipts/attestations, and terminal claim record.
-**Acceptance**: Singleton environment transition verified; all authorized nodes terminal; unauthorized legacy dispatch test fails; production health/OpenAPI/MCP/browser canaries green.
+### ⬜ Unit 27a: Native Source Hostile Review and Repair
+**What**: Run contract, security, privacy, compatibility, test, release, and visual reviewers on the native diff and repair through TDD.
+**Output**: Converged native verdicts and repair commits.
+**Acceptance**: No BLOCKER/MAJOR; full native gates green.
 
-### ⬜ Unit 24: Previous Installed Queue Replay
-**What**: Using the exact previous installed TestFlight build, create the run-bound offline mutation before upgrade/relaunch as required, replay against additive production, verify idempotent backend/user-visible result and transitional provenance, then clean only run-owned state.
-**Output**: Previous-installed identity, queue-before/after, backend oracle, UI result, transitional attestation, and cleanup receipt.
-**Acceptance**: Installed proof is from the frozen ASC build; replay occurs once; no duplicate cover/spoon/media; private evidence remains private; zero deletable run-owned residue.
+### ⬜ Unit 27b: Native Pull Request and Protected CI
+**What**: Open the native PR, self-review, run protected CI, and repair PR-only failures without merge or TestFlight.
+**Output**: PR/head/run IDs and terminal review state.
+**Acceptance**: Exact head green; no unresolved or in-flight check.
 
-### ⬜ Unit 25: Production Browser, MCP, and Agent Proof
-**What**: Run shared Photo Studio upload/generate/editorialize/Spoon scenarios in a browser and deterministic MCP client, then five no-retry agent trials using frozen host/model/tool digest and 100,000-token aggregate ceiling; use one backend oracle and exact cleanup.
-**Output**: Actor-specific sanitized evidence, deterministic results, agent trial matrix, backend oracle, cleanup receipts, and leak-scan proof.
-**Acceptance**: Browser/MCP required proofs pass; agent passes at least four of five deterministic oracles; advisory taste cannot override failure; no public user/device/media data.
+### ⬜ Unit 27c: Native Merge and Exact-Main Proof
+**What**: Coordinate merge, verify exact native main/CI, and prove no TestFlight run started.
+**Output**: Merge SHA, exact-main runs, TestFlight query, and worktree ownership.
+**Acceptance**: Main green, zero in-flight TestFlight, no source cleanup yet.
 
-### ⬜ Unit 26: Authorized Native Archive and TestFlight
-**What**: Dispatch exact native preflight, append/approve Execution Claim, build/archive/export from exact source/pack, bind signed-in-binary provenance to app/archive/IPA, execute authorized ASC DAG, independently re-query ASC, and append terminal receipts. Do not notify unless the operation graph explicitly authorizes it.
-**Output**: Exact build/version/app/build/group identities, hashes/provenance, ASC receipts/attestation, and terminal claim.
-**Acceptance**: One claimed environment job transitions; build is valid/attached as authorized; metadata/group/notification branches match predicates; no raw provider output leaks.
+### ⬜ Unit 28: Merged-State Pilot Rebaseline
+**What**: Re-query exact merged mains, environments, credential scopes, current/previous ASC identities, hardware, Codex host/model/tool digest, in-flight runs, and cleanup ownership.
+**Output**: Pilot rebaseline/freeze record.
+**Acceptance**: Validator green; singleton environments match actor/bypass rules; zero in-flight mutation; exact IDs recorded without secret values.
 
-### ⬜ Unit 27: Installed Native Actor Proof and Visual Dogfood
-**What**: Install/launch exact candidate on available iPhone TestFlight, iPad candidate artifact, and signed macOS candidate; run Photo Studio and offline/retry scenarios; verify in-app/bundle provenance, backend effects, private evidence, accessibility, performance, and visual quality; classify unavailable physical hardware as `BLOCKED_HUMAN` without substitution.
-**Output**: Per-platform installed proofs, sanitized screenshot/verdict digests, performance/accessibility results, backend oracle, and cleanup.
-**Acceptance**: Required platform proofs pass or terminal state is non-shipped; no simulator/source-token proof is mislabeled installed; visual absurdity ledger is closed.
+### ⬜ Unit 29a: Photo Studio Change and Exact Operation Graphs - Tests
+**What**: Add red validation fixtures for exact merged web/native operation nodes/alternatives, Product Change classifications, compatibility matrix, evidence requirements, and freeze references.
+**Output**: Red change/operation fixtures.
+**Acceptance**: Generic or stale pre-rebaseline graphs fail validation.
 
-### ⬜ Unit 28: Negative Proof, Rollback, and Exact Cleanup
-**What**: Inject stale/mismatched digest/claim fixtures and prove finalization fails; exercise or safely contain named Worker/capability/migration/native-candidate/Release Set rollback paths under authorization; exact-manifest clean D1/R2/OAuth/media/artifacts/branches/worktrees; classify preserved provider records; re-query all authorities.
-**Output**: Negative-finalization evidence, rollback/containment receipts, cleanup plan/apply/verify receipts, preserved-record inventory, and zero-residue proof.
-**Acceptance**: Negative case cannot ship; every authorized rollback terminal; zero deletable run-owned residue; dirty/Clem/separately owned work remains untouched.
+### ⬜ Unit 29b: Photo Studio Change and Exact Operation Graphs - Implementation
+**What**: Add exact Product Change and source-specific graph templates from merged source, classify every surface, and produce authorization payloads without appending.
+**Output**: Validated change/graph files and dry-run plans.
+**Acceptance**: Exactly one predicate per fixture node; all required/no-op/deferred rules valid.
 
-### ⬜ Unit 29: Finalization and Shipment Projection
-**What**: Append `FinalizationClaim`, run fresh GitHub/Cloudflare/D1/ASC/source/runtime/cleanup queries, compile and leak-scan the complete Release Set, expected-parent append `ReleaseSetPublished` as direct child, then project its ledger commit to protected main/tag/GitHub Release with separate authorized retryable operations.
-**Output**: Authoritative ledger commit, complete Release Set, GitHub artifact attestations, main/tag/release projections, and final provider re-query.
-**Acceptance**: Ledger head remains the finalization claim until direct-child publication; any drift aborts; only ledger append confers `shipped`; projections verify their ledger pointer.
+### ⬜ Unit 29c: Photo Studio Change and Exact Operation Graphs - Review and Merge
+**What**: Hostile-review the records, merge them to protected delivery main, and verify exact main.
+**Output**: Delivery PR/merge SHA, CI runs, graph/change digests.
+**Acceptance**: No BLOCKER/MAJOR; exact-main validators green; no provider mutation.
 
-### ⬜ Unit 30: Final Hostile Audit, Durable Closeout, and Cleanup
-**What**: Run fresh architecture/security/privacy/compatibility/test/release/visual reviewers against merged and live state; repair any finding through the appropriate TDD/release cycle; update Desk task/lessons and product docs; verify exact SHAs/settings/runs/providers/feedback health; remove only terminal clean task worktrees/merged branches; notify Slugger.
-**Output**: Converged review bundle, final evidence index, Desk completion commit, exact repository/worktree inventory, and Slugger completion receipt.
-**Acceptance**: No BLOCKER/MAJOR findings or residual agent-owned work; all relevant repos clean/synced; no in-flight workflow/deploy/TestFlight operation; protected records point to authoritative ledger shipment.
+### ⬜ Unit 30: Staged Web Preflight
+**What**: Dispatch the exact staged preflight for the merged web SHA at 0% or version override and validate graph, dry-run, and preflight digest.
+**Output**: Preflight run/attempt, workflow SHA, graph/freeze digests, and waiting environment/job inventory.
+**Acceptance**: No mutation; one expected staged mutation job waits; all identities match.
+
+### ⬜ Unit 31: Staged Web Claim and Mutation
+**What**: Append staged authorization/claim, approve the singleton environment, execute staged Worker mutation, and append terminal or containment.
+**Output**: Ledger parent/authorization/claim/terminal commits, run ID, Worker receipt, and provider post-query.
+**Acceptance**: Only claimed job transitions; exact staged Worker exists at 0%; terminal or containment recorded.
+
+### ⬜ Unit 32: Previous-Source Staged Scenario
+**What**: Run frozen previous-source debug/simulator Photo Studio scenarios against the exact staged Worker, including queued mutation creation; clean staged run-owned state.
+**Output**: Actor evidence, backend oracle, queue manifest, and cleanup receipt linked to Unit 31.
+**Acceptance**: Exact previous source passes; mismatch negative fails; production traffic unchanged; zero staged residue.
+
+### ⬜ Unit 33: Staged Independent Attestation
+**What**: Dispatch and verify the read-only attestor for staged Worker/D1/runtime digest and bind it to Unit 31 terminal.
+**Output**: Attestor run/artifact IDs, GitHub attestation, provider post-query, and evidence digest.
+**Acceptance**: Exact identities match; no mutation; raw evidence absent from public output.
+
+### ⬜ Unit 34: Previous Installed Queue Seed
+**What**: On the frozen previous TestFlight build, create and export one run-bound offline Photo Studio mutation before production deploy.
+**Output**: Installed build/ASC/source identity, queue-before manifest, run-owned IDs, and private evidence digest.
+**Acceptance**: Real frozen installed build; queue pending exactly once; no production backend effect yet.
+
+### ⬜ Unit 35: Production D1 Migration Operation
+**What**: Authorize, preflight, claim, approve, and apply or executable-no-op the exact D1 migration/backfill operation; post-query and append terminal.
+**Output**: Run ID, ledger parent/claim/terminal commits, migration receipt, D1 post-query, and containment if needed.
+**Acceptance**: Authorized node terminal; no pending migration; unrelated rows unchanged.
+
+### ⬜ Unit 36: Production Worker Deploy Operation
+**What**: Authorize, preflight, claim, approve, and apply exact Worker deploy; verify source/pack/runtime/traffic and append terminal.
+**Output**: Run ID, ledger commits, Worker version/source/digests, post-query, and rollback locator.
+**Acceptance**: Exact version active; health/readiness green; terminal or containment recorded.
+
+### ⬜ Unit 37: Production Canary and Reporting Operation
+**What**: Authorize OAuth/user/token/legacy-row canary plus conditional GitHub report/artifact nodes, exact cleanup, post-query, and terminal append.
+**Output**: Run ID, ledger commits, per-node receipts, issue/artifact IDs, cleanup, and provider post-query.
+**Acceptance**: One predicate branch per node; canary residue zero; no sensitive output.
+
+### ⬜ Unit 38: Production Web Independent Attestation
+**What**: Dispatch and verify read-only GitHub/Cloudflare/D1/R2/runtime attestors for Units 35-37.
+**Output**: Attestor run/artifact/attestation IDs, provider post-queries, and evidence digests.
+**Acceptance**: Exact source/Worker/pack/migration/capability state matches; no mutation; evidence fresh.
+
+### ⬜ Unit 39: Previous Installed Queue Replay
+**What**: Bring the frozen queued mutation online against production, verify one idempotent effect and user-visible result, then exact-clean run-owned state.
+**Output**: Queue after-state, backend/UI oracle, transitional attestation, cleanup receipts, and post-query.
+**Acceptance**: Replay once; no duplicate cover/spoon/media; zero run-owned residue.
+
+### ⬜ Unit 40: Production Browser Actor Proof
+**What**: Run upload/generate/editorialize/Spoon browser scenarios with run-owned data and exact cleanup.
+**Output**: Browser evidence digest, backend oracle, cleanup receipts, and post-query.
+**Acceptance**: Required semantics pass; private media stays private; residue zero.
+
+### ⬜ Unit 41: Production MCP Actor Proof
+**What**: Run the same scenarios through deterministic MCP protocol with exact tool-schema digest and cleanup.
+**Output**: MCP transcript digest, backend oracle, cleanup receipts, and post-query.
+**Acceptance**: Protocol and semantics pass without duplicate effects or residue.
+
+### ⬜ Unit 42: Production Agent Experience Proof
+**What**: Run five no-retry trials on frozen Codex host/model/tool digest under the token ceiling and exact cleanup.
+**Output**: Five sanitized trial manifests, oracle scores, token total, cleanup receipts, and post-query.
+**Acceptance**: At least four of five deterministic oracles pass; advisory taste cannot override; no leak or residue.
+
+### ⬜ Unit 43: Native Archive and Upload Operation
+**What**: Authorize, preflight, claim, approve, archive/export/upload, verify provenance/hashes, post-query ASC, and append terminal.
+**Output**: Run ID, ledger commits, hashes/provenance, ASC app/build IDs/state, receipt, and post-query.
+**Acceptance**: Exact artifact uploads once and reaches required state or containment.
+
+### ⬜ Unit 44: ASC Metadata and Localization Operation
+**What**: Authorize export-compliance and app/build-localization predicate branches, post-query, and append terminal.
+**Output**: Run ID, ledger commits, PATCH/POST/skip receipts, and ASC post-query.
+**Acceptance**: One branch per node, exact resolved IDs/digests, terminal or containment.
+
+### ⬜ Unit 45: ASC Group Attachment Operation
+**What**: Authorize group create/attach/skip, post-query exact relation, and append terminal.
+**Output**: Run ID, ledger commits, group receipts/IDs, and ASC post-query.
+**Acceptance**: Exact build attached once; terminal or containment.
+
+### ⬜ Unit 46: ASC Tester Notification Operation
+**What**: Apply executable no-op by default, or authorize auto-notify/notification only if explicitly required; post-query and append terminal.
+**Output**: Run ID, ledger commits, no-op or notification receipts, and ASC post-query.
+**Acceptance**: No implicit notification; chosen predicate branch is terminal.
+
+### ⬜ Unit 47: ASC Independent Attestation
+**What**: Dispatch and verify read-only ASC attestor for Units 43-46 and bind evidence to native terminals.
+**Output**: Attestor run/artifact/attestation IDs, ASC post-query, and evidence digest.
+**Acceptance**: State matches receipts; no PII or mutation.
+
+### ⬜ Unit 48: iPhone Installed Proof
+**What**: Install and launch exact TestFlight candidate on available iPhone and run Photo Studio/offline/retry scenario with oracle and cleanup.
+**Output**: Installed provenance, actor evidence digest, accessibility/performance/visual verdict, cleanup, and post-query.
+**Acceptance**: Real TestFlight identity matches; required semantics pass or change is non-shipped.
+
+### ⬜ Unit 49: iPad Candidate Proof
+**What**: Run exact signed candidate on available iPad hardware, otherwise record `BLOCKED_HUMAN`; execute scenario/oracle/cleanup when available.
+**Output**: Installed/candidate provenance or blocker, evidence digest, cleanup, and post-query.
+**Acceptance**: Proof type is honest; required unavailable hardware prevents shipped state.
+
+### ⬜ Unit 50: macOS Signed Candidate Proof
+**What**: Run exact signed macOS candidate scenario with provenance, oracle, accessibility/performance/visual review, and cleanup.
+**Output**: Signed app identity, actor evidence digest, verdicts, cleanup, and post-query.
+**Acceptance**: Exact source/pack/signature matches and required semantics pass.
+
+### ⬜ Unit 51: Worker Rollback Proof
+**What**: Authorize and safely exercise or simulate exact Worker rollback/restore with provider queries and terminal receipts.
+**Output**: Ledger/run IDs, before/rollback/restore versions, receipts, and post-query.
+**Acceptance**: Named target selected, containment safe, candidate restored, no unrelated change.
+
+### ⬜ Unit 52: Capability Rollback Proof
+**What**: Authorize and exercise or simulate capability disable/restore with runtime oracle and terminal receipts.
+**Output**: Ledger/run IDs, capability states, receipts, and post-query.
+**Acceptance**: Degraded behavior matches contract and restore is exact.
+
+### ⬜ Unit 53: Migration Containment Proof
+**What**: Authorize and exercise safe additive-migration containment without destructive rollback.
+**Output**: Ledger/run IDs, migration state/backup locator, containment receipt, and post-query.
+**Acceptance**: Existing/previous clients remain compatible and no data loss occurs.
+
+### ⬜ Unit 54: Native Candidate Supersession Proof
+**What**: Authorize and exercise or simulate candidate supersession without deleting immutable ASC records.
+**Output**: Ledger/run IDs, selected/contained build dispositions, and ASC post-query.
+**Acceptance**: Superseded candidate cannot ship; selected build remains explicit.
+
+### ⬜ Unit 55: D1 Cleanup Operation
+**What**: Authorize exact-manifest deletion of remaining run-owned D1 rows, verify references and zero count, and append terminal.
+**Output**: Run/ledger IDs, plan/apply/verify receipts, and D1 post-query.
+**Acceptance**: Zero run-owned D1 residue; unrelated data unchanged.
+
+### ⬜ Unit 56: R2 and Generated Media Cleanup Operation
+**What**: Authorize exact-manifest deletion of run-owned R2/media objects, verify references and zero keys, and append terminal.
+**Output**: Run/ledger IDs, plan/apply/verify receipts, and R2 post-query.
+**Acceptance**: Zero run-owned media residue; referenced/pre-existing objects preserved.
+
+### ⬜ Unit 57: OAuth and Token Cleanup Operation
+**What**: Authorize exact cleanup of run-owned OAuth clients/tokens/connections, verify zero, and append terminal.
+**Output**: Run/ledger IDs, plan/apply/verify receipts, and provider/D1 post-query.
+**Acceptance**: Zero run-owned auth residue; active/pre-existing credentials preserved.
+
+### ⬜ Unit 58: Artifact, Branch, and Worktree Cleanup
+**What**: Classify non-deletable provider records, remove run-owned temporary artifacts/caches, and retire only clean merged source branches/worktrees with ownership proof.
+**Output**: Preserved-record inventory, artifact cleanup receipt, and git/worktree before/after.
+**Acceptance**: Zero deletable residue; dirty, pre-existing, or separately owned work untouched.
+
+### ⬜ Unit 59: Negative Finalization Proof
+**What**: Attempt finalization with stale digest, wrong claim, mismatched provider identity, and failed cleanup fixtures.
+**Output**: Rejected run IDs, ledger parent, error codes, and no-shipment post-query.
+**Acceptance**: No `ReleaseSetPublished`; state unchanged except explicit aborted test records.
+
+### ⬜ Unit 60: Pre-Finalization Hostile Audit and Repair
+**What**: Review merged/live architecture, security, privacy, compatibility, tests, receipts, and visuals; repair through a new tested PR and repeat affected proof units before finalization.
+**Output**: Converged verdicts and any superseding receipts/SHAs.
+**Acceptance**: No BLOCKER/MAJOR; every repair has fresh exact proof; no shipment yet.
+
+### ⬜ Unit 61: Finalization Claim
+**What**: Append the generation-reserving `FinalizationClaim` through protected workflow after all proof/cleanup terminals.
+**Output**: Append run ID, ledger parent/claim commit, and provider actor/workflow identity.
+**Acceptance**: Claim is ledger head and blocks every other transition.
+
+### ⬜ Unit 62: Fresh Final Provider Queries
+**What**: Re-query GitHub, source mains/checks, Cloudflare Worker/D1/R2, runtime digests, ASC, installed proof locators, cleanup, and feedback health against Unit 61.
+**Output**: Attestor run/artifact IDs, provider post-queries, and evidence digests/expiry.
+**Acceptance**: All identities match; no ledger drift or mutation; raw evidence private.
+
+### ⬜ Unit 63: Release Set Compile and Leak Scan
+**What**: Compile the complete Release Set from Unit 62, validate graph/claims/receipts/dispositions, and scan every field/artifact.
+**Output**: Canonical Release Set digest, validation report, and leak-scan report.
+**Acceptance**: State is `shipped`, all required proofs fresh, no waiver/blocker/leak, ledger still Unit 61.
+
+### ⬜ Unit 64: Authoritative ReleaseSetPublished Append
+**What**: Expected-parent append the complete Release Set as the direct child of Unit 61 through protected workflow.
+**Output**: Append run ID, ledger parent, authoritative commit, actor/workflow proof, and post-query.
+**Acceptance**: CAS succeeds once; commit is ledger head and sole shipment event.
+
+### ⬜ Unit 65: Main Projection
+**What**: Authorize and project the authoritative ledger commit/digest to protected main, then verify pointer and CI.
+**Output**: Projection run/ledger IDs, main commit/CI, and pointer post-query.
+**Acceptance**: Projection points to Unit 64 and cannot alter shipment truth.
+
+### ⬜ Unit 66: Protected Tag and GitHub Release Projection
+**What**: Authorize and create protected tag/GitHub Release pointing to Unit 64, attach sanitized attestations, and verify.
+**Output**: Projection run/ledger IDs, tag/release/attestation URLs, and post-query.
+**Acceptance**: All projections identify Unit 64; retries idempotent; no private artifact.
+
+### ⬜ Unit 67: Post-Shipment Read-Only Closeout
+**What**: Read-only verify ledger/projections/providers/feedback/in-flight state, update Desk/lessons/docs, notify Slugger, and report clean repository/worktree inventory. Any new product/release finding opens a superseding Product Change.
+**Output**: Final evidence index, Desk completion commit, post-query, cleanup inventory, and Slugger receipt.
+**Acceptance**: Zero in-flight operation or residual agent-owned work; repos clean/synced; no post-shipment corrective mutation.
 
 ## Execution
 
@@ -393,3 +708,4 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 ## Progress Log
 
 - 2026-07-20 21:27: Created from the reviewer-approved planning doc in direct execution mode; source work remains gated on the active TestFlight owner's protected handoff.
+- 2026-07-20 21:48: Granularity pass fixed the pre-edit identity-freeze order, split delivery governance/review and every mixed source feature into atomic tracks, and decomposed the live pilot into one mutation, attestation, actor proof, rollback, cleanup, or ledger transition per unit with terminal evidence.
