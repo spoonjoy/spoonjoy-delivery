@@ -1,6 +1,6 @@
 # Planning: Spoonjoy Cross-Client Delivery
 
-**Status**: NEEDS_REVIEW
+**Status**: approved
 **Created**: 2026-07-20 19:58
 
 ## Goal
@@ -158,3 +158,4 @@ Photo Studio scenarios begin with a recipe lacking a cover and cover upload/gene
 - 2026-07-20 20:58: Closed the claim-publication race with one append-only authorization/claim ledger and expected-parent CAS, bound claims through deployment/job identity and environment approval, retained expired-claim exclusivity until containment, and replaced linear mutation lists with exact predicate-bound provider operation graphs.
 - 2026-07-20 21:10: Made `ReleaseSetPublished` on the ledger the sole atomic shipment event, replaced self-declared actor identity with provider-bound protected workflow appends, constrained GitHub environment approval to one waiting mutation job, and added typed DAG dataflow with template/resolved request digests.
 - 2026-07-20 21:20: Reserved authorization generations for active claims, made shipment the direct child of finalization claim, specified concrete GitHub environment reviewer/bypass/approval behavior, and separated static authorized DAG templates from hash-linked runtime execution receipts.
+- 2026-07-20 21:27: Fresh convergence reviewer returned `CONVERGED` with no remaining BLOCKER or MAJOR findings; planning is approved for doing-doc conversion.
