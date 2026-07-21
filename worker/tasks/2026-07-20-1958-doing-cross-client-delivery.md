@@ -69,7 +69,7 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: JSON parses; IDs/SHAs are exact; no source checkout, deployment, TestFlight, or source worktree changed; the active TestFlight owner has the coordination message.
 
 ### ⬜ Unit 1a: Delivery Repository Foundation - Tests
-**What**: Add red contract tests for package metadata, Node 22/pnpm pinning, strict compiler/linter/formatter settings, ESM exports/bin, deterministic scripts, warning failure, coverage thresholds, repository instructions, ignored private artifacts, and SHA-pinned workflow actions. Run the pre-package red test with `corepack pnpm dlx vitest@4.0.18 run test/repository-contract.test.ts` so Unit 1a does not depend on Unit 1b.
+**What**: Add red contract tests for package metadata, Node 22/pnpm pinning, strict compiler/linter/formatter settings, ESM exports/bin, deterministic scripts, warning failure, coverage thresholds, repository instructions, ignored private artifacts, and SHA-pinned workflow actions. Run the pre-package red test with `corepack pnpm@10.28.1 dlx --allow-build=esbuild vitest@4.0.18 run test/repository-contract.test.ts` so Unit 1a does not depend on Unit 1b.
 **Output**: `test/repository-contract.test.ts` plus red logs.
 **Acceptance**: The pinned bootstrap command runs without a repository package and fails only because foundation files/configuration are absent.
 
@@ -299,17 +299,17 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: 100% changed-code coverage, full web suite green, zero warnings.
 
 ### ⬜ Unit 15a: Web Release Authorization - Tests
-**What**: Add red tests for non-environment preflight, one protected mutation job/environment, authorization/claim verification, no legacy unbound auto-deploy, DAG receipt/containment hooks, and private provider capture.
+**What**: Add red tests for non-environment preflight, one protected mutation job/environment, authorization/claim verification, a claimed read-only `verify-environment-governance` operation that waits on `production` without provider credentials, no legacy unbound auto-deploy, DAG receipt/containment hooks, and private provider capture.
 **Output**: Web release workflow red tests.
 **Acceptance**: Current automatic/unbound deploy and mixed protected-job behavior are rejected by tests.
 
 ### ⬜ Unit 15b: Web Release Authorization - Implementation
-**What**: Split `.github/workflows/production-deploy.yml` into preflight plus singleton claimed mutation operations, pin exact delivery validator, and gate D1/deploy/canary/report/artifact nodes with private output and receipts.
+**What**: Split `.github/workflows/production-deploy.yml` into preflight plus singleton claimed mutation operations, add the claimed read-only `verify-environment-governance` branch under the same `production` gate, pin exact delivery validator, and gate D1/deploy/canary/report/artifact nodes with private output and receipts.
 **Output**: Authorized production workflow.
 **Acceptance**: Workflow contract tests, security tests, typecheck/build, and dry-run fixtures pass; no provider mutation occurs in validation.
 
 ### ⬜ Unit 15c: Web Release Authorization - Coverage
-**What**: Cover absent/stale/revoked claims, environment mismatch, each operation alternative/receipt/containment, and log leaks.
+**What**: Cover absent/stale/revoked claims, environment mismatch, governance verification with no provider-secret or deploy access, each operation alternative/receipt/containment, and log leaks.
 **Output**: Web workflow coverage and warning logs.
 **Acceptance**: 100% changed-code coverage, full suite green, zero warnings.
 
@@ -389,17 +389,17 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: 100% core/changed-script coverage, full builds green.
 
 ### ⬜ Unit 21a: Native TestFlight Authorization - Tests
-**What**: Add red workflow tests for non-environment preflight, singleton internal-testflight mutation job, reviewer/self-review/no-bypass settings, claim/run/attempt validation, legacy dispatch rejection, receipts, and containment.
+**What**: Add red workflow tests for non-environment preflight, singleton internal-testflight mutation job, a claimed read-only `verify-environment-governance` operation that waits on `internal-testflight` without ASC credentials, reviewer/self-review/no-bypass settings, claim/run/attempt validation, legacy dispatch rejection, receipts, and containment.
 **Output**: Native workflow red tests.
 **Acceptance**: Current unbound/mixed TestFlight path and raw `tee` output fail the new contracts.
 
 ### ⬜ Unit 21b: Native TestFlight Authorization - Implementation
-**What**: Refactor `.github/workflows/testflight.yml` into exact preflight and claimed singleton mutation operations pinned to the delivery validator.
+**What**: Refactor `.github/workflows/testflight.yml` into exact preflight and claimed singleton mutation operations pinned to the delivery validator, including the claimed read-only `verify-environment-governance` branch under the same `internal-testflight` gate.
 **Output**: Authorized TestFlight workflow shell.
 **Acceptance**: Focused contracts, full Swift suite, scenarios, builds, shell syntax, and warning scans pass.
 
 ### ⬜ Unit 21c: Native TestFlight Authorization - Coverage
-**What**: Cover claim/environment/run/retry/containment and settings drift paths.
+**What**: Cover claim/environment/run/retry/containment, governance verification with no ASC-secret or upload access, and settings drift paths.
 **Output**: Native workflow coverage logs.
 **Acceptance**: 100% core/changed-script contract coverage, full gates green, zero warnings.
 
@@ -493,15 +493,25 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Output**: Merge SHA, exact-main runs, TestFlight query, and worktree ownership.
 **Acceptance**: Main green, zero in-flight TestFlight, no source cleanup yet.
 
-### ⬜ Unit 27d: Web Production Environment Governance
-**What**: Through an authorized claimed governance operation, capture and set web `production` to required reviewer actor `16390116`, `prevent_self_review=false`, administrator bypass disabled, and protected-main deployment policy; verify afterward.
-**Output**: Authorization/claim/terminal-or-containment commits, run/attempt ID, before/apply/after API responses, governance receipt digest, and authoritative post-query.
-**Acceptance**: Receipt binds exact claim/graph/run; terminal-or-containment appended; live environment exactly matches policy; no deploy occurs.
+### ⬜ Unit 27d1: Web Production Environment Bootstrap
+**What**: Append authorization and a claim for the versioned `github-environment-ui-bootstrap-v1` exception, re-query the authenticated GitHub viewer as actor `16390116`, capture the existing web `production` environment through REST and the GitHub Settings UI, then use the authenticated UI at `Settings > Environments > production` to set required reviewer `16390116`, allow self-review (`prevent_self_review=false`), turn off `Allow administrators to bypass configured protection rules`, and select `Protected branches only`. Capture the post-save UI and REST state and append terminal or containment. This exception exists only because the target environment cannot approve the operation that first installs its reviewer gate; it grants no source deploy or provider mutation authority.
+**Output**: Authorization/claim/terminal-or-containment commits; actor-viewer response; exact repository/environment IDs; before/after REST responses; before/apply/after screenshot, accessibility-tree, and URL digests; `operation_execution_kind=github_ui_bootstrap_v1`; explicitly null workflow run/attempt fields; governance receipt digest; and authoritative post-query.
+**Acceptance**: Receipt binds exact claim/graph/actor/repository/environment and the documented bootstrap-exception version; terminal-or-containment appended; UI and API evidence agree on every API-visible policy field; the UI independently proves administrator bypass is off; no workflow or deploy runs.
 
-### ⬜ Unit 27e: Native Internal-TestFlight Environment Governance
-**What**: Through an authorized claimed governance operation, capture and set native `internal-testflight` to required reviewer actor `16390116`, `prevent_self_review=false`, administrator bypass disabled, and protected-main deployment policy; verify afterward.
-**Output**: Authorization/claim/terminal-or-containment commits, run/attempt ID, before/apply/after API responses, governance receipt digest, and authoritative post-query.
-**Acceptance**: Receipt binds exact claim/graph/run; terminal-or-containment appended; live environment exactly matches policy; no TestFlight run occurs.
+### ⬜ Unit 27d2: Web Production Environment Protected Proof
+**What**: Authorize and claim the merged web workflow's read-only `verify-environment-governance` operation, dispatch it at exact main, prove its sole `production` job enters `waiting`, re-query approver actor `16390116`, approve that exact waiting job, and append its sanitized verification receipt plus terminal or containment.
+**Output**: Authorization/claim/terminal-or-containment commits, workflow/run/attempt/job/environment IDs, waiting and approval API responses, actor proof, verification receipt digest, and authoritative post-query.
+**Acceptance**: Exactly one claimed job waits and is approved by actor `16390116`; it validates current environment settings without access to Cloudflare/D1 secrets or deploy commands; terminal-or-containment appended; no deploy occurs.
+
+### ⬜ Unit 27e1: Native Internal-TestFlight Environment Bootstrap
+**What**: Append authorization and a claim for the versioned `github-environment-ui-bootstrap-v1` exception, re-query the authenticated GitHub viewer as actor `16390116`, capture the existing native `internal-testflight` environment through REST and the GitHub Settings UI, then use the authenticated UI at `Settings > Environments > internal-testflight` to set required reviewer `16390116`, allow self-review (`prevent_self_review=false`), turn off `Allow administrators to bypass configured protection rules`, and select `Protected branches only`. Capture the post-save UI and REST state and append terminal or containment. This exception exists only because the target environment cannot approve the operation that first installs its reviewer gate; it grants no TestFlight or provider mutation authority.
+**Output**: Authorization/claim/terminal-or-containment commits; actor-viewer response; exact repository/environment IDs; before/after REST responses; before/apply/after screenshot, accessibility-tree, and URL digests; `operation_execution_kind=github_ui_bootstrap_v1`; explicitly null workflow run/attempt fields; governance receipt digest; and authoritative post-query.
+**Acceptance**: Receipt binds exact claim/graph/actor/repository/environment and the documented bootstrap-exception version; terminal-or-containment appended; UI and API evidence agree on every API-visible policy field; the UI independently proves administrator bypass is off; no workflow or TestFlight run starts.
+
+### ⬜ Unit 27e2: Native Internal-TestFlight Environment Protected Proof
+**What**: Authorize and claim the merged native workflow's read-only `verify-environment-governance` operation, dispatch it at exact main, prove its sole `internal-testflight` job enters `waiting`, re-query approver actor `16390116`, approve that exact waiting job, and append its sanitized verification receipt plus terminal or containment.
+**Output**: Authorization/claim/terminal-or-containment commits, workflow/run/attempt/job/environment IDs, waiting and approval API responses, actor proof, verification receipt digest, and authoritative post-query.
+**Acceptance**: Exactly one claimed job waits and is approved by actor `16390116`; it validates current environment settings without access to ASC secrets or upload commands; terminal-or-containment appended; no TestFlight upload occurs.
 
 ### ⬜ Unit 28: Merged-State Pilot Rebaseline
 **What**: Re-query exact merged mains, environments, credential scopes, current/previous ASC identities, hardware, Codex host/model/tool digest, in-flight runs, and cleanup ownership.
@@ -986,6 +996,7 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 - Store public-safe logs/manifests only under `./2026-07-20-1958-doing-cross-client-delivery/`; raw evidence remains private ephemeral and is deleted after sanitized proof.
 - Source edits are forbidden before Unit 13 rebaseline succeeds; the active TestFlight task retains its lane until then.
 - Provider mutations require authority, dry-run/preflight, protected ledger claim, singleton environment approval, per-request drift checks, receipts, terminal/containment, and post-query.
+- The one-time `github-environment-ui-bootstrap-v1` exception in Units 27d1/27e1 is the only operation exempt from its target environment's approval gate: it requires protected ledger authorization/claim, authenticated actor-ID proof, bounded UI changes, UI/API evidence, and terminal/containment; it cannot invoke source or provider mutation code. All later governance changes use the installed gate.
 - Visual changes or consuming-surface proof require `visual-qa-dogfood` and a closed absurdity ledger.
 - Fix ordinary blockers with fresh sub-agents and TDD; surface only true human-only credentials/hardware/account capability after all safe authenticated paths are exhausted.
 - Keep checklists and ledger/Desk ownership current after every transition.
@@ -999,3 +1010,4 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 - 2026-07-20 22:27: Granularity convergence repair moved protected append proof after workflow merge, split every delivery/web/native repair into repair/PR/merge, replayed merged-state rebaseline and exact operation records before live proofs, and separated read-only versus claimed cleanup replay.
 - 2026-07-20 22:36: Final granularity findings were closed with reviewer-gated one-unit-per-finding repair expansion and conditional replay of live delivery settings plus protected-ledger append proof before downstream rebaseline.
 - 2026-07-20 22:45: Validation pass made the upstream release task's outbound handoff and this task's protected receiver acknowledgment explicit, added authorized web/native environment-governance operations, and made the Unit 1 red test independently runnable with pinned Vitest.
+- 2026-07-20 22:57: Validation Round 2 pinned pnpm and allowed only the esbuild bootstrap, replaced the circular first environment approval with a ledger-authorized, actor-bound GitHub UI bootstrap exception, and added separate read-only protected workflow proofs for both source environments.
