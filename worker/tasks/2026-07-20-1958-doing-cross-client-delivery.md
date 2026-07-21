@@ -129,7 +129,7 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: 100% coverage, mutation testing spot checks reject removed guards, zero warnings.
 
 ### ⬜ Unit 5a: Typed Operation DAGs - Tests
-**What**: Add source-agnostic red tests for static templates, typed topological dataflow, authoritative-query/prior-receipt inputs, branch cardinality, template/resolved digests, per-request drift, idempotency, retry, compensation, partial failure, the reserved `github-environment-ui-bootstrap-v1` interactive node sequence, its `github-environment-ui-governance-v1` installed-gate successor, and the restore-only `github-environment-ui-recovery-v1` drift path. Use fictional provider fixtures only; exact web/native provider-operation inventories wait for the validated Unit 13 rebaseline.
+**What**: Add source-agnostic red tests for static templates, typed topological dataflow, authoritative-query/prior-receipt inputs, branch cardinality, template/resolved digests, per-request drift, idempotency, retry, compensation, partial failure, the reserved bootstrap interactive node sequence, same-identity/prestate/target-only bootstrap resume, the installed-gate governance successor, and restore-only drift recovery. Use fictional provider fixtures only; exact web/native provider-operation inventories wait for the validated Unit 13 rebaseline.
 **Output**: `test/operation-graph.test.ts`, generic operation fixtures, and red logs.
 **Acceptance**: Unknown methods/paths/nodes, unresolved/multiple/out-of-graph values, stale pre-state, and ambiguous POST/PATCH/skip branches fail.
 
@@ -159,7 +159,7 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: 100% coverage, deterministic sanitized output, zero warnings.
 
 ### ⬜ Unit 7a: GitHub Run, Attestation, and Environment APIs - Tests
-**What**: Add red mocked-HTTP tests for exact workflow dispatch, run/attempt/workflow SHA/actor verification, waiting-job/environment inventory, singleton enforcement, approval request/response, authenticated viewer and named-environment queries, sanitized UI-evidence ingestion for bootstrap/governance/recovery graphs, before/after transition checks, artifact identity/download/digest/expiry, GitHub attestation claims, reruns/forks/mutable refs/rate limits/pagination/retries, and redacted errors.
+**What**: Add red mocked-HTTP tests for exact workflow dispatch, run/attempt/workflow SHA/actor verification, waiting-job/environment inventory, singleton enforcement, approval request/response, authenticated viewer and named-environment queries, sanitized UI-evidence ingestion for bootstrap/resume/governance/recovery graphs, resume identity/prestate/target mismatch rejection, before/after transition checks, artifact identity/download/digest/expiry, GitHub attestation claims, reruns/forks/mutable refs/rate limits/pagination/retries, and redacted errors.
 **Output**: `test/github.test.ts`, HTTP fixtures, and red logs.
 **Acceptance**: All stale, ambiguous, unauthorized, replayed, or leaking provider states fail closed.
 
@@ -1045,3 +1045,4 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 - 2026-07-20 23:08: Validation Round 3 assigned the bootstrap exception to early schema/authority/DAG/GitHub/CLI TDD units, added installed-gate governance and proof replays after source repairs, and guaranteed every finalization claim ends in either publication or `FinalizationAborted` before repair.
 - 2026-07-20 23:19: Validation Round 4 made exact-prestate rollback a nonterminal same-claim bootstrap waypoint, added restore-only live-drift governance recovery, and moved final private provider attestors into the uninterrupted publication unit before its protected zero-drift checks.
 - 2026-07-20 23:31: Validation Round 5 added terminal `BootstrapRolledBack` with same-target-only resume, started a fail-closed protected coordinator before local finalization work, and replaced impossible cross-provider lock claims with exact age-bounded point-in-time attestation semantics.
+- 2026-07-20 23:38: Validation Round 6 added component-level red graph and GitHub/UI tests for bootstrap resume before its implementation and CLI wiring.
