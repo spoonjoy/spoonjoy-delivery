@@ -309,22 +309,22 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: 100% changed-code coverage, full web suite green, zero warnings.
 
 ### ⬜ Unit 15a: Web Release Authorization - Tests
-**What**: Add red tests for non-environment preflight, one protected mutation job/environment, authorization/claim verification, claimed read-only `authorize-environment-governance-update` and `verify-environment-governance` operations that wait on `production` without provider credentials, no legacy unbound auto-deploy, DAG receipt/containment hooks, and private provider capture.
+**What**: Add red tests for `production-deploy.yml` and `storybook.yml`: non-environment preflight, shared production-mutation concurrency, one protected mutation job/environment, authorization/claim verification, read-only environment governance operations, no legacy push-triggered Worker or Cloudflare Pages deploy, least-privilege separate Worker/Pages credentials, DAG receipt/containment hooks, and private provider capture.
 **Output**: Web release workflow red tests.
 **Acceptance**: Current automatic/unbound deploy and mixed protected-job behavior are rejected by tests.
 
 ### ⬜ Unit 15b: Web Release Authorization - Implementation
-**What**: Split `.github/workflows/production-deploy.yml` into preflight plus singleton claimed mutation operations; add claimed read-only `authorize-environment-governance-update` and `verify-environment-governance` branches under the same `production` gate, with the former emitting a bounded approved-job grant and the latter asserting settings; pin exact delivery validator; and gate D1/deploy/canary/report/artifact nodes with private output and receipts.
+**What**: Split `.github/workflows/production-deploy.yml` into preflight plus claimed singleton operations. Refactor `.github/workflows/storybook.yml` so push/PR only build/test and can never use Cloudflare credentials; add manual claimed Pages preflight/deploy/receipt branches under the same `production` gate and shared `web-production-mutation` concurrency. Add read-only governance branches, pin exact delivery validator, use separate least-privilege Worker/D1 and Pages credentials, and privately capture provider output.
 **Output**: Authorized production workflow.
 **Acceptance**: Workflow contract tests, security tests, typecheck/build, and dry-run fixtures pass; no provider mutation occurs in validation.
 
 ### ⬜ Unit 15c: Web Release Authorization - Coverage
-**What**: Cover absent/stale/revoked claims, environment mismatch, governance authorization/verification with no provider-secret or deploy access, each operation alternative/receipt/containment, and log leaks.
+**What**: Cover absent/stale/revoked claims, environment mismatch, Storybook build-only push/PR, manual Pages deploy/no-op/failure/containment, shared-concurrency races, governance authorization/verification with no provider access, every operation alternative/receipt/containment, and log leaks.
 **Output**: Web workflow coverage and warning logs.
 **Acceptance**: 100% changed-code coverage, full suite green, zero warnings.
 
 ### ⬜ Unit 16a: Web Provider Attestor - Tests
-**What**: Add red tests for source-owned exact-delivery-SHA dispatch, FinalizationClaim/nonce binding for final-query mode, least-privilege Cloudflare/D1/R2/GitHub queries, complete fingerprints/audit-watermarks, strict IMF-fixdate GMT parsing/UTC normalization, per-provider `S/C/R` observation windows, final consistency requery after pagination, inclusive ±5-second/120-second boundaries, missing/stale/future/substituted timestamps, sanitized output, artifact attestation, expiry, and wrong run/ref/event.
+**What**: Add red tests for source-owned exact-delivery-SHA dispatch, FinalizationClaim/nonce binding, least-privilege Worker/D1/R2/Cloudflare Pages/GitHub queries, exact Storybook project/deployment/source identity, complete fingerprints/audit-watermarks, strict timestamp windows, pagination consistency, sanitization, artifact attestation, expiry, and wrong run/ref/event.
 **Output**: Web attestor red tests.
 **Acceptance**: Self-authored deploy summaries and broad/mutable evidence fail verification.
 
@@ -484,9 +484,9 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: Exact head green; no unresolved or in-flight check.
 
 ### ⬜ Unit 26c: Web Merge and Exact-Main Proof
-**What**: Coordinate merge, verify exact web main/CI, and prove no production deployment started.
-**Output**: Merge SHA, exact-main runs, deployment query, and worktree ownership.
-**Acceptance**: Main green, zero in-flight deploy, no source cleanup yet.
+**What**: Coordinate merge, verify exact web main/CI/Storybook build, and prove neither Worker/D1 nor Storybook Pages production mutation started from the push.
+**Output**: Merge SHA, exact-main CI/Storybook runs, Worker/Pages deployment queries, and worktree ownership.
+**Acceptance**: Main/build green; zero automatic or in-flight Worker/D1/Pages mutation; no source cleanup yet.
 
 ### ⬜ Unit 27a: Native Source Hostile Review and Repair
 **What**: Run contract, security, privacy, compatibility, test, release, and visual reviewers on the native diff and repair through TDD.
@@ -524,7 +524,7 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: Exactly one claimed job waits and is approved by actor `16390116`; it validates current environment settings without access to ASC secrets or upload commands; terminal-or-containment appended; no TestFlight upload occurs.
 
 ### ⬜ Unit 28: Merged-State Pilot Rebaseline
-**What**: Re-query exact merged mains, environments, credential scopes, current/previous ASC identities, hardware, Codex host/model/tool digest, in-flight runs, and cleanup ownership.
+**What**: Re-query exact merged mains, production environment/shared mutation concurrency, least-privilege Worker/D1/Pages credential scopes, current Worker/Storybook Pages state, current/previous ASC identities, hardware, Codex host/model/tool digest, in-flight runs, and cleanup ownership.
 **Output**: Pilot rebaseline/freeze record.
 **Acceptance**: Validator green; singleton environments match actor/bypass rules; zero in-flight mutation; exact IDs recorded without secret values.
 
@@ -534,7 +534,7 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: Generic or stale pre-rebaseline graphs fail validation.
 
 ### ⬜ Unit 29b: Photo Studio Change and Exact Operation Graphs - Implementation
-**What**: Add exact Product Change/source operation templates and `records/photo-studio-proof-dependencies.json`. Its direct inputs are: 30 web/delivery/workflow/graph/freeze/staged-policy; 31=30+ledger/environment/Worker-prestate; 32=31+previous-source/scenario; 33=31+web-attestor/staged-state; 34 previous-installed-build/queue/scenario; 35 web/delivery/D1-schema/migration/environment/D1-prestate; 36=35+web-pack/workflow/Worker-prestate; 37=36+canary/OAuth-fixture/cleanup-policy; 38=35-37+web-attestor/provider-state; 39=34-38+queue-contract; 40=35-38+browser-harness; 41=35-40+MCP-schema/harness; 42=35-41+agent-host/model/tool/budget; 43 native/delivery/workflow/archive-provenance/environment/ASC-prestate; 44=43+publisher-graph/ASC-metadata; 45=43-44+group-state; 46=43-45+notification-policy/state; 47=43-46+ASC-attestor; 48=43-47+iPhone/build/scenario; 49=43-47+iPad/build/scenario; 50 native/pack/signed-macOS/scenario; 51=36+Worker-predecessor/rollback-selector/graph/state; 52=36-40+capability-selector/isolation/graph/state; 53=35+migration/backup/containment-graph; 54=43-47+sacrificial-build-selector/supersession-graph/state; 55=35-42+D1-cleanup-manifest/state; 56=35-42+R2/media-manifest/state; 57=37+OAuth/token-manifest/state; 58a=43-57+provider-record-state/disposition-policy; 58b=30-58a+artifact-manifest/state; 59 ledger/finalization-workflow+all cleanup terminals. Unit 34 is a `historical_barrier`: its invalidation increments `compatibility_generation` and atomically marks Units 30-39 replay-required so queue seed occurs before a fresh Unit 36 candidate-version deploy. Classify source/build/contract/workflow/graph/ledger/operation-receipt/actor-result/rollback-result/cleanup-operation identities as durable: changed identity invalidates, elapsed time does not. Classify current source-main/check, environment, provider/ASC/runtime, cleanup-zero, build-eligibility, and feedback state as renewable observations with exact read-only renewal query/expected predicate; age requires refresh, not mutation replay. Generate transitive/barrier edges fail closed.
+**What**: Add exact Product Change/source operation templates and `records/photo-studio-proof-dependencies.json`. Its direct inputs are: 30 web/delivery/workflow/graph/freeze/staged-policy; 31=30+ledger/environment/Worker-prestate; 32=31+previous-source/scenario; 33=31+web-attestor/staged-state; 34 previous-installed-build/queue/scenario; 35 web/delivery/D1-schema/migration/environment/D1-prestate; 36=35+web-pack/workflow/Worker-prestate; 37=36+canary/OAuth-fixture/cleanup-policy; 37a=37+web/Storybook-workflow/Pages-project/environment/Pages-prestate; 38=35-37a+web-attestor/provider-state; 39=34-38+queue-contract; 40=35-38+browser-harness; 41=35-40+MCP-schema/harness; 42=35-41+agent-host/model/tool/budget; 43 native/delivery/workflow/archive-provenance/environment/ASC-prestate; 44=43+publisher-graph/ASC-metadata; 45=43-44+group-state; 46=43-45+notification-policy/state; 47=43-46+ASC-attestor; 48=43-47+iPhone/build/scenario; 49=43-47+iPad/build/scenario; 50 native/pack/signed-macOS/scenario; 51=36+Worker-predecessor/rollback-selector/graph/state; 52=36-40+capability-selector/isolation/graph/state; 53=35+migration/backup/containment-graph; 54=43-47+sacrificial-build-selector/supersession-graph/state; 55=35-42+D1-cleanup-manifest/state; 56=35-42+R2/media-manifest/state; 57=37+OAuth/token-manifest/state; 58a=43-57+provider-record-state/disposition-policy; 58b=30-58a+artifact-manifest/state; 59 ledger/finalization-workflow+all cleanup terminals. Unit 34 is a historical barrier marking 30-39 required. Classify immutable identities/results as durable and current source/environment/Worker/Pages/ASC/runtime/cleanup/build/feedback state as renewable with exact read-only query/predicate. Generate transitive/barrier edges fail closed.
 **Output**: Validated change/operation/dependency files, complete node-input/edge inventory, and dry-run/replay-evaluation plans.
 **Acceptance**: Exactly one predicate per operation node; every proof node 30-59 has the listed direct inputs, transitive closure, and original acceptance reference; changed/missing/unknown inputs fail closed; all required/no-op/deferred rules valid.
 
@@ -593,10 +593,15 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Output**: Authorization/claim/terminal-or-containment commits, run/attempt ID, per-node receipt digests, issue/artifact IDs, cleanup receipt, and authoritative provider post-query.
 **Acceptance**: Receipts bind exact claim/graph/run; terminal-or-containment appended; one branch per node; residue zero; no sensitive output.
 
+### ⬜ Unit 37a: Storybook Pages Deploy Operation
+**What**: Authorize, preflight, claim, approve, and manually deploy exact merged Storybook static output to Cloudflare Pages project `spoonjoy-storybook` through the refactored workflow; enforce shared `web-production-mutation` concurrency, separate least-privilege Pages token, exact source SHA/build digest, private provider capture, post-query, and terminal append.
+**Output**: Authorization/claim/terminal-or-containment commits, run/attempt ID, Storybook build/deploy receipt digests, Pages project/deployment/source IDs, authoritative post-query, and containment receipt if needed.
+**Acceptance**: Exactly one claimed Pages mutation runs after Worker/canary terminals; receipt binds exact source/build/claim/run; deployed production branch points to exact SHA; token cannot mutate Worker/D1; terminal success and post-query are green. Containment/failure is not proof success.
+
 ### ⬜ Unit 38: Production Web Independent Attestation
-**What**: Dispatch and verify read-only GitHub/Cloudflare/D1/R2/runtime attestors for Units 35-37.
+**What**: Dispatch and verify read-only GitHub/Worker/D1/R2/Cloudflare Pages/runtime attestors for Units 35-37a.
 **Output**: Attestor run/artifact/attestation IDs, provider post-queries, and evidence digests.
-**Acceptance**: Exact source/Worker/pack/migration/capability state matches; no mutation; evidence fresh.
+**Acceptance**: Exact source/Worker/Storybook Pages/pack/migration/capability state matches; no mutation; evidence fresh.
 
 ### ⬜ Unit 39: Previous Installed Queue Replay
 **What**: Bring the frozen queued mutation online against production, verify one idempotent effect and user-visible result, then exact-clean run-owned state.
@@ -604,9 +609,9 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: Replay once; no duplicate cover/spoon/media; zero run-owned residue.
 
 ### ⬜ Unit 40: Production Browser Actor Proof
-**What**: Run upload/generate/editorialize/Spoon browser scenarios with run-owned data and exact cleanup.
-**Output**: Browser evidence digest, backend oracle, cleanup receipts, and post-query.
-**Acceptance**: Required semantics pass; private media stays private; residue zero.
+**What**: Run authenticated upload/generate/editorialize/Spoon scenarios with run-owned data and capture exactly 14 deployed-state views: `default`, `spoon-off`, `editorial-off`, `processing`, `failure`, `empty`, and `narrow`, each at mobile 390x844 and desktop 1440x1000. Use real loading/transition/error/empty data, visual-qa-dogfood, backend/state oracles, axe/accessibility-tree scans, keyboard/focus/touch-target checks, text/overlap/clipping metrics, and exact cleanup.
+**Output**: Fourteen named screenshots with source/pack/state/viewport digests, browser/backend oracles, accessibility/performance/layout reports, absurdity ledger, cleanup receipts, and provider post-query.
+**Acceptance**: Every named state and viewport matches its oracle; zero incoherent overlap/clipping/blank capture/serious accessibility violation; processing/failure transitions are observed rather than mocked; required semantics pass; private media absent from public evidence; absurdity ledger closed; residue zero.
 
 ### ⬜ Unit 41: Production MCP Actor Proof
 **What**: Run the same scenarios through deterministic MCP protocol with exact tool-schema digest and cleanup.
@@ -908,6 +913,11 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Output**: Dependency decision plus fresh Unit 37 run/ledger/receipt/cleanup/post-query or no-replay receipt.
 **Acceptance**: Any replay binds claim/graph/run, reaches terminal, and leaves zero canary residue.
 
+### ⬜ Unit 60c37a: Conditional Replay of Unit 37a
+**What**: Consume only the latest evaluation pass Unit 37a decision; replay the original claimed Storybook Pages deploy when required, otherwise emit its schema-valid no-replay receipt.
+**Output**: Dependency decision plus fresh Unit 37a run/ledger/Pages receipt/post-query or no-replay receipt.
+**Acceptance**: Replay inherits all Unit 37a acceptance, binds exact source/build/claim/run, reaches terminal success, and preserves shared mutation serialization; containment/failure blocks convergence.
+
 ### ⬜ Unit 60c38: Conditional Replay of Unit 38
 **What**: Consume Unit 60c29f's Unit 38 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 38 attestations or no-replay receipt.
@@ -1029,7 +1039,7 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: One latest pass owns every next action; all durable nodes are green simultaneously; no prior-pass decision is consumed; containment/failure loops through a new Unit 60c29f pass.
 
 ### ⬜ Unit 60c59b: Read-Only Renewable Observation Batch
-**What**: In parallel, dispatch exact web/native read-only attestors and GitHub queries defined by every manifest `renewal_query` to refresh current source-main/check, environment, Worker/D1/R2/runtime, ASC/build eligibility, cleanup-zero, and feedback state without rerunning uploads, hardware/actor trials, rollback, or cleanup mutations. Bind one GitHub-server observation time and provider-specific windows; feed the batch into a new Unit 60c29f pass. If predicates mismatch, that new pass marks only dependent proof nodes `replay_required`; if they match, observations are green.
+**What**: In parallel, dispatch exact web/native read-only attestors and GitHub queries defined by every manifest `renewal_query` to refresh current source-main/check, environment, Worker/D1/R2/Storybook Pages/runtime, ASC/build eligibility, cleanup-zero, and feedback state without rerunning uploads, hardware/actor trials, rollback, or cleanup mutations. Bind one GitHub-server observation time and provider-specific windows; feed the batch into a new Unit 60c29f pass. If predicates mismatch, that new pass marks only dependent proof nodes `replay_required`; if they match, observations are green.
 **Output**: Attested renewable-observation batch/query IDs/times/digests, predicate results, provider post-queries, and resulting latest evaluation-pass locator.
 **Acceptance**: Every renewable class is queried exactly once per provider/account scope; all calls read-only; durable proof remains unchanged. If the resulting latest pass contains any `replay_required`, return to the lowest required Unit 60c30-59, execute latest-pass actions through Unit 60c59a, then run Unit 60c59b again. Only a latest pass with durable green and all renewable predicates green may proceed to Unit 60d.
 
@@ -1074,7 +1084,7 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: Protected main contains the complete reviewed record chain through Unit 60; attestation binds exact commit; prior repair branch retired; no unreviewed record exists.
 
 ### ⬜ Unit 60f4: Pre-Claim Proof Freshness Recheck
-**What**: Immediately before Unit 61, run the Unit 60c59b read-only renewable-observation batch from protected Unit 60f3 records, then run a new numbered Unit 60c29f evaluation with fresh GitHub server time. Durable proofs remain valid by exact identity; renewable predicates must match current state. A mismatch/unknown records failure on `finalize-iN` and jumps to Units 64a1-c before loopback; age alone causes another read-only query, not upload/hardware/mutation replay.
+**What**: Immediately before Unit 61, run the Unit 60c59b read-only renewable-observation batch from protected Unit 60f3 records, then run a new numbered Unit 60c29f evaluation with fresh GitHub server time. Durable proofs remain valid by exact identity; renewable predicates must match current state. A mismatch/unknown records failure on `finalize-iN`, executes Unit 64b private purge, then Units 64a1-c; age alone causes another read-only query, not mutation replay.
 **Output**: Attested pre-claim renewable batch, latest evaluation pass/time, durable/renewable predicate inventory, protected records identity, and green decision or loopback record.
 **Acceptance**: Unit 61 starts only from one complete green latest pass bound to Unit 60f3; every renewable predicate is freshly queried; durable proof is not needlessly repeated; mismatch/unknown cannot be waived.
 
@@ -1099,17 +1109,22 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: Plan is complete, single-use, source-owned-secret preserving, and executable by Unit 64 through authenticated local `gh`; it grants read-only attestation only and performs no query or mutation itself.
 
 ### ⬜ Unit 63b: Finalization Claim Resolution
-**What**: Resolve Unit 61 before any other transition. If Units 62-63a are fully green, record a validated publish decision for its exact generation/repair iteration and leave `FinalizationClaim` as ledger head for Unit 64. If any is not green, expected-parent append `FinalizationAborted`, verify it as head, write sanitized abort evidence to `finalize-iN`, and jump to Units 64a1-c. A later Unit 61 must create a fresh generation.
+**What**: Resolve Unit 61 before any other transition. If Units 62-63a are fully green, record a validated publish decision for its exact generation/repair iteration and leave `FinalizationClaim` as ledger head for Unit 64. If any is not green, expected-parent append `FinalizationAborted`, verify it as head, write sanitized abort evidence to `finalize-iN`, execute Unit 64b private purge, then Units 64a1-c. A later Unit 61 must create a fresh generation.
 **Output**: Publish-decision receipt, or append run/parent/`FinalizationAborted` commit/actor proof/post-query plus reviewer-approved loopback units.
 **Acceptance**: The claim is never stranded: green proof authorizes only Unit 64, while any query/compile/leak failure ends at `FinalizationAborted` before repair; no failed generation can publish.
 
 ### ⬜ Unit 64: Authoritative ReleaseSetPublished Append
-**What**: After Unit 63b records a green publish decision, first start the protected `finalization-coordinator` at the exact merged delivery SHA with Unit 63a's nonce/plan and prove it is waiting with a 45-minute fail-closed timeout. Then execute local orchestration: in parallel, use authenticated `gh` to dispatch both exact source-owned final-query attestors; verify their private Cloudflare/D1/R2/ASC fingerprints, audit/watermark metadata where exposed, identities, and attestations; replace freshness-bound evidence; recompile and leak-scan the set; and dispatch the protected `finalization-evidence` ingest for the same nonce. The coordinator accepts at most one attested evidence artifact, requires each private-provider snapshot to be at most 120 seconds old, re-queries source mains/checks/mutation runs, public Worker/runtime digests, evidence identity/expiry, nonce reuse, and ledger parent, then appends either `ReleaseSetPublished` or `FinalizationAborted`. Missing local progress, dispatch/query/verification/compile/ingest failure, timeout, stale evidence, or drift selects abort followed only by Units 64a1-c.
+**What**: After Unit 63b green decision, create one generation-scoped `0700` private temp directory; register each intended file in an exact manifest before write; require `0600` files; install EXIT/INT/TERM cleanup trap. Start the protected coordinator, then use authenticated `gh` to dispatch final-query attestors, verify private Worker/D1/R2/Pages/ASC fingerprints/metadata/identities/attestations, recompile/leak-scan, and dispatch nonce-bound evidence ingest. Coordinator enforces 120-second snapshots and re-queries source/public state before appending `ReleaseSetPublished` or `FinalizationAborted`. Every terminal or local failure proceeds to Unit 64b before any projection or abort-record review.
 **Output**: Coordinator/evidence run IDs; final attestor run/attempt/artifact/attestation IDs and point-in-time provider query timestamps; refreshed Release Set/query/leak digests; ledger parent; authoritative `ReleaseSetPublished` or `FinalizationAborted` commit; actor/workflow proof; and post-query.
-**Acceptance**: Coordinator is durable before local work and emits exactly one direct-child terminal even if local disappears. Immediately before CAS it strict-parses fresh GitHub API Date as `E` using Unit 63a rules. For every provider independently require inclusive `E >= C-5000` and `E >= R-5000`; let raw age `A=E-S`: `A < -5000` fails, `-5000 <= A < 0` clamps to `0`, and `0 <= A <= 120000` passes, with boundary values accepted and larger magnitude rejected. Artifact time never determines freshness; consistency hashes match. Drift/uncertainty abort. `ReleaseSetPublished` skips Units 64a1-c and alone unlocks Unit 65; `FinalizationAborted` writes sanitized abort evidence to `finalize-iN` and executes Units 64a1-c. Publication binds point-in-time observations, not a distributed lock.
+**Acceptance**: Coordinator is durable and emits one direct-child terminal even if local disappears. Timestamp equations from Unit 63a pass per provider; consistency hashes match; drift/uncertainty abort. No unregistered/private artifact enters public output. `ReleaseSetPublished` executes Unit 64b, skips 64a1-c, then may unlock Unit 65; `FinalizationAborted` writes only sanitized abort evidence, executes Unit 64b, then 64a1-c. Publication binds point-in-time observations, not a distributed lock.
+
+### ⬜ Unit 64b: Finalization Private-Evidence Purge
+**What**: Unconditionally after any Unit 60f4/63b/64 terminal path, acquire an exclusive cleanup lock, compare the live private directory to the pre-write exact manifest, remove every manifest file plus temporary downloads/caches and the directory itself, and scan expected temp/cache roots for the generation nonce. Persist only a sanitized receipt with nonce digest, artifact classes/counts/digests, trap result, absence checks, and zero residue; never persist raw paths, payloads, account IDs, or filenames.
+**Output**: Sanitized purge receipt/digest, manifest-count parity, trap/explicit-cleanup disposition, expected-root absence scan, and zero-residue result.
+**Acceptance**: Every registered/unexpected generation artifact is absent; directory/manifest removed; no open file handle or cache residue; receipt passes evidence policy. Failure blocks Unit 64a/65 and retries purge or enters reviewed containment without exposing private data.
 
 ### ⬜ Unit 64a1: Finalization-Abort Records Review
-**What**: Conditional on Unit 60f4, 63b, or 64 failure/abort, integrate exact current delivery main into `finalize-iN` with `git merge --no-ff origin/main`, add all pre-claim/finalization query/coordinator/abort evidence and a byte-complete forward-port manifest, and hostile-review public-safe records. On successful Unit 64 publication this unit is skipped.
+**What**: Conditional on Unit 60f4, 63b, or 64 failure/abort and only after green Unit 64b, integrate exact current delivery main into `finalize-iN` with `git merge --no-ff origin/main`, add sanitized pre-claim/finalization/coordinator/abort/purge evidence and a byte-complete forward-port manifest, and hostile-review public-safe records. On successful publication this unit is skipped.
 **Output**: Abort source unit; either pre-claim failure with `finalization_generation=null`/no ledger event or post-claim generation/`FinalizationAborted` locator; converged records verdict; exact `finalize-iN` head/digests; and forward-port manifest.
 **Acceptance**: Every post-Unit60f3 record and abort locator is present; private evidence absent; source finalization branch ancestry preserved; no provider mutation.
 
@@ -1124,7 +1139,7 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: Protected main preserves all finalization failure records; next branch has exact ancestry; iteration increments once; fresh Unit 61 generation will be required; Unit 60a is the only next unit.
 
 ### ⬜ Unit 65: Main Projection
-**What**: Only when Unit 64 post-query proves `ReleaseSetPublished` is protected-ledger head for the current finalization generation, authorize and project that authoritative commit/digest to protected main, then verify pointer and CI.
+**What**: Only when Unit 64 proves current `ReleaseSetPublished` and Unit 64b proves zero private residue, authorize and project that authoritative commit/digest plus sanitized purge receipt to protected main, then verify pointer and CI.
 **Output**: Authorization/claim/terminal commits, run/attempt ID, projection receipt digest, main commit/CI, and authoritative pointer post-query.
 **Acceptance**: Guard rejects `FinalizationAborted`, missing, stale, or prior-generation Unit 64 state; receipt matches claim; projection points to current `ReleaseSetPublished`; terminal or containment commit recorded; projection cannot alter shipment truth.
 
@@ -1134,7 +1149,7 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: Guard rejects absent/aborted/stale generations; receipt matches claim; terminal or containment commit recorded; projections identify current Unit 64 publication; retries idempotent; no private artifact.
 
 ### ⬜ Unit 67: Post-Shipment Read-Only Closeout
-**What**: Only after Units 64-66 prove current-generation publication/projections, read-only verify ledger/projections/providers/feedback/in-flight state, update Desk/lessons/docs, retire all clean task-owned source/coordinating branches/worktrees, notify Slugger, and report final inventory. Any new product/release finding opens a superseding Product Change.
+**What**: Only after Units 64-66 prove current-generation publication/projections, read-only verify ledger/projections/providers/feedback/in-flight state; rerun nonce/path/cache scans proving Unit 64b residue remains zero; update Desk/lessons/docs; retire all clean task-owned branches/worktrees; notify Slugger; and report final inventory. Any new finding opens a superseding Product Change.
 **Output**: Final evidence index, Desk completion commit, post-query, coordinating-worktree cleanup receipt, final inventory, and Slugger receipt.
 **Acceptance**: Guard rejects aborted/non-published generations; zero in-flight operation or residual task-owned worktree/branch; repos clean/synced; unrelated work untouched; no post-shipment corrective mutation.
 
@@ -1178,3 +1193,4 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 - 2026-07-20 23:33: Cold validation Round 2 removed self-referential containing commits from receiver-ack content and made delivery/upstream commits external tree-reachability evidence.
 - 2026-07-20 23:37: Independent cold validation converged across the delivery, release, web, and native task/source contracts.
 - 2026-07-20 23:42: Quality pass converged with template, TDD, coverage, warning, conditional acceptance, and completion-criteria checks clean.
+- 2026-07-20 23:54: Tinfoil scrutiny repaired the unclaimed automatic Storybook Pages deploy by moving it behind the shared claimed production mutation lane, restored the exact fourteen-capture production browser matrix, and added fail-closed finalization private-evidence purge proof before projection or abort review.
