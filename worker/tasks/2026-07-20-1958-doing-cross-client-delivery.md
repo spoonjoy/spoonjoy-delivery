@@ -84,12 +84,12 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: 100% statements/branches/functions/lines for new code and all gates green.
 
 ### ⬜ Unit 2a: Structural Schemas and Parsing - Tests
-**What**: Add red fixture tests for every planning object, strict JSON/YAML parsing, duplicate keys, unknown fields, invalid versions/IDs/SHAs/digests/timestamps, empty collections, malformed unions, and schema fixture drift.
+**What**: Add red fixture tests for every planning object, the `github-environment-ui-bootstrap-v1` authorization/claim/receipt union with its deliberately null workflow fields, strict JSON/YAML parsing, duplicate keys, unknown fields, invalid versions/IDs/SHAs/digests/timestamps, empty collections, malformed unions, and schema fixture drift.
 **Output**: `schemas/*.schema.json`, `test/schema.test.ts`, `test/fixtures/schema/{valid,invalid}/`, and red logs.
 **Acceptance**: Tests fail on missing parser/schema implementation and demonstrate each rejection path.
 
 ### ⬜ Unit 2b: Structural Schemas and Parsing - Implementation
-**What**: Implement `src/parse.ts`, `src/schema.ts`, and versioned JSON Schemas for authority policy, Product Change/Contract/Pack, authorization, claims/terminals/cancellation, operation graph/receipt, evidence/attestation, handoff/rebaseline, cleanup, finalization, Release Set, and projections.
+**What**: Implement `src/parse.ts`, `src/schema.ts`, and versioned JSON Schemas for authority policy, Product Change/Contract/Pack, authorization, claims/terminals/cancellation, the closed `github-environment-ui-bootstrap-v1` exception union, operation graph/receipt, evidence/attestation, handoff/rebaseline, cleanup, finalization, Release Set, and projections. Workflow run/attempt may be null only for that exact exception kind; all other claims/receipts require them where applicable.
 **Output**: Strict typed parser API with machine-readable validation errors.
 **Acceptance**: Valid fixtures parse; every invalid fixture fails closed with stable error codes; no permissive additional properties.
 
@@ -114,14 +114,14 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: 100% coverage and deterministic repeated-run digest equality.
 
 ### ⬜ Unit 4a: Ledger State Machine and Authority - Tests
-**What**: Add red semantic tests for authority roles, GitHub actor/run provenance, allowed transitions, monotonic generations, expected-parent CAS, active-generation reservation, pre/post-claim supersession, emergency cancellation, terminal containment, expired claims, direct-child finalization, unauthorized/self-declared appends, and every race ordering.
+**What**: Add red semantic tests for authority roles, GitHub actor/run provenance, allowed transitions, monotonic generations, expected-parent CAS, active-generation reservation, pre/post-claim supersession, emergency cancellation, terminal containment, expired claims, direct-child finalization, unauthorized/self-declared appends, the one-time per-repository/environment bootstrap exception with no source/provider authority, and every race ordering.
 **Output**: `test/ledger.test.ts`, ledger history fixtures, and red logs.
 **Acceptance**: Tests exercise both winners of each CAS race and reject all illegal histories.
 
 ### ⬜ Unit 4b: Ledger State Machine and Authority - Implementation
-**What**: Implement `src/authority.ts`, `src/ledger.ts`, `src/transitions.ts`, immutable actor policy `policies/authority-v1.yaml`, append payload/digest generation, and local history validation for `refs/heads/release-ledger`.
+**What**: Implement `src/authority.ts`, `src/ledger.ts`, `src/transitions.ts`, immutable actor policy `policies/authority-v1.yaml`, the exact source-agnostic `github-environment-ui-bootstrap-v1` authority rule, append payload/digest generation, and local history validation for `refs/heads/release-ledger`.
 **Output**: Deterministic ledger transition engine.
-**Acceptance**: Only protected-workflow/provider-bound actors and legal expected-parent transitions validate; shipment is possible only through direct-child `ReleaseSetPublished`.
+**Acceptance**: Only protected-workflow/provider-bound actors and legal expected-parent transitions validate; the bootstrap exception can occur at most once for a named repository/environment, cannot authorize source/provider mutation, and must terminate before another claim; shipment is possible only through direct-child `ReleaseSetPublished`.
 
 ### ⬜ Unit 4c: Ledger State Machine and Authority - Coverage
 **What**: Complete transition-table, clock/expiry, race, cancellation, and malformed-history coverage.
@@ -129,12 +129,12 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: 100% coverage, mutation testing spot checks reject removed guards, zero warnings.
 
 ### ⬜ Unit 5a: Typed Operation DAGs - Tests
-**What**: Add source-agnostic red tests for static templates, typed topological dataflow, authoritative-query/prior-receipt inputs, branch cardinality, template/resolved digests, per-request drift, idempotency, retry, compensation, and partial failure. Use fictional provider fixtures only; exact web/native operation inventories wait for the validated Unit 13 rebaseline.
+**What**: Add source-agnostic red tests for static templates, typed topological dataflow, authoritative-query/prior-receipt inputs, branch cardinality, template/resolved digests, per-request drift, idempotency, retry, compensation, partial failure, the reserved `github-environment-ui-bootstrap-v1` interactive node sequence, and its `github-environment-ui-governance-v1` installed-gate successor. Use fictional provider fixtures only; exact web/native provider-operation inventories wait for the validated Unit 13 rebaseline.
 **Output**: `test/operation-graph.test.ts`, generic operation fixtures, and red logs.
 **Acceptance**: Unknown methods/paths/nodes, unresolved/multiple/out-of-graph values, stale pre-state, and ambiguous POST/PATCH/skip branches fail.
 
 ### ⬜ Unit 5b: Typed Operation DAGs - Implementation
-**What**: Implement `src/operation-graph.ts`, `src/receipts.ts`, canonical expression resolution, dry-run plans, apply-time revalidation, receipt chaining, and containment planning.
+**What**: Implement `src/operation-graph.ts`, `src/receipts.ts`, the fixed source-agnostic `github-environment-ui-bootstrap-v1` graph and `github-environment-ui-governance-v1` installed-gate successor, canonical expression resolution, dry-run plans, apply-time revalidation, receipt chaining, and containment planning. Interactive governance nodes are limited to authenticated viewer proof, a matching approved waiting-job grant for the successor, named GitHub environment settings, sanitized UI/API evidence, and terminal append; provider/source operation node kinds are structurally forbidden.
 **Output**: Validated static DAG and runtime receipt APIs plus `operation dry-run|verify-receipts` CLI.
 **Acceptance**: Generic fixtures resolve one authorized branch per node and preserve hash-linked provenance without embedding assumptions about unvalidated source workflows.
 
@@ -159,12 +159,12 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: 100% coverage, deterministic sanitized output, zero warnings.
 
 ### ⬜ Unit 7a: GitHub Run, Attestation, and Environment APIs - Tests
-**What**: Add red mocked-HTTP tests for exact workflow dispatch, run/attempt/workflow SHA/actor verification, waiting-job/environment inventory, singleton enforcement, approval request/response, before/after transition checks, artifact identity/download/digest/expiry, GitHub attestation claims, reruns/forks/mutable refs/rate limits/pagination/retries, and redacted errors.
+**What**: Add red mocked-HTTP tests for exact workflow dispatch, run/attempt/workflow SHA/actor verification, waiting-job/environment inventory, singleton enforcement, approval request/response, authenticated viewer and named-environment queries, sanitized UI-evidence ingestion for the fixed bootstrap graph, before/after transition checks, artifact identity/download/digest/expiry, GitHub attestation claims, reruns/forks/mutable refs/rate limits/pagination/retries, and redacted errors.
 **Output**: `test/github.test.ts`, HTTP fixtures, and red logs.
 **Acceptance**: All stale, ambiguous, unauthorized, replayed, or leaking provider states fail closed.
 
 ### ⬜ Unit 7b: GitHub Run, Attestation, and Environment APIs - Implementation
-**What**: Implement `src/github.ts`, `src/attestations.ts`, authenticated `gh` adapter, exact dispatch/wait/download/verify, environment review handshake, and artifact-attestation verification.
+**What**: Implement `src/github.ts`, `src/attestations.ts`, authenticated `gh` adapter, exact dispatch/wait/download/verify, environment review handshake, `environment bootstrap plan|receipt|verify` for the fixed interactive graph, and artifact-attestation verification. The CLI validates and hashes bounded browser-produced UI evidence; it cannot synthesize actor identity or invoke source/provider operations.
 **Output**: `attestor dispatch|verify` and `claim approve` CLI commands with dependency injection for tests.
 **Acceptance**: Mocked provider matrix passes; production code never logs token/provider payloads.
 
@@ -204,12 +204,12 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: 100% coverage, zero warnings.
 
 ### ⬜ Unit 10a: Delivery CLI, Samples, and Documentation - Tests
-**What**: Add red end-to-end CLI tests for init/validate/digest/authorize/dispatch/claim/receipt/evidence/rebaseline/cleanup/finalize/project commands, stable exit codes/JSON, sample Product Change/Contract/Release Set validation, and docs command/path drift.
+**What**: Add red end-to-end CLI tests for init/validate/digest/authorize/dispatch/claim/receipt/evidence/rebaseline/cleanup/finalize/project and `environment bootstrap` commands, stable exit codes/JSON, sample Product Change/Contract/Release Set validation, and docs command/path drift.
 **Output**: `test/cli-e2e.test.ts`, sample fixtures, and red logs.
 **Acceptance**: Command matrix fails only on missing wiring/docs.
 
 ### ⬜ Unit 10b: Delivery CLI, Samples, and Documentation - Implementation
-**What**: Wire the CLI; add `examples/`, `docs/architecture.md`, `docs/authority-and-ledger.md`, `docs/operation-graphs.md`, `docs/evidence-policy.md`, `docs/source-integration.md`, `docs/rollback.md`, and `docs/photo-studio-pilot.md` without secrets/private paths.
+**What**: Wire the CLI; add `examples/`, `docs/architecture.md`, `docs/authority-and-ledger.md`, `docs/operation-graphs.md`, `docs/evidence-policy.md`, `docs/source-integration.md`, `docs/rollback.md`, and `docs/photo-studio-pilot.md` without secrets/private paths, including the one-time bootstrap threat model, exact UI path, receipt semantics, and installed-gate successor path.
 **Output**: Usable operator CLI and complete public docs.
 **Acceptance**: Samples validate; docs commands execute; no stale names or unverifiable shipment language.
 
@@ -299,17 +299,17 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: 100% changed-code coverage, full web suite green, zero warnings.
 
 ### ⬜ Unit 15a: Web Release Authorization - Tests
-**What**: Add red tests for non-environment preflight, one protected mutation job/environment, authorization/claim verification, a claimed read-only `verify-environment-governance` operation that waits on `production` without provider credentials, no legacy unbound auto-deploy, DAG receipt/containment hooks, and private provider capture.
+**What**: Add red tests for non-environment preflight, one protected mutation job/environment, authorization/claim verification, claimed read-only `authorize-environment-governance-update` and `verify-environment-governance` operations that wait on `production` without provider credentials, no legacy unbound auto-deploy, DAG receipt/containment hooks, and private provider capture.
 **Output**: Web release workflow red tests.
 **Acceptance**: Current automatic/unbound deploy and mixed protected-job behavior are rejected by tests.
 
 ### ⬜ Unit 15b: Web Release Authorization - Implementation
-**What**: Split `.github/workflows/production-deploy.yml` into preflight plus singleton claimed mutation operations, add the claimed read-only `verify-environment-governance` branch under the same `production` gate, pin exact delivery validator, and gate D1/deploy/canary/report/artifact nodes with private output and receipts.
+**What**: Split `.github/workflows/production-deploy.yml` into preflight plus singleton claimed mutation operations; add claimed read-only `authorize-environment-governance-update` and `verify-environment-governance` branches under the same `production` gate, with the former emitting a bounded approved-job grant and the latter asserting settings; pin exact delivery validator; and gate D1/deploy/canary/report/artifact nodes with private output and receipts.
 **Output**: Authorized production workflow.
 **Acceptance**: Workflow contract tests, security tests, typecheck/build, and dry-run fixtures pass; no provider mutation occurs in validation.
 
 ### ⬜ Unit 15c: Web Release Authorization - Coverage
-**What**: Cover absent/stale/revoked claims, environment mismatch, governance verification with no provider-secret or deploy access, each operation alternative/receipt/containment, and log leaks.
+**What**: Cover absent/stale/revoked claims, environment mismatch, governance authorization/verification with no provider-secret or deploy access, each operation alternative/receipt/containment, and log leaks.
 **Output**: Web workflow coverage and warning logs.
 **Acceptance**: 100% changed-code coverage, full suite green, zero warnings.
 
@@ -389,17 +389,17 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: 100% core/changed-script coverage, full builds green.
 
 ### ⬜ Unit 21a: Native TestFlight Authorization - Tests
-**What**: Add red workflow tests for non-environment preflight, singleton internal-testflight mutation job, a claimed read-only `verify-environment-governance` operation that waits on `internal-testflight` without ASC credentials, reviewer/self-review/no-bypass settings, claim/run/attempt validation, legacy dispatch rejection, receipts, and containment.
+**What**: Add red workflow tests for non-environment preflight, singleton internal-testflight mutation job, claimed read-only `authorize-environment-governance-update` and `verify-environment-governance` operations that wait on `internal-testflight` without ASC credentials, reviewer/self-review/no-bypass settings, claim/run/attempt validation, legacy dispatch rejection, receipts, and containment.
 **Output**: Native workflow red tests.
 **Acceptance**: Current unbound/mixed TestFlight path and raw `tee` output fail the new contracts.
 
 ### ⬜ Unit 21b: Native TestFlight Authorization - Implementation
-**What**: Refactor `.github/workflows/testflight.yml` into exact preflight and claimed singleton mutation operations pinned to the delivery validator, including the claimed read-only `verify-environment-governance` branch under the same `internal-testflight` gate.
+**What**: Refactor `.github/workflows/testflight.yml` into exact preflight and claimed singleton mutation operations pinned to the delivery validator, including claimed read-only `authorize-environment-governance-update` and `verify-environment-governance` branches under the same `internal-testflight` gate; the former emits a bounded approved-job grant and the latter asserts settings.
 **Output**: Authorized TestFlight workflow shell.
 **Acceptance**: Focused contracts, full Swift suite, scenarios, builds, shell syntax, and warning scans pass.
 
 ### ⬜ Unit 21c: Native TestFlight Authorization - Coverage
-**What**: Cover claim/environment/run/retry/containment, governance verification with no ASC-secret or upload access, and settings drift paths.
+**What**: Cover claim/environment/run/retry/containment, governance authorization/verification with no ASC-secret or upload access, and settings drift paths.
 **Output**: Native workflow coverage logs.
 **Acceptance**: 100% core/changed-script contract coverage, full gates green, zero warnings.
 
@@ -758,8 +758,28 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Output**: Dependency decision plus fresh direct-push rejection, append run/ledger/containment/post-query or no-replay receipt.
 **Acceptance**: Decision binds repaired workflow/settings; any replay is non-shipping, exact, and terminally contained.
 
+### ⬜ Unit 60c27d1: Conditional Web Environment Governance Repair
+**What**: If a reviewed repair changes the required web environment policy, authorize and claim `github-environment-ui-governance-v1`, dispatch the exact merged read-only `authorize-environment-governance-update` operation to obtain a bounded approved-job grant from the existing `production` gate, re-query approver actor `16390116`, approve that exact waiting job, then apply only the grant-bound GitHub Settings UI delta and append its UI/API receipt plus terminal or containment. Otherwise issue a validated no-replay receipt. The one-time bootstrap exception is forbidden here.
+**Output**: Dependency decision; authorization/claim/terminal-or-containment commits; workflow/run/attempt/job/environment and actor IDs; before/after UI/API evidence digests; or no-replay receipt.
+**Acceptance**: Decision binds repaired web SHA and policy; any change is approved through the already-installed gate before bounded UI apply, exactly matches the reviewed policy delta, reaches terminal-or-containment, and starts no deploy.
+
+### ⬜ Unit 60c27d2: Conditional Replay of Web Protected Environment Proof
+**What**: Re-run Unit 27d2 when the web workflow, validator, environment policy, or Unit 60c27d1 result invalidates its proof; otherwise issue a validated no-replay receipt.
+**Output**: Dependency decision plus fresh claimed waiting/approval/verification/terminal evidence or no-replay receipt.
+**Acceptance**: Decision binds repaired web/workflow/policy SHAs and digests; any replay proves the sole read-only `production` job under the installed gate and starts no deploy.
+
+### ⬜ Unit 60c27e1: Conditional Native Environment Governance Repair
+**What**: If a reviewed repair changes the required native environment policy, authorize and claim `github-environment-ui-governance-v1`, dispatch the exact merged read-only `authorize-environment-governance-update` operation to obtain a bounded approved-job grant from the existing `internal-testflight` gate, re-query approver actor `16390116`, approve that exact waiting job, then apply only the grant-bound GitHub Settings UI delta and append its UI/API receipt plus terminal or containment. Otherwise issue a validated no-replay receipt. The one-time bootstrap exception is forbidden here.
+**Output**: Dependency decision; authorization/claim/terminal-or-containment commits; workflow/run/attempt/job/environment and actor IDs; before/after UI/API evidence digests; or no-replay receipt.
+**Acceptance**: Decision binds repaired native SHA and policy; any change is approved through the already-installed gate before bounded UI apply, exactly matches the reviewed policy delta, reaches terminal-or-containment, and starts no TestFlight upload.
+
+### ⬜ Unit 60c27e2: Conditional Replay of Native Protected Environment Proof
+**What**: Re-run Unit 27e2 when the native workflow, validator, environment policy, or Unit 60c27e1 result invalidates its proof; otherwise issue a validated no-replay receipt.
+**Output**: Dependency decision plus fresh claimed waiting/approval/verification/terminal evidence or no-replay receipt.
+**Acceptance**: Decision binds repaired native/workflow/policy SHAs and digests; any replay proves the sole read-only `internal-testflight` job under the installed gate and performs no upload.
+
 ### ⬜ Unit 60c28: Conditional Replay of Unit 28
-**What**: Re-run merged-state pilot rebaseline when any delivery/web/native repair landed, otherwise issue a validated no-replay receipt.
+**What**: Re-run merged-state pilot rebaseline when any delivery/web/native repair or Unit 60c27d1-e2 replay landed, otherwise issue a validated no-replay receipt.
 **Output**: Fresh Unit 28 rebaseline/freeze or no-replay receipt.
 **Acceptance**: Decision binds repair SHAs; any replay is green with zero in-flight mutation.
 
@@ -960,18 +980,23 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 
 ### ⬜ Unit 62: Fresh Final Provider Queries
 **What**: Re-query GitHub, source mains/checks, Cloudflare Worker/D1/R2, runtime digests, ASC, installed proof locators, cleanup, and feedback health against Unit 61.
-**Output**: Attestor run/artifact IDs, provider post-queries, and evidence digests/expiry.
-**Acceptance**: All identities match; no ledger drift or mutation; raw evidence private.
+**Output**: Attestor run/artifact IDs, provider post-queries, evidence digests/expiry, and either a green result or a structured failure report consumed by Unit 63a.
+**Acceptance**: Every query reaches a terminal classified result; a green result proves all identities match, while any mismatch/failure is preserved as a sanitized fail-closed report; no ledger drift or mutation; raw evidence private.
 
 ### ⬜ Unit 63: Release Set Compile and Leak Scan
-**What**: Compile the complete Release Set from Unit 62, validate graph/claims/receipts/dispositions, and scan every field/artifact.
-**Output**: Canonical Release Set digest, validation report, and leak-scan report.
-**Acceptance**: Release Set is publishable with proposed state `shipped`; Product Change remains unshipped; all proofs fresh; no waiver/blocker/leak; ledger remains Unit 61.
+**What**: When Unit 62 is green, compile the complete Release Set, validate graph/claims/receipts/dispositions, and scan every field/artifact. When Unit 62 is not green, emit a bound skipped-due-to-provider-failure record instead of compiling.
+**Output**: Canonical Release Set digest, validation report, and leak-scan report, or a structured skip/failure report consumed by Unit 63a.
+**Acceptance**: The result is terminally classified: either the Release Set is publishable with proposed state `shipped`, all proofs fresh, and no waiver/blocker/leak, or publication is explicitly refused with bound reasons; Product Change remains unshipped and ledger remains Unit 61.
+
+### ⬜ Unit 63a: Finalization Claim Resolution
+**What**: Resolve Unit 61 before any other transition. If Units 62-63 are fully green, record a validated publish decision and leave `FinalizationClaim` as ledger head for Unit 64. If either is not green, expected-parent append `FinalizationAborted` with sanitized reason/evidence digests through the protected workflow, verify it as ledger head, amend this doing doc with reviewer-gated repair/replay units beginning again at Unit 60a, and do not execute Unit 64 until a later fresh finalization claim passes.
+**Output**: Publish-decision receipt, or append run/parent/`FinalizationAborted` commit/actor proof/post-query plus reviewer-approved loopback units.
+**Acceptance**: The claim is never stranded: green proof authorizes only Unit 64, while any query/compile/leak failure ends at `FinalizationAborted` before repair; no failed generation can publish.
 
 ### ⬜ Unit 64: Authoritative ReleaseSetPublished Append
-**What**: Expected-parent append the complete Release Set as the direct child of Unit 61 through protected workflow.
+**What**: After Unit 63a records a green publish decision, expected-parent append the complete Release Set as the direct child of Unit 61 through protected workflow.
 **Output**: Append run ID, ledger parent, authoritative commit, actor/workflow proof, and post-query.
-**Acceptance**: CAS succeeds once; commit is ledger head and sole shipment event.
+**Acceptance**: Unit 63a publish decision and Unit 61 parent are exact; CAS succeeds once; commit is ledger head and sole shipment event.
 
 ### ⬜ Unit 65: Main Projection
 **What**: Authorize and project the authoritative ledger commit/digest to protected main, then verify pointer and CI.
@@ -1011,3 +1036,4 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 - 2026-07-20 22:36: Final granularity findings were closed with reviewer-gated one-unit-per-finding repair expansion and conditional replay of live delivery settings plus protected-ledger append proof before downstream rebaseline.
 - 2026-07-20 22:45: Validation pass made the upstream release task's outbound handoff and this task's protected receiver acknowledgment explicit, added authorized web/native environment-governance operations, and made the Unit 1 red test independently runnable with pinned Vitest.
 - 2026-07-20 22:57: Validation Round 2 pinned pnpm and allowed only the esbuild bootstrap, replaced the circular first environment approval with a ledger-authorized, actor-bound GitHub UI bootstrap exception, and added separate read-only protected workflow proofs for both source environments.
+- 2026-07-20 23:08: Validation Round 3 assigned the bootstrap exception to early schema/authority/DAG/GitHub/CLI TDD units, added installed-gate governance and proof replays after source repairs, and guaranteed every finalization claim ends in either publication or `FinalizationAborted` before repair.
