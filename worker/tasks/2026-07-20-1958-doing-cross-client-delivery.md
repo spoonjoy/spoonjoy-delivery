@@ -69,9 +69,9 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: JSON parses; IDs/SHAs are exact; no source checkout, deployment, TestFlight, or source worktree changed; the active TestFlight owner has the coordination message.
 
 ### ⬜ Unit 1a: Delivery Repository Foundation - Tests
-**What**: Add red contract tests for package metadata, Node 22/pnpm pinning, strict compiler/linter/formatter settings, ESM exports/bin, deterministic scripts, warning failure, coverage thresholds, repository instructions, ignored private artifacts, and SHA-pinned workflow actions.
+**What**: Add red contract tests for package metadata, Node 22/pnpm pinning, strict compiler/linter/formatter settings, ESM exports/bin, deterministic scripts, warning failure, coverage thresholds, repository instructions, ignored private artifacts, and SHA-pinned workflow actions. Run the pre-package red test with `corepack pnpm dlx vitest@4.0.18 run test/repository-contract.test.ts` so Unit 1a does not depend on Unit 1b.
 **Output**: `test/repository-contract.test.ts` plus red logs.
-**Acceptance**: Focused Vitest fails only because foundation files/configuration are absent.
+**Acceptance**: The pinned bootstrap command runs without a repository package and fails only because foundation files/configuration are absent.
 
 ### ⬜ Unit 1b: Delivery Repository Foundation - Implementation
 **What**: Add `package.json`, `pnpm-lock.yaml`, `tsconfig.json`, `eslint.config.mjs`, `vitest.config.ts`, formatter config, `.gitignore`, `AGENTS.md`, `src/index.ts`, `src/cli.ts`, and `README.md` using Node 22, pnpm 10.28.1, ESM, strict TypeScript, Ajv 2020, YAML strict parsing, RFC 8785 canonicalization, and zero-warning scripts.
@@ -258,15 +258,20 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Output**: Append run/attempt ID, ledger parent/fixture/containment commits, actor/workflow identity, direct-push rejection, and post-query.
 **Acceptance**: Only merged protected workflow can append; fixture is non-shipping and terminally contained; no provider mutation.
 
-### ⬜ Unit 13a: Source Owner Handoff Receipt
-**What**: Wait in-turn for task `019f2e25-2fc3-75b2-8ba3-335f3777115a` and ingest its protected owner-release handoff plus receiver acknowledgment without touching source repositories.
-**Output**: Handoff/acknowledgment commits, task commit, and stated cleanup owner.
-**Acceptance**: Both protected records agree on exact ownership and no source mutation is performed.
+### ⬜ Unit 13a1: Upstream Source Owner Handoff Ingestion
+**What**: Wait in-turn for task `019f2e25-2fc3-75b2-8ba3-335f3777115a` and ingest its terminal protected outbound handoff naming this cross-client task without touching source repositories.
+**Output**: Upstream handoff commit/artifact, release-task commit, exact web/native/provider state, zero-in-flight fields, and cleanup owner.
+**Acceptance**: Handoff explicitly transfers source ownership to this task and is terminal/protected; no source mutation is performed.
+
+### ⬜ Unit 13a2: Cross-Client Receiver Acknowledgment
+**What**: Validate Unit 13a1, commit/push a protected receiver acknowledgment in the delivery records branch, and send its exact commit/artifact back to the releasing task.
+**Output**: Receiver acknowledgment commit/artifact and coordination receipt.
+**Acceptance**: Acknowledgment exactly matches handoff SHAs/provider/in-flight/cleanup fields and accepts ownership; no source mutation is performed.
 
 ### ⬜ Unit 13b: Source Rebaseline Verification
 **What**: Query exact web/native remote main, open PRs, active workflow runs, deployments, TestFlight mutations, worktrees, and cleanup ownership; run `rebaseline verify`.
 **Output**: Rebaseline bundle and validator report.
-**Acceptance**: Zero in-flight source mutation/deploy/release work, exact SHAs, explicit cleanup ownership, and green validator.
+**Acceptance**: Units 13a1-13a2 both validate; zero in-flight source mutation/deploy/release work, exact SHAs, explicit cleanup ownership, and green validator.
 
 ### ⬜ Unit 13c: Source Worktree Creation
 **What**: Create isolated `worker/cross-client-delivery` web/native worktrees from the exact validated mains and record branch/upstream state.
@@ -487,6 +492,16 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **What**: Coordinate merge, verify exact native main/CI, and prove no TestFlight run started.
 **Output**: Merge SHA, exact-main runs, TestFlight query, and worktree ownership.
 **Acceptance**: Main green, zero in-flight TestFlight, no source cleanup yet.
+
+### ⬜ Unit 27d: Web Production Environment Governance
+**What**: Through an authorized claimed governance operation, capture and set web `production` to required reviewer actor `16390116`, `prevent_self_review=false`, administrator bypass disabled, and protected-main deployment policy; verify afterward.
+**Output**: Authorization/claim/terminal-or-containment commits, run/attempt ID, before/apply/after API responses, governance receipt digest, and authoritative post-query.
+**Acceptance**: Receipt binds exact claim/graph/run; terminal-or-containment appended; live environment exactly matches policy; no deploy occurs.
+
+### ⬜ Unit 27e: Native Internal-TestFlight Environment Governance
+**What**: Through an authorized claimed governance operation, capture and set native `internal-testflight` to required reviewer actor `16390116`, `prevent_self_review=false`, administrator bypass disabled, and protected-main deployment policy; verify afterward.
+**Output**: Authorization/claim/terminal-or-containment commits, run/attempt ID, before/apply/after API responses, governance receipt digest, and authoritative post-query.
+**Acceptance**: Receipt binds exact claim/graph/run; terminal-or-containment appended; live environment exactly matches policy; no TestFlight run occurs.
 
 ### ⬜ Unit 28: Merged-State Pilot Rebaseline
 **What**: Re-query exact merged mains, environments, credential scopes, current/previous ASC identities, hardware, Codex host/model/tool digest, in-flight runs, and cleanup ownership.
@@ -983,3 +998,4 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 - 2026-07-20 22:16: Final granularity repair preserved the coordinating worktree, moved the `shipped` transition exclusively to Unit 64, split delivery/web/native repairs and every conditional Unit 30-59 replay, separated provider-record classification from claimed artifact deletion, and completed live mutation evidence chains.
 - 2026-07-20 22:27: Granularity convergence repair moved protected append proof after workflow merge, split every delivery/web/native repair into repair/PR/merge, replayed merged-state rebaseline and exact operation records before live proofs, and separated read-only versus claimed cleanup replay.
 - 2026-07-20 22:36: Final granularity findings were closed with reviewer-gated one-unit-per-finding repair expansion and conditional replay of live delivery settings plus protected-ledger append proof before downstream rebaseline.
+- 2026-07-20 22:45: Validation pass made the upstream release task's outbound handoff and this task's protected receiver acknowledgment explicit, added authorized web/native environment-governance operations, and made the Unit 1 red test independently runnable with pinned Vitest.
