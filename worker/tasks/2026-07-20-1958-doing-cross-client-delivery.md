@@ -84,12 +84,12 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: 100% statements/branches/functions/lines for new code and all gates green.
 
 ### ⬜ Unit 2a: Structural Schemas and Parsing - Tests
-**What**: Add red fixture tests for every planning object, bootstrap/bootstrap-resume/recovery authorization/claim/receipt unions with deliberately null workflow fields, `BootstrapRolledBack`, the installed-gate governance union with required run fields, strict JSON/YAML parsing, duplicate keys, unknown fields, invalid versions/IDs/SHAs/digests/timestamps, empty collections, malformed unions, and schema fixture drift.
+**What**: Add red fixture tests for every planning object, bootstrap/bootstrap-resume/recovery authorization/claim/receipt unions with deliberately null workflow fields, `BootstrapRolledBack`, the installed-gate governance union with required run fields, proof-dependency manifests/replay decisions/no-replay receipts, strict JSON/YAML parsing, duplicate keys, unknown fields, invalid versions/IDs/SHAs/digests/timestamps, empty collections, malformed unions, and schema fixture drift.
 **Output**: `schemas/*.schema.json`, `test/schema.test.ts`, `test/fixtures/schema/{valid,invalid}/`, and red logs.
 **Acceptance**: Tests fail on missing parser/schema implementation and demonstrate each rejection path.
 
 ### ⬜ Unit 2b: Structural Schemas and Parsing - Implementation
-**What**: Implement `src/parse.ts`, `src/schema.ts`, and versioned JSON Schemas for authority policy, Product Change/Contract/Pack, authorization, claims/terminals/cancellation, closed bootstrap/bootstrap-resume/recovery exception unions and terminals, the installed-gate governance union, operation graph/receipt, evidence/attestation, handoff/rebaseline, cleanup, finalization, Release Set, and projections. Workflow run/attempt may be null only for exact interactive exception kinds; installed-gate and all other workflow-backed claims/receipts require them.
+**What**: Implement `src/parse.ts`, `src/schema.ts`, and versioned JSON Schemas for authority policy, Product Change/Contract/Pack, authorization, claims/terminals/cancellation, closed bootstrap/bootstrap-resume/recovery exception unions and terminals, the installed-gate governance union, operation graph/receipt, proof-dependency manifest/replay decision/no-replay receipt, evidence/attestation, handoff/rebaseline, cleanup, finalization, Release Set, and projections. Workflow run/attempt may be null only for exact interactive exception kinds; installed-gate and all other workflow-backed claims/receipts require them.
 **Output**: Strict typed parser API with machine-readable validation errors.
 **Acceptance**: Valid fixtures parse; every invalid fixture fails closed with stable error codes; no permissive additional properties.
 
@@ -204,7 +204,7 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: 100% coverage, zero warnings.
 
 ### ⬜ Unit 10a: Delivery CLI, Samples, and Documentation - Tests
-**What**: Add red end-to-end CLI tests for init/validate/digest/authorize/dispatch/claim/receipt/evidence/rebaseline/cleanup/finalize/project and `environment bootstrap|resume|govern|recover` commands, stable exit codes/JSON, sample Product Change/Contract/Release Set validation, and docs command/path drift.
+**What**: Add red end-to-end CLI tests for init/validate/digest/authorize/dispatch/claim/receipt/evidence/rebaseline/cleanup/finalize/project, `replay evaluate`, and `environment bootstrap|resume|govern|recover` commands, stable exit codes/JSON, sample Product Change/Contract/Release Set validation, and docs command/path drift.
 **Output**: `test/cli-e2e.test.ts`, sample fixtures, and red logs.
 **Acceptance**: Command matrix fails only on missing wiring/docs.
 
@@ -249,7 +249,7 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: All required checks succeed on the exact head; no unresolved review thread or in-flight run.
 
 ### ⬜ Unit 12c: Delivery Merge and Exact-Main Proof
-**What**: Merge the protected PR, verify exact delivery main/CI, preserve the coordinating worktree, and rotate it onto a clean records branch based on verified main for Units 13-67.
+**What**: Merge the protected PR, verify exact delivery main/CI, preserve the coordinating worktree, and rotate it onto clean `worker/cross-client-delivery-records-r0` based on verified main for Units 13-29e.
 **Output**: Merge SHA, exact-main run IDs, settings post-query, records branch/worktree path/base SHA, and retired implementation-branch receipt.
 **Acceptance**: Main is clean/green; no in-flight delivery mutation; coordinating worktree remains clean on the exact records base.
 
@@ -264,14 +264,14 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: Handoff explicitly transfers source ownership to this task and is terminal/protected; no source mutation is performed.
 
 ### ⬜ Unit 13a2: Cross-Client Receiver Acknowledgment
-**What**: Validate Unit 13a1, commit/push a protected receiver acknowledgment in the delivery records branch, and send its exact commit/artifact back to the releasing task.
-**Output**: Receiver acknowledgment commit/artifact and coordination receipt.
-**Acceptance**: Acknowledgment exactly matches handoff SHAs/provider/in-flight/cleanup fields and accepts ownership; no source mutation is performed.
+**What**: Validate Unit 13a1, then use exact merged `.github/workflows/ledger-append.yml` in `spoonjoy/spoonjoy-delivery` to expected-parent append a non-shipping `ReceiverAcknowledged` event to protected `refs/heads/release-ledger`; independently query the remote ref, workflow run/attempt/SHA, triggering actor ID, and payload digest; send those exact locators back to the releasing task. The records branch may reference this event but is not authoritative.
+**Output**: Protected append run/attempt, prior ledger parent, remote-reachable acknowledgment commit/payload digest, actor/workflow identity, authoritative post-query, and coordination receipt.
+**Acceptance**: Remote `release-ledger` head is the matching acknowledgment produced by the exact merged protected workflow; payload exactly matches handoff SHAs/provider/in-flight/cleanup fields and names both tasks; upstream schema validation succeeds; no source mutation is performed.
 
 ### ⬜ Unit 13b: Source Rebaseline Verification
 **What**: Query exact web/native remote main, open PRs, active workflow runs, deployments, TestFlight mutations, worktrees, and cleanup ownership; run `rebaseline verify`.
 **Output**: Rebaseline bundle and validator report.
-**Acceptance**: Units 13a1-13a2 both validate; zero in-flight source mutation/deploy/release work, exact SHAs, explicit cleanup ownership, and green validator.
+**Acceptance**: Unit 13a1 terminal handoff and Unit 13a2 remote protected-ledger acknowledgment both validate by independent GitHub queries; zero in-flight source mutation/deploy/release work, exact SHAs, explicit cleanup ownership, and green validator. A branch-only acknowledgment cannot unlock source work.
 
 ### ⬜ Unit 13c: Source Worktree Creation
 **What**: Create isolated `worker/cross-client-delivery` web/native worktrees from the exact validated mains and record branch/upstream state.
@@ -314,12 +314,12 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: 100% changed-code coverage, full suite green, zero warnings.
 
 ### ⬜ Unit 16a: Web Provider Attestor - Tests
-**What**: Add red tests for source-owned exact-delivery-SHA dispatch, FinalizationClaim/nonce binding for the final-query mode, least-privilege Cloudflare/D1/R2/GitHub queries, complete relevant-state fingerprints and provider audit/watermark metadata where exposed, pagination/errors, sanitized output, artifact attestation, expiry, and wrong run/ref/event.
+**What**: Add red tests for source-owned exact-delivery-SHA dispatch, FinalizationClaim/nonce binding for final-query mode, least-privilege Cloudflare/D1/R2/GitHub queries, complete fingerprints/audit-watermarks, per-provider signed observation windows from response `Date` headers, final consistency requery after pagination, GitHub server-clock cross-check with 5-second skew allowance, missing/stale/future timestamps, sanitized output, artifact attestation, expiry, and wrong run/ref/event.
 **Output**: Web attestor red tests.
 **Acceptance**: Self-authored deploy summaries and broad/mutable evidence fail verification.
 
 ### ⬜ Unit 16b: Web Provider Attestor - Implementation
-**What**: Add the source-owned production attestor workflow and scripts, including a final-query mode bound to a delivery FinalizationClaim and nonce, that capture raw responses privately and emit only complete allowlisted attested evidence.
+**What**: Add the source-owned production attestor workflow and scripts, including a final-query mode bound to a delivery FinalizationClaim and nonce, that capture raw responses privately, perform final inventory consistency requery, record signed per-provider observation windows/server-clock proof, and emit only complete allowlisted attested evidence.
 **Output**: Independent web/Cloudflare/D1/GitHub attestor.
 **Acceptance**: Mock and live read-only dry runs plus artifact verification pass without mutation.
 
@@ -419,12 +419,12 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: Full native gates green, zero warnings.
 
 ### ⬜ Unit 23a: Native ASC Attestor - Tests
-**What**: Add red tests for exact delivery SHA, FinalizationClaim/nonce binding for the final-query mode, least-privilege ASC queries, app/build/group/metadata/notification state, complete relevant-state fingerprints and provider audit/watermark metadata where exposed, pagination/errors, sanitization, artifact attestation, expiry, and wrong run/ref.
+**What**: Add red tests for exact delivery SHA, FinalizationClaim/nonce binding for final-query mode, least-privilege ASC queries, app/build/group/metadata/notification state, complete fingerprints/audit-watermarks, signed observation windows from response `Date` headers, final consistency requery after pagination, GitHub server-clock cross-check with 5-second skew allowance, missing/stale/future timestamps, sanitization, artifact attestation, expiry, and wrong run/ref.
 **Output**: ASC attestor red tests.
 **Acceptance**: Publisher summaries and raw tester responses cannot verify.
 
 ### ⬜ Unit 23b: Native ASC Attestor - Implementation
-**What**: Add source-owned read-only ASC attestor with private raw capture, allowlisted evidence, and a final-query mode bound to a delivery FinalizationClaim and nonce.
+**What**: Add source-owned read-only ASC attestor with private raw capture, allowlisted evidence, final inventory consistency requery, signed ASC/GitHub observation-window proof, and a final-query mode bound to a delivery FinalizationClaim and nonce.
 **Output**: Independent ASC attestor.
 **Acceptance**: Fixture/read-only dry run and attestation verification pass without mutation.
 
@@ -519,14 +519,14 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: Validator green; singleton environments match actor/bypass rules; zero in-flight mutation; exact IDs recorded without secret values.
 
 ### ⬜ Unit 29a: Photo Studio Change and Exact Operation Graphs - Tests
-**What**: Add red validation fixtures for exact merged web/native operation nodes/alternatives, Product Change classifications, compatibility matrix, evidence requirements, and freeze references.
+**What**: Add red validation fixtures for exact merged web/native operation nodes/alternatives, Product Change classifications, compatibility matrix, evidence requirements, freeze references, and a complete proof-dependency manifest for Units 30-59. Tests require every node's direct immutable/runtime inputs, predecessor edges, propagation closure, original acceptance reference, and fail-closed replay/no-replay predicates.
 **Output**: Red change/operation fixtures plus the coordinating records branch, worktree path, and exact base SHA inherited from Unit 12c.
 **Acceptance**: Generic or stale pre-rebaseline graphs fail validation.
 
 ### ⬜ Unit 29b: Photo Studio Change and Exact Operation Graphs - Implementation
-**What**: Add exact Product Change and source-specific graph templates from merged source, classify every surface, and produce authorization payloads without appending.
-**Output**: Validated change/graph files and dry-run plans.
-**Acceptance**: Exactly one predicate per fixture node; all required/no-op/deferred rules valid.
+**What**: Add exact Product Change/source operation templates and `records/photo-studio-proof-dependencies.json`. Its direct inputs are: 30 web/delivery/workflow/graph/freeze/staged-policy; 31=30+ledger/environment/Worker-prestate; 32=31+previous-source/scenario; 33=31+web-attestor/staged-state; 34 previous-installed-build/queue/scenario; 35 web/delivery/D1-schema/migration/environment/D1-prestate; 36=35+web-pack/workflow/Worker-prestate; 37=36+canary/OAuth-fixture/cleanup-policy; 38=35-37+web-attestor/provider-state; 39=34-38+queue-contract; 40=35-38+browser-harness; 41=35-40+MCP-schema/harness; 42=35-41+agent-host/model/tool/budget; 43 native/delivery/workflow/archive-provenance/environment/ASC-prestate; 44=43+publisher-graph/ASC-metadata; 45=43-44+group-state; 46=43-45+notification-policy/state; 47=43-46+ASC-attestor; 48=43-47+iPhone/build/scenario; 49=43-47+iPad/build/scenario; 50 native/pack/signed-macOS/scenario; 51=36+Worker-predecessor/rollback-graph/state; 52=36-40+capability-isolation/rollback-graph/state; 53=35+migration/backup/containment-graph; 54=43-47+sacrificial-build/supersession-graph/state; 55=35-42+D1-cleanup-manifest/state; 56=35-42+R2/media-manifest/state; 57=37+OAuth/token-manifest/state; 58a=43-57+provider-record-state/disposition-policy; 58b=30-58a+artifact-manifest/state; 59 ledger/finalization-workflow+all cleanup terminals. Generate transitive edges; any changed/missing/unknown input invalidates the node and all descendants. Produce authorization payloads without appending.
+**Output**: Validated change/operation/dependency files, complete node-input/edge inventory, and dry-run/replay-evaluation plans.
+**Acceptance**: Exactly one predicate per operation node; every proof node 30-59 has the listed direct inputs, transitive closure, and original acceptance reference; changed/missing/unknown inputs fail closed; all required/no-op/deferred rules valid.
 
 ### ⬜ Unit 29c: Photo Studio Change and Exact Operation Graphs - Hostile Review
 **What**: Hostile-review the Product Change and graph records and make bounded fixture/data repairs without opening or merging a PR.
@@ -539,9 +539,9 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: Exact head green; no unresolved/in-flight check; no merge or provider mutation.
 
 ### ⬜ Unit 29e: Photo Studio Change and Exact Operation Graphs - Merge
-**What**: Merge the protected records PR and verify exact delivery main.
-**Output**: Merge SHA, exact-main CI runs, and graph/change digest post-query.
-**Acceptance**: Exact main green and matches reviewed records; no provider mutation.
+**What**: Merge the protected `records-r0` PR, verify exact delivery main, and rotate the coordinating worktree onto clean `worker/cross-client-delivery-live-r1` at that exact main for Units 30-42.
+**Output**: Merge SHA, exact-main CI runs, graph/change digest post-query, and clean `live-r1` branch/worktree/base locator.
+**Acceptance**: Exact main green and matches reviewed records; `records-r0` retired; `live-r1` is pushed, clean, and contains no unreviewed receipt yet; no provider mutation.
 
 ### ⬜ Unit 30: Staged Web Preflight
 **What**: Dispatch the exact staged preflight for the merged web SHA at 0% or version override and validate graph, dry-run, and preflight digest.
@@ -608,6 +608,21 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Output**: Five sanitized trial manifests, oracle scores, token total, cleanup receipts, and post-query.
 **Acceptance**: At least four of five deterministic oracles pass; advisory taste cannot override; no leak or residue.
 
+### ⬜ Unit 42a: Web Live-Records Hostile Review
+**What**: Validate and hostile-review all public-safe Unit 30-42 records on `live-r1`, their ledger/provider locators, evidence classifications, and dependency-manifest updates; repair record data only without provider mutation.
+**Output**: Converged verdicts, final `live-r1` head/digests, and private-artifact absence scan.
+**Acceptance**: No BLOCKER/MAJOR; every Unit 30-42 terminal has one exact sanitized record; validators green; no raw/private evidence or provider mutation.
+
+### ⬜ Unit 42b: Web Live-Records Pull Request
+**What**: Open the `live-r1` records PR and obtain protected CI plus terminal review on the exact head.
+**Output**: PR/head/run/review IDs.
+**Acceptance**: Exact head green; no unresolved/in-flight check; no merge or provider mutation.
+
+### ⬜ Unit 42c: Web Live-Records Merge and Rotation
+**What**: Merge `live-r1`, verify exact delivery main/CI, and rotate the coordinating worktree onto clean `worker/cross-client-delivery-live-r2` for Units 43-50.
+**Output**: Merge/main/run IDs, protected web-records commit/digest, and clean `live-r2` locator.
+**Acceptance**: Main contains the reviewed Unit 30-42 records; `live-r1` retired; `live-r2` clean at exact main.
+
 ### ⬜ Unit 43: Native Archive and Upload Operation
 **What**: Authorize, preflight, claim, approve, archive/export/upload, verify provenance/hashes, post-query ASC, and append terminal.
 **Output**: Authorization/claim/terminal-or-containment commits, run/attempt ID, upload receipt digest, hashes/provenance, ASC app/build IDs/state, and authoritative post-query.
@@ -648,15 +663,30 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Output**: Signed app identity, actor evidence digest, verdicts, cleanup, and post-query.
 **Acceptance**: Exact source/pack/signature matches and required semantics pass.
 
+### ⬜ Unit 50a: Native Live-Records Hostile Review
+**What**: Validate and hostile-review all public-safe Unit 43-50 records on `live-r2`, their ledger/ASC locators, evidence classifications, and dependency-manifest updates; repair record data only without provider mutation.
+**Output**: Converged verdicts, final `live-r2` head/digests, and private-artifact absence scan.
+**Acceptance**: No BLOCKER/MAJOR; every Unit 43-50 terminal has one exact sanitized record; validators green; no PII/private evidence or provider mutation.
+
+### ⬜ Unit 50b: Native Live-Records Pull Request
+**What**: Open the `live-r2` records PR and obtain protected CI plus terminal review on the exact head.
+**Output**: PR/head/run/review IDs.
+**Acceptance**: Exact head green; no unresolved/in-flight check; no merge or provider mutation.
+
+### ⬜ Unit 50c: Native Live-Records Merge and Rotation
+**What**: Merge `live-r2`, verify exact delivery main/CI, and rotate the coordinating worktree onto clean `worker/cross-client-delivery-live-r3` for Units 51-59.
+**Output**: Merge/main/run IDs, protected native-records commit/digest, and clean `live-r3` locator.
+**Acceptance**: Main contains the reviewed Unit 43-50 records; `live-r2` retired; `live-r3` clean at exact main.
+
 ### ⬜ Unit 51: Worker Rollback Proof
-**What**: Authorize and safely exercise or simulate exact Worker rollback/restore with provider queries and terminal receipts.
+**What**: Authorize and live-exercise exact Worker rollback/restore on an isolated 0%-traffic/version-pinned deployment proven by preflight to receive no user traffic; provider-query before/rollback/restore and append terminals. Simulation is permitted only as an additional negative fixture and cannot satisfy this unit or shipment.
 **Output**: Authorization/claim/terminal-or-containment commits, run/attempt ID, rollback/restore receipt digests, before/rollback/restore versions, and authoritative post-query.
-**Acceptance**: Receipts bind exact claim/graph/run; terminal-or-containment appended; candidate restored; no unrelated change.
+**Acceptance**: Selector records `live_required` only after zero-traffic isolation proof; live receipts bind exact claim/graph/run; exact candidate restored; unrelated traffic/state unchanged. Missing isolation, containment, or simulation-only evidence blocks shipment and enters Unit 60 repair.
 
 ### ⬜ Unit 52: Capability Rollback Proof
-**What**: Authorize and exercise or simulate capability disable/restore with runtime oracle and terminal receipts.
+**What**: Authorize and live-exercise capability disable/restore through a run-scoped subject/version override that cannot affect unrelated users, with runtime oracle and terminal receipts. Simulation is permitted only for negative fixtures and cannot satisfy this unit or shipment.
 **Output**: Authorization/claim/terminal-or-containment commits, run/attempt ID, disable/restore receipt digests, capability states, and authoritative post-query.
-**Acceptance**: Receipts bind exact claim/graph/run; terminal-or-containment appended; degraded behavior matches contract and restore is exact.
+**Acceptance**: Selector records `live_required` only after isolation proof; live receipts bind exact claim/graph/run; degraded behavior matches contract and restore is exact; unrelated users unchanged. If no isolated live path exists, the Product Change remains non-shipped pending a reviewed implementation repair.
 
 ### ⬜ Unit 53: Migration Containment Proof
 **What**: Authorize and exercise safe additive-migration containment without destructive rollback.
@@ -664,9 +694,9 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: Receipt binds exact claim/graph/run; terminal-or-containment appended; previous clients compatible; no data loss.
 
 ### ⬜ Unit 54: Native Candidate Supersession Proof
-**What**: Authorize and exercise or simulate candidate supersession without deleting immutable ASC records.
+**What**: Authorize and live-exercise candidate supersession on a run-owned sacrificial TestFlight build that is not the selected candidate; preserve immutable ASC records and re-query both dispositions. Simulation is permitted only for negative fixtures and cannot satisfy this unit or shipment.
 **Output**: Authorization/claim/terminal commits, run/attempt ID, supersession receipt digest, selected/contained build dispositions, and authoritative ASC post-query.
-**Acceptance**: Supersession receipt matches claim; superseded candidate cannot ship; selected build remains explicit; terminal or containment commit recorded.
+**Acceptance**: Selector proves sacrificial and selected build IDs differ; live supersession receipt matches claim; sacrificial build cannot ship; selected build remains explicit/eligible and unchanged; terminal commit recorded. No sacrificial live proof, containment, or simulation-only evidence blocks shipment.
 
 ### ⬜ Unit 55: D1 Cleanup Operation
 **What**: Authorize exact-manifest deletion of remaining run-owned D1 rows, verify references and zero count, and append terminal.
@@ -698,10 +728,25 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Output**: Rejected run IDs, ledger parent, error codes, and no-shipment post-query.
 **Acceptance**: No `ReleaseSetPublished`; state unchanged except explicit aborted test records.
 
+### ⬜ Unit 59a: Safety Live-Records Hostile Review
+**What**: Validate and hostile-review all public-safe Unit 51-59 records on `live-r3`, their ledger/provider locators, exact rollback branch selections, cleanup dispositions, and dependency-manifest updates; repair record data only.
+**Output**: Converged verdicts, final `live-r3` head/digests, and private-artifact absence scan.
+**Acceptance**: No BLOCKER/MAJOR; every Unit 51-59 terminal has one exact sanitized record; validators green; no raw/private evidence or provider mutation.
+
+### ⬜ Unit 59b: Safety Live-Records Pull Request
+**What**: Open the `live-r3` records PR and obtain protected CI plus terminal review on the exact head.
+**Output**: PR/head/run/review IDs.
+**Acceptance**: Exact head green; no unresolved/in-flight check; no merge or provider mutation.
+
+### ⬜ Unit 59c: Safety Live-Records Merge and Rotation
+**What**: Merge `live-r3`, verify exact delivery main/CI, and rotate the coordinating worktree onto clean `worker/cross-client-delivery-repair-i1-r4` for Unit 60 iteration 1.
+**Output**: Merge/main/run IDs, protected safety-records commit/digest, and clean iteration/branch/worktree locator.
+**Acceptance**: Main contains reviewed Unit 51-59 records; `live-r3` retired; repair iteration is `i1`; `repair-i1-r4` clean at exact main.
+
 ### ⬜ Unit 60a: Pre-Finalization Hostile Audit
-**What**: Run fresh architecture, security, privacy, compatibility, test, release-receipt, and visual reviewers over merged/live state without editing.
-**Output**: Ordered findings with exact affected repositories and proof units.
-**Acceptance**: Every finding has severity, evidence, owner, and required replay scope; no mutation or shipment.
+**What**: Begin or resume monotonic `repair_iteration=iN` (starting `i1`), verify/create clean source worktrees from exact current mains when a repair may touch them, and verify the coordinating records branch. A new iteration creates `worker/cross-client-delivery-repair-iN-r4` from exact delivery main; a resumed iteration uses its latest recorded `rK`, with K incremented after each protected records merge. Run fresh architecture, security, privacy, compatibility, test, release-receipt, and visual reviewers over merged/live state without editing.
+**Output**: Iteration ID; exact delivery/web/native bases; branch/worktree ownership; ordered findings with affected repositories, proof nodes, and replay scope.
+**Acceptance**: Iteration is one greater than any prior aborted/nonconverged iteration; worktrees are clean/owned or explicitly no-edit; every finding has severity/evidence/owner/manifest nodes; no mutation or shipment.
 
 ### ⬜ Unit 60b1a: Delivery Repair Unit Expansion
 **What**: Map each delivery finding to one bounded tests/implementation/coverage unit set, amend this doing doc with those explicit units, and run fresh granularity/validation/ambiguity/quality review before any repair; emit a no-repair receipt when none apply.
@@ -804,179 +849,199 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: Exact head green, no unresolved/in-flight check, no merge or mutation.
 
 ### ⬜ Unit 60c29e: Conditional Replay of Unit 29e
-**What**: Merge and exact-main verify the updated records when invalidated, otherwise issue a validated no-replay receipt.
-**Output**: Merge SHA/exact-main CI/digests or no-replay receipt.
-**Acceptance**: Decision binds Unit 60c28; delivery main green; no provider mutation.
+**What**: Merge and exact-main verify the updated records when invalidated, then rotate the coordinating worktree from current `repair-iN-rK` to clean `repair-iN-r(K+1)` at that main; otherwise issue a validated no-replay receipt and retain current `rK`.
+**Output**: Merge SHA/exact-main CI/digests plus retired/new branch locators, or no-replay receipt with retained branch locator.
+**Acceptance**: Decision binds Unit 60c28; delivery main green; exactly one current iteration records branch exists; no provider mutation.
+
+### ⬜ Unit 60c29f: Mechanical Replay Invalidation Evaluation
+**What**: Run `replay evaluate` against the exact protected proof-dependency manifest, original Unit 30-59 baseline receipts, current repaired delivery/web/native SHAs, workflow/graph/policy/runtime/provider/actor/hardware input digests, and predecessor outcomes for the current `repair_iteration`. The evaluator marks a node `replay_required` when any direct input changed/is missing/is unknown or any predecessor is required/failed; otherwise it emits `no_replay` only with byte-equal old/current input maps and green predecessor decisions.
+**Output**: Attested `replay-evaluation-iN.json` containing every node 30-59, old/current direct-input digests, predecessor closure, decision/reason codes, original acceptance reference, and manifest/tool/iteration digests.
+**Acceptance**: All nodes are present exactly once; decisions are deterministic and fail closed; no-replay has complete equality evidence; required status propagates transitively; no provider mutation occurs.
 
 ### ⬜ Unit 60c30: Conditional Replay of Unit 30
-**What**: Evaluate dependency invalidation for Unit 30; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 30 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 30 evidence or no-replay receipt.
 **Acceptance**: Decision binds repaired SHAs/graph and exact prior evidence; invalidated proof is terminal and fresh.
 
 ### ⬜ Unit 60c31: Conditional Replay of Unit 31
-**What**: Evaluate dependency invalidation for Unit 31; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 31 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 31 run/ledger/provider evidence or no-replay receipt.
 **Acceptance**: Decision binds repaired SHAs/graph; any replay has terminal-or-containment commit and post-query.
 
 ### ⬜ Unit 60c32: Conditional Replay of Unit 32
-**What**: Evaluate dependency invalidation for Unit 32; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 32 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 32 actor/oracle/cleanup evidence or no-replay receipt.
 **Acceptance**: Decision binds dependencies; any replay is fresh and residue-free.
 
 ### ⬜ Unit 60c33: Conditional Replay of Unit 33
-**What**: Evaluate dependency invalidation for Unit 33; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 33 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 33 attestation evidence or no-replay receipt.
 **Acceptance**: Decision binds dependencies; any replay is fresh, exact, and read-only.
 
 ### ⬜ Unit 60c34: Conditional Replay of Unit 34
-**What**: Evaluate dependency invalidation for Unit 34; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 34 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 34 installed-queue evidence or no-replay receipt.
 **Acceptance**: Decision binds dependencies; any replay uses the exact eligible previous installed build.
 
 ### ⬜ Unit 60c35: Conditional Replay of Unit 35
-**What**: Evaluate dependency invalidation for Unit 35; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 35 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 35 run/ledger/receipt/post-query or no-replay receipt.
 **Acceptance**: Any replay binds claim/graph/run and reaches terminal-or-containment.
 
 ### ⬜ Unit 60c36: Conditional Replay of Unit 36
-**What**: Evaluate dependency invalidation for Unit 36; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 36 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 36 run/ledger/receipt/post-query or no-replay receipt.
 **Acceptance**: Any replay binds claim/graph/run and reaches terminal-or-containment.
 
 ### ⬜ Unit 60c37: Conditional Replay of Unit 37
-**What**: Evaluate dependency invalidation for Unit 37; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 37 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 37 run/ledger/receipt/cleanup/post-query or no-replay receipt.
 **Acceptance**: Any replay binds claim/graph/run, reaches terminal, and leaves zero canary residue.
 
 ### ⬜ Unit 60c38: Conditional Replay of Unit 38
-**What**: Evaluate dependency invalidation for Unit 38; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 38 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 38 attestations or no-replay receipt.
 **Acceptance**: Any replay is fresh, exact, independent, and read-only.
 
 ### ⬜ Unit 60c39: Conditional Replay of Unit 39
-**What**: Evaluate dependency invalidation for Unit 39; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 39 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 39 queue/oracle/cleanup evidence or no-replay receipt.
 **Acceptance**: Any replay is idempotent and residue-free.
 
 ### ⬜ Unit 60c40: Conditional Replay of Unit 40
-**What**: Evaluate dependency invalidation for Unit 40; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 40 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 40 browser/oracle/cleanup evidence or no-replay receipt.
 **Acceptance**: Any replay is exact, private-safe, and residue-free.
 
 ### ⬜ Unit 60c41: Conditional Replay of Unit 41
-**What**: Evaluate dependency invalidation for Unit 41; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 41 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 41 MCP/oracle/cleanup evidence or no-replay receipt.
 **Acceptance**: Any replay is exact, deterministic, and residue-free.
 
 ### ⬜ Unit 60c42: Conditional Replay of Unit 42
-**What**: Evaluate dependency invalidation for Unit 42; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 42 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 42 trial/oracle/cleanup evidence or no-replay receipt.
 **Acceptance**: Any replay uses frozen host/model/tool identity, obeys budget, and is residue-free.
 
 ### ⬜ Unit 60c43: Conditional Replay of Unit 43
-**What**: Evaluate dependency invalidation for Unit 43; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 43 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 43 run/ledger/upload/post-query or no-replay receipt.
 **Acceptance**: Any replay binds claim/graph/run and reaches terminal-or-containment.
 
 ### ⬜ Unit 60c44: Conditional Replay of Unit 44
-**What**: Evaluate dependency invalidation for Unit 44; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 44 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 44 run/ledger/receipts/post-query or no-replay receipt.
 **Acceptance**: Any replay binds claim/graph/run and reaches terminal-or-containment.
 
 ### ⬜ Unit 60c45: Conditional Replay of Unit 45
-**What**: Evaluate dependency invalidation for Unit 45; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 45 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 45 run/ledger/receipt/post-query or no-replay receipt.
 **Acceptance**: Any replay binds claim/graph/run and reaches terminal-or-containment.
 
 ### ⬜ Unit 60c46: Conditional Replay of Unit 46
-**What**: Evaluate dependency invalidation for Unit 46; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 46 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 46 run/ledger/receipt/post-query or no-replay receipt.
 **Acceptance**: Any replay binds claim/graph/run, has explicit notify/no-op state, and reaches terminal.
 
 ### ⬜ Unit 60c47: Conditional Replay of Unit 47
-**What**: Evaluate dependency invalidation for Unit 47; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 47 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 47 ASC attestation or no-replay receipt.
 **Acceptance**: Any replay is fresh, exact, independent, and read-only.
 
 ### ⬜ Unit 60c48: Conditional Replay of Unit 48
-**What**: Evaluate dependency invalidation for Unit 48; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 48 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 48 installed/oracle/cleanup evidence or no-replay receipt.
 **Acceptance**: Any replay uses exact TestFlight build and is residue-free.
 
 ### ⬜ Unit 60c49: Conditional Replay of Unit 49
-**What**: Evaluate dependency invalidation for Unit 49; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 49 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 49 installed/blocker evidence or no-replay receipt.
 **Acceptance**: Any replay uses honest physical/candidate proof and preserves blocker semantics.
 
 ### ⬜ Unit 60c50: Conditional Replay of Unit 50
-**What**: Evaluate dependency invalidation for Unit 50; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 50 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 50 signed-app/oracle/cleanup evidence or no-replay receipt.
 **Acceptance**: Any replay uses exact signed candidate and is residue-free.
 
 ### ⬜ Unit 60c51: Conditional Replay of Unit 51
-**What**: Evaluate dependency invalidation for Unit 51; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 51 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 51 run/ledger/receipts/post-query or no-replay receipt.
 **Acceptance**: Any replay binds claim/graph/run, reaches terminal, and restores exact candidate.
 
 ### ⬜ Unit 60c52: Conditional Replay of Unit 52
-**What**: Evaluate dependency invalidation for Unit 52; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 52 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 52 run/ledger/receipts/post-query or no-replay receipt.
 **Acceptance**: Any replay binds claim/graph/run, reaches terminal, and restores capability.
 
 ### ⬜ Unit 60c53: Conditional Replay of Unit 53
-**What**: Evaluate dependency invalidation for Unit 53; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 53 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 53 run/ledger/receipt/post-query or no-replay receipt.
 **Acceptance**: Any replay binds claim/graph/run, reaches terminal-or-containment, and loses no data.
 
 ### ⬜ Unit 60c54: Conditional Replay of Unit 54
-**What**: Evaluate dependency invalidation for Unit 54; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 54 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 54 run/ledger/receipt/post-query or no-replay receipt.
 **Acceptance**: Any replay binds claim/graph/run and reaches terminal-or-containment.
 
 ### ⬜ Unit 60c55: Conditional Replay of Unit 55
-**What**: Evaluate dependency invalidation for Unit 55; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 55 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 55 run/ledger/cleanup/post-query or no-replay receipt.
 **Acceptance**: Any replay binds claim/graph/run, reaches terminal, and proves zero D1 residue.
 
 ### ⬜ Unit 60c56: Conditional Replay of Unit 56
-**What**: Evaluate dependency invalidation for Unit 56; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 56 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 56 run/ledger/cleanup/post-query or no-replay receipt.
 **Acceptance**: Any replay binds claim/graph/run, reaches terminal, and proves zero media residue.
 
 ### ⬜ Unit 60c57: Conditional Replay of Unit 57
-**What**: Evaluate dependency invalidation for Unit 57; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 57 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh Unit 57 run/ledger/cleanup/post-query or no-replay receipt.
 **Acceptance**: Any replay binds claim/graph/run, reaches terminal, and proves zero auth residue.
 
 ### ⬜ Unit 60c58a: Conditional Replay of Unit 58a
-**What**: Evaluate dependency invalidation for provider-record classification; replay Unit 58a if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 58a decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh read-only classification/post-query or no-replay receipt.
 **Acceptance**: Any replay is read-only and every retained record has one valid disposition.
 
 ### ⬜ Unit 60c58b: Conditional Replay of Unit 58b
-**What**: Evaluate dependency invalidation for artifact/cache cleanup; replay Unit 58b if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 58b decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh claim/run/receipt/terminal/post-query or no-replay receipt.
 **Acceptance**: Any replay binds exact claim/graph/run, reaches terminal-or-containment, and proves zero deletable artifact residue.
 
 ### ⬜ Unit 60c59: Conditional Replay of Unit 59
-**What**: Evaluate dependency invalidation for Unit 59; replay it if invalidated, otherwise issue a validated no-replay receipt.
+**What**: Consume Unit 60c29f's Unit 59 decision; replay the original unit when required, otherwise emit its schema-valid no-replay receipt.
 **Output**: Dependency decision plus fresh negative-finalization evidence or no-replay receipt.
 **Acceptance**: Any replay still proves no shipment and no unintended state change.
 
 ### ⬜ Unit 60d: Final Convergence Review
 **What**: Run fresh reviewers against repaired merged/live state and the complete replay evidence without editing.
 **Output**: Final architecture/security/privacy/compatibility/test/release/visual verdicts.
-**Acceptance**: All reviewers return no BLOCKER/MAJOR; proof graph is complete; no shipment yet.
+**Acceptance**: Only all-reviewer convergence with no BLOCKER/MAJOR and a complete green proof graph may proceed. Any finding or replay containment/failure increments `repair_iteration`, amends this doing doc with one reviewer-gated repair set, and loops to Unit 60a; it cannot satisfy this unit or reach Unit 61.
 
-### ⬜ Unit 60e: Source Branch and Worktree Retirement
-**What**: Retire only clean merged source branches/worktrees after Unit 60d, preserving dirty, pre-existing, or separately owned work.
-**Output**: Git/worktree before/after and ownership-safe cleanup receipt.
-**Acceptance**: Task source branches/worktrees absent; canonical/source-owner checkouts clean; unrelated work untouched.
+### ⬜ Unit 60e: Source Worktree Retention and Freeze
+**What**: After Unit 60d convergence, retain task-owned source/coordinating worktrees for possible finalization abort repair, verify them clean at exact merged mains, and freeze their ownership/branch/base locators. Do not retire them before successful Unit 64 publication.
+**Output**: Git/worktree inventory, clean-state proof, and finalization-loop ownership freeze.
+**Acceptance**: Every task worktree is clean and recreatable from recorded exact main; unrelated work untouched; no branch/worktree deletion occurs.
+
+### ⬜ Unit 60f1: Final Repair-Records Hostile Review
+**What**: Rebase/merge exact current delivery main into the current `repair-iN-rK` branch without dropping its records, then validate and hostile-review all Unit 60 repair/replay decisions, no-replay receipts, refreshed live records, iteration links, and final proof-dependency closure; repair record data only.
+**Output**: Converged verdicts, exact branch head/digests, complete iteration evidence index, and private-artifact absence scan.
+**Acceptance**: No BLOCKER/MAJOR; every repaired/replayed/no-replay node is represented; all original acceptance criteria are green; no containment/failure is treated as success.
+
+### ⬜ Unit 60f2: Final Repair-Records Pull Request
+**What**: Open the current `repair-iN-rK` records PR and obtain protected CI plus terminal review on the exact head.
+**Output**: PR/head/run/review IDs.
+**Acceptance**: Exact head green; no unresolved/in-flight check; no merge or provider mutation.
+
+### ⬜ Unit 60f3: Final Repair-Records Merge
+**What**: Merge current `repair-iN-rK`, verify exact delivery main/CI and GitHub artifact attestation, then rotate the coordinating worktree onto clean `worker/cross-client-delivery-finalize-iN` at that main without adding records.
+**Output**: Merge/main/run/attestation IDs, canonical protected records commit/digest, and clean finalization branch/worktree locator.
+**Acceptance**: Protected main contains the complete reviewed record chain through Unit 60; attestation binds exact commit; prior repair branch retired; no unreviewed record exists.
 
 ### ⬜ Unit 61: Finalization Claim
-**What**: Append the generation-reserving `FinalizationClaim` through protected workflow after all proof/cleanup terminals.
-**Output**: Append run ID, ledger parent/claim commit, and provider actor/workflow identity.
-**Acceptance**: Claim is ledger head and blocks every other transition.
+**What**: Append a fresh generation-reserving `FinalizationClaim` through protected workflow after Unit 60f3, binding `repair_iteration`, exact canonical protected records commit/attestation, and all proof/cleanup terminals.
+**Output**: Finalization generation, repair iteration, append run ID, ledger parent/claim commit, canonical records identity, and provider actor/workflow identity.
+**Acceptance**: Generation is new; claim is ledger head, binds exact Unit 60f3 records, and blocks every other transition. An aborted prior generation cannot be reused.
 
 ### ⬜ Unit 62: Fresh Final Provider Queries
 **What**: Re-query GitHub, source mains/checks, Cloudflare Worker/D1/R2, runtime digests, ASC, installed proof locators, cleanup, and feedback health against Unit 61.
@@ -989,34 +1054,34 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: The result is terminally classified: either the Release Set is publishable with proposed state `shipped`, all proofs fresh, and no waiver/blocker/leak, or publication is explicitly refused with bound reasons; Product Change remains unshipped and ledger remains Unit 61.
 
 ### ⬜ Unit 63a: Final Attestor Dispatch Plan
-**What**: When Unit 63 is green, compile a single-use final-query dispatch plan containing the FinalizationClaim, random nonce, exact source workflow files/SHAs, exact delivery validator SHA, required private/public state fields, artifact/attestation predicates, a 45-minute coordinator timeout, and a maximum 120-second age for each source attestation when the coordinator chooses its terminal. If Unit 63 is not green, emit a structured skip report.
+**What**: When Unit 63 is green, compile a single-use final-query dispatch plan containing the FinalizationClaim, random nonce, exact source workflow files/SHAs, exact delivery validator SHA, required private/public state fields, artifact/attestation predicates, a 45-minute coordinator timeout, and signed timestamp rules. For each Cloudflare, D1, R2, and ASC snapshot: `observation_started_at` is the provider response `Date` on the first page; `observation_completed_at` is the response `Date` on the final full-inventory consistency requery; `clock_reference_at` is a GitHub API response `Date` captured immediately afterward; provider/GitHub skew over 5 seconds or missing headers fail. If Unit 63 is not green, emit a structured skip report.
 **Output**: Validated final-query dispatch plan/digest/nonce and green or structured skip report.
 **Acceptance**: Plan is complete, single-use, source-owned-secret preserving, and executable by Unit 64 through authenticated local `gh`; it grants read-only attestation only and performs no query or mutation itself.
 
 ### ⬜ Unit 63b: Finalization Claim Resolution
-**What**: Resolve Unit 61 before any other transition. If Units 62-63a are fully green, record a validated publish decision and leave `FinalizationClaim` as ledger head for Unit 64. If any is not green, expected-parent append `FinalizationAborted` with sanitized reason/evidence digests through the protected workflow, verify it as ledger head, amend this doing doc with reviewer-gated repair/replay units beginning again at Unit 60a, and do not execute Unit 64 until a later fresh finalization claim passes.
+**What**: Resolve Unit 61 before any other transition. If Units 62-63a are fully green, record a validated publish decision for its exact generation/repair iteration and leave `FinalizationClaim` as ledger head for Unit 64. If any is not green, expected-parent append `FinalizationAborted`, verify it as head, increment `repair_iteration`, preserve or recreate task worktrees from exact mains, rotate the coordinating branch to `repair-iN-r4`, amend/review the doing doc, and loop to Unit 60a. A later Unit 61 must create a fresh generation.
 **Output**: Publish-decision receipt, or append run/parent/`FinalizationAborted` commit/actor proof/post-query plus reviewer-approved loopback units.
 **Acceptance**: The claim is never stranded: green proof authorizes only Unit 64, while any query/compile/leak failure ends at `FinalizationAborted` before repair; no failed generation can publish.
 
 ### ⬜ Unit 64: Authoritative ReleaseSetPublished Append
 **What**: After Unit 63b records a green publish decision, first start the protected `finalization-coordinator` at the exact merged delivery SHA with Unit 63a's nonce/plan and prove it is waiting with a 45-minute fail-closed timeout. Then execute local orchestration: in parallel, use authenticated `gh` to dispatch both exact source-owned final-query attestors; verify their private Cloudflare/D1/R2/ASC fingerprints, audit/watermark metadata where exposed, identities, and attestations; replace freshness-bound evidence; recompile and leak-scan the set; and dispatch the protected `finalization-evidence` ingest for the same nonce. The coordinator accepts at most one attested evidence artifact, requires each private-provider snapshot to be at most 120 seconds old, re-queries source mains/checks/mutation runs, public Worker/runtime digests, evidence identity/expiry, nonce reuse, and ledger parent, then appends either `ReleaseSetPublished` or `FinalizationAborted`. Missing local progress, dispatch/query/verification/compile/ingest failure, timeout, stale evidence, or drift selects abort and reviewer-gated loopback at Unit 60a.
 **Output**: Coordinator/evidence run IDs; final attestor run/attempt/artifact/attestation IDs and point-in-time provider query timestamps; refreshed Release Set/query/leak digests; ledger parent; authoritative `ReleaseSetPublished` or `FinalizationAborted` commit; actor/workflow proof; and post-query.
-**Acceptance**: Coordinator is durable before local work and emits exactly one direct-child terminal even if the local process disappears; every private snapshot is queried inside Unit 64 and is no older than 120 seconds at the terminal decision; source/public drift and all uncertainty abort. Publication truth explicitly binds point-in-time provider observations rather than claiming an impossible distributed lock across independent Cloudflare and ASC systems; any later out-of-band provider event is a new change, not retroactive evidence drift.
+**Acceptance**: Coordinator is durable before local work and emits exactly one direct-child terminal even if the local process disappears. Immediately before CAS it reads `evaluation_at` from a fresh GitHub API response `Date`; for every provider it requires `0 <= evaluation_at - observation_started_at <= 120s`, clamping only negative differences within the signed 5-second skew allowance to zero, and requires `observation_completed_at >= observation_started_at`; artifact creation/upload time never determines freshness. Paginated/multi-provider observations pass independently and final consistency hashes must match. Source/public drift and any timestamp/query uncertainty abort. `ReleaseSetPublished` alone unlocks Unit 65. `FinalizationAborted` increments repair iteration, preserves/recreates owned worktrees, rotates a fresh repair records branch from exact main, and loops to Unit 60a with a later fresh generation. Publication truth binds point-in-time observations rather than an impossible distributed lock; any later external event is a new change, not retroactive evidence drift.
 
 ### ⬜ Unit 65: Main Projection
-**What**: Authorize and project the authoritative ledger commit/digest to protected main, then verify pointer and CI.
+**What**: Only when Unit 64 post-query proves `ReleaseSetPublished` is protected-ledger head for the current finalization generation, authorize and project that authoritative commit/digest to protected main, then verify pointer and CI.
 **Output**: Authorization/claim/terminal commits, run/attempt ID, projection receipt digest, main commit/CI, and authoritative pointer post-query.
-**Acceptance**: Receipt matches claim; projection points to Unit 64; terminal or containment commit recorded; projection cannot alter shipment truth.
+**Acceptance**: Guard rejects `FinalizationAborted`, missing, stale, or prior-generation Unit 64 state; receipt matches claim; projection points to current `ReleaseSetPublished`; terminal or containment commit recorded; projection cannot alter shipment truth.
 
 ### ⬜ Unit 66: Protected Tag and GitHub Release Projection
-**What**: Authorize and create protected tag/GitHub Release pointing to Unit 64, attach sanitized attestations, and verify.
+**What**: Only after Unit 65 succeeds for current `ReleaseSetPublished`, authorize and create protected tag/GitHub Release pointing to that ledger event, attach sanitized attestations, and verify.
 **Output**: Authorization/claim/terminal commits, run/attempt ID, projection receipt digest, tag/release/attestation URLs, and authoritative post-query.
-**Acceptance**: Receipt matches claim; terminal or containment commit recorded; projections identify Unit 64; retries idempotent; no private artifact.
+**Acceptance**: Guard rejects absent/aborted/stale generations; receipt matches claim; terminal or containment commit recorded; projections identify current Unit 64 publication; retries idempotent; no private artifact.
 
 ### ⬜ Unit 67: Post-Shipment Read-Only Closeout
-**What**: Read-only verify ledger/projections/providers/feedback/in-flight state, update Desk/lessons/docs, retire the clean coordinating delivery records branch/worktree, notify Slugger, and report final inventory. Any new product/release finding opens a superseding Product Change.
+**What**: Only after Units 64-66 prove current-generation publication/projections, read-only verify ledger/projections/providers/feedback/in-flight state, update Desk/lessons/docs, retire all clean task-owned source/coordinating branches/worktrees, notify Slugger, and report final inventory. Any new product/release finding opens a superseding Product Change.
 **Output**: Final evidence index, Desk completion commit, post-query, coordinating-worktree cleanup receipt, final inventory, and Slugger receipt.
-**Acceptance**: Zero in-flight operation or residual agent-owned work; repos clean/synced; coordinating worktree retired; no post-shipment corrective mutation.
+**Acceptance**: Guard rejects aborted/non-published generations; zero in-flight operation or residual task-owned worktree/branch; repos clean/synced; unrelated work untouched; no post-shipment corrective mutation.
 
 ## Execution
 
@@ -1028,6 +1093,8 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 - Provider mutations require authority, dry-run/preflight, protected ledger claim, singleton environment approval, per-request drift checks, receipts, terminal/containment, and post-query.
 - The first-install bootstrap family (`github-environment-ui-bootstrap-v1` plus same-target-only resume) and restore-only `github-environment-ui-recovery-v1` are the only operations exempt from their target environment's approval gate: all require protected ledger authorization/claim, authenticated actor-ID proof, bounded UI changes, UI/API evidence, and unambiguous terminal state; none can invoke source/provider mutation code. Bootstrap installs a new gate once; recovery requires proven drift and can only restore the last attested policy. All policy changes use the installed gate.
 - Cross-provider publication uses exact, age-bounded, source-owned point-in-time attestations plus a durable protected coordinator; it must never claim an atomic distributed snapshot or lock across Cloudflare and ASC because those control planes expose no shared transaction. Later external changes create new state and require a new Product Change.
+- Every Unit 60c30-59 decision is mechanically owned by Unit 60c29f. A replay inherits the original unit's complete What/Output/Acceptance plus current-iteration identities; `terminal-or-containment` describes ledger safety, not proof success. Containment, blocker, failed postcondition, or missing evidence marks the node failed, propagates invalidation, blocks Unit 60d/61, and opens the next reviewer-gated repair iteration. No-replay is valid only with complete byte-equal direct-input and green-predecessor evidence.
+- Public-safe records are committed on the named iteration branch and merge through protected PR/CI checkpoints after Units 29, 42, 50, 59, and 60. Finalization consumes only Unit 60f3's exact protected-main commit and GitHub attestation; branch-only records are never authoritative.
 - Visual changes or consuming-surface proof require `visual-qa-dogfood` and a closed absurdity ledger.
 - Fix ordinary blockers with fresh sub-agents and TDD; surface only true human-only credentials/hardware/account capability after all safe authenticated paths are exhausted.
 - Keep checklists and ledger/Desk ownership current after every transition.
@@ -1047,3 +1114,4 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 - 2026-07-20 23:31: Validation Round 5 added terminal `BootstrapRolledBack` with same-target-only resume, started a fail-closed protected coordinator before local finalization work, and replaced impossible cross-provider lock claims with exact age-bounded point-in-time attestation semantics.
 - 2026-07-20 23:38: Validation Round 6 added component-level red graph and GitHub/UI tests for bootstrap resume before its implementation and CLI wiring.
 - 2026-07-20 23:41: Validation converged with no remaining BLOCKER or MAJOR finding.
+- 2026-07-20 23:55: Ambiguity pass protected receiver acknowledgment on `release-ledger`, added mechanical proof invalidation and protected records checkpoints, defined repair/finalization iteration loops, required isolated live rollback proofs, and fixed signed observation-time semantics.
