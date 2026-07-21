@@ -19,8 +19,9 @@ Build and pilot a small, production-grade delivery system that carries one Spoon
 - Model additive expand, optional capability gating, backfill or reviewed maintenance, compatibility validation, deployment, deprecation, and eventual contract/removal phases.
 - Validate the current and immediately previous supported TestFlight contract plus queued offline mutation replay until a public App Store support policy supersedes this rule.
 - Add exact contract locking and provenance to native builds. Embed source SHA/tree, contract digest, build/version identity, and validator version inside the code-signed app; bind the embedded manifest to archive/IPA hashes and App Store Connect build identity in an external attestation.
-- Add reusable read-only GitHub workflows that query GitHub, Cloudflare/D1, and App Store Connect from the source repos that already own those credentials, then emit verifiable provider attestations without copying secrets into the delivery repo.
-- Compile Release Sets from fresh authoritative re-queries, not from deployment-authored summaries. Treat existing production and TestFlight summaries as locators only.
+- Add source-owned, manually dispatchable read-only attestor workflows that query GitHub, Cloudflare/D1, and App Store Connect from the repositories that own those credentials. A local delivery CLI uses the operator's authenticated `gh` session to dispatch and monitor the exact workflow revisions, then verifies their inputs, run identities, artifacts, and checksums without copying provider secrets into the delivery repo. V1 does not require a cross-repository bot token.
+- Inventory and verify the effective scopes of every attestor credential. Use dedicated least-privilege read-only provider credentials where the existing deployment or publication credential has write scope; fail closed and record `BLOCKED_HUMAN` if a provider requires a human-only credential action that cannot be completed through the authenticated account tooling.
+- Compile Release Sets from fresh authoritative re-queries, not from deployment-authored summaries. Treat existing production and TestFlight summaries as locators only. Each provider attestation records normalized request parameters, normalized non-secret response fields, the attestor workflow/source SHA, the delivery validator SHA, the GitHub run identity, issuance/expiry, and content digest.
 - Make dependency edges drive proof invalidation for source changes, contract changes, Worker redeploys, migrations, native rebuilds, App Store Connect metadata/group changes, capability changes, validator changes, and evidence expiry.
 - Define shared semantic scenarios with distinct web, installed-native, deterministic MCP, and pinned host/model agent proofs where the corresponding surface is required. Use a common backend/database oracle and run-owned cleanup.
 - Pilot the process on Recipe Photo Studio after the active TestFlight task releases native ownership. Keep current TestFlight completion and Apple clean-callback cutover as separate prerequisites or Product Changes.
@@ -45,7 +46,8 @@ Build and pilot a small, production-grade delivery system that carries one Spoon
 - [ ] A Contract Pack digest binds the normative subset and every projection hash, scenario ID, validator version, and source revision; same-digest-but-different-projection fixtures fail.
 - [ ] `spoonjoy-v2` emits the exact Contract Pack and serves or exposes its runtime digest for exact Worker verification.
 - [ ] `spoonjoy-apple` locks the expected digest, validates codecs/scenarios against it, embeds signed app provenance, and emits an attestation binding archive/IPA hashes to source, contract, build, and App Store Connect identity.
-- [ ] Cloudflare/D1 and App Store Connect attestors independently query authoritative providers with read-only credentials and produce GitHub-verifiable attestations from pinned delivery workflow code.
+- [ ] Cloudflare/D1 and App Store Connect attestors independently query authoritative providers from source-owned `workflow_dispatch` runs with verified least-privilege credentials and produce GitHub-verifiable attestations from exact source-workflow and delivery-validator SHAs.
+- [ ] The delivery CLI dispatches source-owned attestors through the operator's authenticated `gh` session, accepts only the expected repository/ref/event/inputs/permissions, waits for terminal success, verifies artifact identity and digest, and refuses expired, rerun-with-different-input, fork-authored, or mutable-reference evidence.
 - [ ] Finalization fails for a stale contract digest, wrong Worker version, pending or changed migration, failed or mismatched CI run, unbound native archive, wrong TestFlight build/group/state, missing installed proof, changed ASC metadata, expired artifact, failed cleanup, or superseded dependency.
 - [ ] Finalization supports explicit `superseded`, `rolled_back`, `waived`, and `BLOCKED_HUMAN` dispositions without allowing them to masquerade as successful proof.
 - [ ] A hotfix changing a dependency invalidates only the mechanically dependent proofs and cannot inherit stale green evidence.
@@ -56,7 +58,7 @@ Build and pilot a small, production-grade delivery system that carries one Spoon
 - [ ] Cleanup proves zero run-owned D1, R2, OAuth/credential, fixture, temporary artifact, branch, and worktree residue while enumerating preserved pre-existing ownership separately.
 - [ ] Rollback is exercised or safely simulated for the Worker, capability state, migration boundary, native candidate selection, and Release Set supersession.
 - [ ] Fresh harsh architecture, security, compatibility, test, release, and visual reviewers converge with no BLOCKER or MAJOR findings.
-- [ ] Durable Desk and repository records point to exact source SHAs, contract digest, provider attestation IDs, Worker version, native build/ASC identity, installed proof, cleanup evidence, and the final immutable Release Set.
+- [ ] Durable Desk and repository records point to exact source SHAs, contract digest, provider attestation IDs, Worker version, native build/ASC identity, installed proof, cleanup evidence, and the final append-only Release Set committed through protected `main` and bound to a protected release tag.
 
 ## Code Coverage Requirements
 
@@ -77,7 +79,8 @@ Build and pilot a small, production-grade delivery system that carries one Spoon
 - Do not implement a task-ID lease in V1. Serialize finalization with GitHub Actions concurrency and preserve ownership changes as append-only Git handoffs.
 - Planning and Desk status describe intent and coordination but cannot prove shipment.
 - Reuse existing exact-SHA deploy/TestFlight workflows, OpenAPI/MCP tests, scenario harnesses, and cleanup tools through thin attestors and validators rather than replacing them.
-- Use reusable delivery workflows from the existing source repositories so credentials remain in their current security boundaries.
+- Use source-owned `workflow_dispatch` attestors so credentials remain in their current security boundaries. The local delivery CLI dispatches them with the operator's existing GitHub authentication; V1 does not introduce a delivery-repository bot token.
+- Require an explicit credential-scope inventory and dedicated read-only provider credentials wherever current deployment/publication credentials are broader than attestation requires.
 - Separate normative contract digest from projection hashes; validate dependency relationships rather than assuming equal bytes imply semantic conformance.
 - Require actor-specific proof. Protocol correctness and agent usefulness are different evidence.
 - Define zero residue as zero run-owned residue and enumerate preserved pre-existing ownership explicitly.
@@ -99,11 +102,11 @@ Build and pilot a small, production-grade delivery system that carries one Spoon
 
 The delivery repository is a control plane and evidence compiler, not a second implementation of Spoonjoy. It owns schemas, validators, reusable attestors, finalization, and safe cleanup coordination. Domain behavior remains in the product repositories.
 
-The Release Set must use independent read-only provider queries. Deployment/TestFlight summaries locate candidate evidence but do not attest to themselves. Source-repo reusable workflows preserve existing secret boundaries while pinning finalizer logic to reviewed delivery SHAs.
+The Release Set must use independent read-only provider queries. Deployment/TestFlight summaries locate candidate evidence but do not attest to themselves. Source-owned dispatchable workflows preserve existing secret boundaries while pinning the source workflow and delivery validator to reviewed SHAs. The dispatching CLI verifies the GitHub run itself; a copied artifact without its matching repository, ref, event, inputs, permissions, checksum, and terminal run is invalid.
 
 Embedded native provenance cannot contain the hash of the archive that contains it. The code-signed app embeds source/tree, contract digest, build identity, and validator version; an external signed attestation binds that embedded manifest hash to archive/IPA hashes and the resulting App Store Connect build.
 
-Product Change records include a surface-impact matrix, compatibility matrix, dependency graph, evidence requirements, handoff history, and cleanup ownership. GitHub concurrency serializes finalization; Git history preserves handoffs. The generated Release Set, not the mutable record, is the shipment authority.
+Product Change records include a surface-impact matrix, compatibility matrix, dependency graph, evidence requirements, handoff history, and cleanup ownership. GitHub concurrency serializes finalization; Git history preserves handoffs. The generated Release Set, not the mutable record, is the shipment authority. "Immutable" means append-only under protected `main` plus a protected tag, with supersession represented by a new record; this plan does not claim that a repository administrator is cryptographically incapable of rewriting history.
 
 Evidence nodes declare dependencies and staleness triggers. A relevant source, contract, provider, migration, capability, build, metadata, validator, or expiry change invalidates dependent evidence mechanically. A final provider re-query occurs after cleanup and immediately before immutable release publication.
 
@@ -115,3 +118,4 @@ Photo Studio scenarios begin with a recipe lacking a cover and cover upload/gene
 - 2026-07-20 19:58: Created public repository `spoonjoy/spoonjoy-delivery`, repaired the failed automatic clone with an explicit HTTPS clone, and created isolated branch/worktree `worker/cross-client-delivery`.
 - 2026-07-20 19:58: Created durable Desk task `spoonjoy/cross-client-delivery`, recorded ownership isolation from the active TestFlight task, and pushed Desk commit `32481dd28ee07ef1098c80c4bc4fd334d7f5dd54`.
 - 2026-07-20 19:58: Drafted this plan after Tinfoil Hat and Stranger With Candy ideation scrutiny exposed stale narrative truth, missing compatibility phases, self-authored proof, native provenance gaps, and actor-proof conflation.
+- 2026-07-20 20:12: Grounded the workflow design in the current repositories and replaced the impossible cross-repository secret inheritance assumption with source-owned dispatchable attestors, explicit credential-scope proof, exact GitHub run verification, and an append-only release-record definition.
