@@ -498,10 +498,20 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Output**: Validated change/graph files and dry-run plans.
 **Acceptance**: Exactly one predicate per fixture node; all required/no-op/deferred rules valid.
 
-### ⬜ Unit 29c: Photo Studio Change and Exact Operation Graphs - Review and Merge
-**What**: Hostile-review the records, merge them to protected delivery main, and verify exact main.
-**Output**: Delivery PR/merge SHA, CI runs, graph/change digests.
-**Acceptance**: No BLOCKER/MAJOR; exact-main validators green; no provider mutation.
+### ⬜ Unit 29c: Photo Studio Change and Exact Operation Graphs - Hostile Review
+**What**: Hostile-review the Product Change and graph records and make bounded fixture/data repairs without opening or merging a PR.
+**Output**: Converged reviewer verdicts, repair commits, and final graph/change digests.
+**Acceptance**: No BLOCKER/MAJOR; local validators green; no provider mutation.
+
+### ⬜ Unit 29d: Photo Studio Change and Exact Operation Graphs - Pull Request
+**What**: Open the delivery records PR and obtain protected CI plus terminal review on the exact head.
+**Output**: PR URL, head SHA, CI run IDs, and review state.
+**Acceptance**: Exact head green; no unresolved/in-flight check; no merge or provider mutation.
+
+### ⬜ Unit 29e: Photo Studio Change and Exact Operation Graphs - Merge
+**What**: Merge the protected records PR and verify exact delivery main.
+**Output**: Merge SHA, exact-main CI runs, and graph/change digest post-query.
+**Acceptance**: Exact main green and matches reviewed records; no provider mutation.
 
 ### ⬜ Unit 30: Staged Web Preflight
 **What**: Dispatch the exact staged preflight for the merged web SHA at 0% or version override and validate graph, dry-run, and preflight digest.
@@ -535,8 +545,8 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 
 ### ⬜ Unit 36: Production Worker Deploy Operation
 **What**: Authorize, preflight, claim, approve, and apply exact Worker deploy; verify source/pack/runtime/traffic and append terminal.
-**Output**: Run ID, ledger commits, Worker version/source/digests, post-query, and rollback locator.
-**Acceptance**: Exact version active; health/readiness green; terminal or containment recorded.
+**Output**: Authorization/claim/terminal commits, run/attempt ID, deploy receipt digest, Worker version/source/digests, authoritative post-query, and rollback locator.
+**Acceptance**: Exact version active; health/readiness green; deploy receipt matches claim; terminal or containment commit recorded.
 
 ### ⬜ Unit 37: Production Canary and Reporting Operation
 **What**: Authorize OAuth/user/token/legacy-row canary plus conditional GitHub report/artifact nodes, exact cleanup, post-query, and terminal append.
@@ -625,8 +635,8 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 
 ### ⬜ Unit 54: Native Candidate Supersession Proof
 **What**: Authorize and exercise or simulate candidate supersession without deleting immutable ASC records.
-**Output**: Ledger/run IDs, selected/contained build dispositions, and ASC post-query.
-**Acceptance**: Superseded candidate cannot ship; selected build remains explicit.
+**Output**: Authorization/claim/terminal commits, run/attempt ID, supersession receipt digest, selected/contained build dispositions, and authoritative ASC post-query.
+**Acceptance**: Supersession receipt matches claim; superseded candidate cannot ship; selected build remains explicit; terminal or containment commit recorded.
 
 ### ⬜ Unit 55: D1 Cleanup Operation
 **What**: Authorize exact-manifest deletion of remaining run-owned D1 rows, verify references and zero count, and append terminal.
@@ -643,20 +653,40 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Output**: Run/ledger IDs, plan/apply/verify receipts, and provider/D1 post-query.
 **Acceptance**: Zero run-owned auth residue; active/pre-existing credentials preserved.
 
-### ⬜ Unit 58: Artifact, Branch, and Worktree Cleanup
-**What**: Classify non-deletable provider records, remove run-owned temporary artifacts/caches, and retire only clean merged source branches/worktrees with ownership proof.
-**Output**: Preserved-record inventory, artifact cleanup receipt, and git/worktree before/after.
-**Acceptance**: Zero deletable residue; dirty, pre-existing, or separately owned work untouched.
+### ⬜ Unit 58: Artifact Cleanup and Provider Records
+**What**: Classify non-deletable provider records and remove run-owned temporary provider artifacts/caches; retain source branches/worktrees through final review and replay.
+**Output**: Preserved-record inventory and artifact cleanup receipt.
+**Acceptance**: Zero deletable provider-artifact residue; source worktrees remain available for Unit 60 repairs.
 
 ### ⬜ Unit 59: Negative Finalization Proof
 **What**: Attempt finalization with stale digest, wrong claim, mismatched provider identity, and failed cleanup fixtures.
 **Output**: Rejected run IDs, ledger parent, error codes, and no-shipment post-query.
 **Acceptance**: No `ReleaseSetPublished`; state unchanged except explicit aborted test records.
 
-### ⬜ Unit 60: Pre-Finalization Hostile Audit and Repair
-**What**: Review merged/live architecture, security, privacy, compatibility, tests, receipts, and visuals; repair through a new tested PR and repeat affected proof units before finalization.
-**Output**: Converged verdicts and any superseding receipts/SHAs.
-**Acceptance**: No BLOCKER/MAJOR; every repair has fresh exact proof; no shipment yet.
+### ⬜ Unit 60a: Pre-Finalization Hostile Audit
+**What**: Run fresh architecture, security, privacy, compatibility, test, release-receipt, and visual reviewers over merged/live state without editing.
+**Output**: Ordered findings with exact affected repositories and proof units.
+**Acceptance**: Every finding has severity, evidence, owner, and required replay scope; no mutation or shipment.
+
+### ⬜ Unit 60b: Pre-Finalization Repair Pull Requests
+**What**: Repair findings through per-repository TDD commits, protected PRs, and exact-main merges; create a superseding change/authorization when behavior or provider operations change.
+**Output**: Repair PRs/SHAs/CI, reviewer verdicts, and superseding records where required.
+**Acceptance**: Repaired exact mains green; no unresolved review; no shipment; unaffected proof is not replayed yet.
+
+### ⬜ Unit 60c: Repair Rebaseline and Affected Proof Replay
+**What**: Rebaseline merged repairs, mechanically invalidate dependent evidence, and replay each explicitly affected Unit 30-59 proof to fresh terminal evidence.
+**Output**: Rebaseline digest, invalidation graph, replay run/ledger/provider/cleanup receipts.
+**Acceptance**: Every invalidated proof has fresh terminal evidence; unrelated proof remains valid by dependency graph; no shipment.
+
+### ⬜ Unit 60d: Final Convergence Review
+**What**: Run fresh reviewers against repaired merged/live state and the complete replay evidence without editing.
+**Output**: Final architecture/security/privacy/compatibility/test/release/visual verdicts.
+**Acceptance**: All reviewers return no BLOCKER/MAJOR; proof graph is complete; no shipment yet.
+
+### ⬜ Unit 60e: Source Branch and Worktree Retirement
+**What**: Retire only clean merged source branches/worktrees after Unit 60d, preserving dirty, pre-existing, or separately owned work.
+**Output**: Git/worktree before/after and ownership-safe cleanup receipt.
+**Acceptance**: Task source branches/worktrees absent; canonical/source-owner checkouts clean; unrelated work untouched.
 
 ### ⬜ Unit 61: Finalization Claim
 **What**: Append the generation-reserving `FinalizationClaim` through protected workflow after all proof/cleanup terminals.
@@ -680,13 +710,13 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 
 ### ⬜ Unit 65: Main Projection
 **What**: Authorize and project the authoritative ledger commit/digest to protected main, then verify pointer and CI.
-**Output**: Projection run/ledger IDs, main commit/CI, and pointer post-query.
-**Acceptance**: Projection points to Unit 64 and cannot alter shipment truth.
+**Output**: Authorization/claim/terminal commits, run/attempt ID, projection receipt digest, main commit/CI, and authoritative pointer post-query.
+**Acceptance**: Receipt matches claim; projection points to Unit 64; terminal or containment commit recorded; projection cannot alter shipment truth.
 
 ### ⬜ Unit 66: Protected Tag and GitHub Release Projection
 **What**: Authorize and create protected tag/GitHub Release pointing to Unit 64, attach sanitized attestations, and verify.
-**Output**: Projection run/ledger IDs, tag/release/attestation URLs, and post-query.
-**Acceptance**: All projections identify Unit 64; retries idempotent; no private artifact.
+**Output**: Authorization/claim/terminal commits, run/attempt ID, projection receipt digest, tag/release/attestation URLs, and authoritative post-query.
+**Acceptance**: Receipt matches claim; terminal or containment commit recorded; projections identify Unit 64; retries idempotent; no private artifact.
 
 ### ⬜ Unit 67: Post-Shipment Read-Only Closeout
 **What**: Read-only verify ledger/projections/providers/feedback/in-flight state, update Desk/lessons/docs, notify Slugger, and report clean repository/worktree inventory. Any new product/release finding opens a superseding Product Change.
@@ -709,3 +739,4 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 
 - 2026-07-20 21:27: Created from the reviewer-approved planning doc in direct execution mode; source work remains gated on the active TestFlight owner's protected handoff.
 - 2026-07-20 21:48: Granularity pass fixed the pre-edit identity-freeze order, split delivery governance/review and every mixed source feature into atomic tracks, and decomposed the live pilot into one mutation, attestation, actor proof, rollback, cleanup, or ledger transition per unit with terminal evidence.
+- 2026-07-20 22:00: Granularity Round 2 split record review/PR/merge and final audit/repair/replay/convergence/cleanup, retained source worktrees through repairs, and completed missing deploy, supersession, and projection claim/receipt/terminal evidence.
