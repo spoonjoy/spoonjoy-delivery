@@ -234,9 +234,9 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: 100% coverage, all delivery gates green, zero warnings.
 
 ### ⬜ Unit 11d: Delivery Repository Settings - Apply and Verify
-**What**: Capture settings-before, apply automatic branch deletion, read-only workflow tokens, no PR approval, selected SHA-pinned Actions, protected main, protected `release-ledger`, no force/delete, required checks/admin enforcement, workflow-only ledger bypass, and delivery environments; capture settings-after.
-**Output**: Before/apply/after JSON and protected append/direct-push fixture receipts.
-**Acceptance**: Settings verifier passes against live GitHub; direct ledger update fails; disposable protected-workflow append succeeds; run ID, ledger parent/commit, and post-query are recorded.
+**What**: Capture settings-before, apply automatic branch deletion, read-only workflow tokens, no PR approval, selected SHA-pinned Actions, protected main, protected `release-ledger`, no force/delete, required checks/admin enforcement, workflow-only ledger bypass, and delivery environments; capture settings-after without invoking the not-yet-merged append workflow.
+**Output**: Before/apply/after JSON and settings-verifier report.
+**Acceptance**: Settings verifier passes against live GitHub; no ledger append or provider mutation occurs before workflow merge.
 
 ### ⬜ Unit 12a: Delivery Hostile Review and TDD Repair
 **What**: Run fresh architecture, security, privacy, test, and release reviewers over the delivery diff and repair every BLOCKER/MAJOR through new red tests and green implementation.
@@ -252,6 +252,11 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **What**: Merge the protected PR, verify exact delivery main/CI, preserve the coordinating worktree, and rotate it onto a clean records branch based on verified main for Units 13-67.
 **Output**: Merge SHA, exact-main run IDs, settings post-query, records branch/worktree path/base SHA, and retired implementation-branch receipt.
 **Acceptance**: Main is clean/green; no in-flight delivery mutation; coordinating worktree remains clean on the exact records base.
+
+### ⬜ Unit 12d: Protected Ledger Append Live Proof
+**What**: From exact merged delivery main, prove direct ledger update fails and a disposable non-shipping protected-workflow append succeeds, then terminally contain/remove the fixture through the same ledger semantics.
+**Output**: Append run/attempt ID, ledger parent/fixture/containment commits, actor/workflow identity, direct-push rejection, and post-query.
+**Acceptance**: Only merged protected workflow can append; fixture is non-shipping and terminally contained; no provider mutation.
 
 ### ⬜ Unit 13a: Source Owner Handoff Receipt
 **What**: Wait in-turn for task `019f2e25-2fc3-75b2-8ba3-335f3777115a` and ingest its protected owner-release handoff plus receiver acknowledgment without touching source repositories.
@@ -673,20 +678,80 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Output**: Ordered findings with exact affected repositories and proof units.
 **Acceptance**: Every finding has severity, evidence, owner, and required replay scope; no mutation or shipment.
 
-### ⬜ Unit 60b1: Delivery Repair Pull Request
-**What**: Repair delivery/record findings through TDD, protected PR/CI, exact-main merge, or emit a validated no-repair receipt when none apply.
-**Output**: Repair/no-repair decision, PR/SHAs/CI, reviewer verdict, and superseding records where required.
-**Acceptance**: Delivery main green, no unresolved review, decision covers every delivery finding, no shipment.
+### ⬜ Unit 60b1a: Delivery Repair
+**What**: Repair delivery/record findings through TDD, or emit a validated no-repair receipt when none apply; do not open or merge a PR.
+**Output**: Repair/no-repair decision, red/green evidence, commits, reviewer verdict, and superseding records if required.
+**Acceptance**: Local delivery gates green and every delivery finding resolved or explicitly absent; no PR or shipment.
 
-### ⬜ Unit 60b2: Web Repair Pull Request
-**What**: Repair web findings through TDD, protected PR/CI, exact-main merge, or emit a validated no-repair receipt when none apply.
-**Output**: Repair/no-repair decision, PR/SHAs/CI, reviewer verdict, and superseding records where required.
-**Acceptance**: Web main green, no unresolved review, decision covers every web finding, no deployment or shipment.
+### ⬜ Unit 60b1b: Delivery Repair Pull Request
+**What**: Open the delivery repair PR and obtain protected CI/terminal review without merge, or validate no-PR when Unit 60b1a is no-op.
+**Output**: PR/head/run IDs and review state, or no-PR receipt.
+**Acceptance**: Exact head green with no unresolved/in-flight check; no merge or shipment.
 
-### ⬜ Unit 60b3: Native Repair Pull Request
-**What**: Repair native findings through TDD, protected PR/CI, exact-main merge, or emit a validated no-repair receipt when none apply.
-**Output**: Repair/no-repair decision, PR/SHAs/CI, reviewer verdict, and superseding records where required.
-**Acceptance**: Native main green, no unresolved review, decision covers every native finding, no TestFlight or shipment.
+### ⬜ Unit 60b1c: Delivery Repair Merge
+**What**: Merge the reviewed delivery repair and verify exact main, or validate no-merge when Unit 60b1b is no-op.
+**Output**: Merge SHA/exact-main CI or no-merge receipt.
+**Acceptance**: Delivery main green and decision covers every delivery finding; no shipment.
+
+### ⬜ Unit 60b2a: Web Repair
+**What**: Repair web findings through TDD, or emit a validated no-repair receipt when none apply; do not open or merge a PR.
+**Output**: Repair/no-repair decision, red/green evidence, commits, reviewer verdict, and superseding records if required.
+**Acceptance**: Local web gates green and every web finding resolved or absent; no PR, deploy, or shipment.
+
+### ⬜ Unit 60b2b: Web Repair Pull Request
+**What**: Open the web repair PR and obtain protected CI/terminal review without merge, or validate no-PR when Unit 60b2a is no-op.
+**Output**: PR/head/run IDs and review state, or no-PR receipt.
+**Acceptance**: Exact head green with no unresolved/in-flight check; no merge/deploy/shipment.
+
+### ⬜ Unit 60b2c: Web Repair Merge
+**What**: Merge the reviewed web repair and verify exact main, or validate no-merge when Unit 60b2b is no-op.
+**Output**: Merge SHA/exact-main CI/deployment query or no-merge receipt.
+**Acceptance**: Web main green, zero in-flight deploy, and every web finding covered; no shipment.
+
+### ⬜ Unit 60b3a: Native Repair
+**What**: Repair native findings through TDD, or emit a validated no-repair receipt when none apply; do not open or merge a PR.
+**Output**: Repair/no-repair decision, red/green evidence, commits, reviewer verdict, and superseding records if required.
+**Acceptance**: Local native gates green and every native finding resolved or absent; no PR, TestFlight, or shipment.
+
+### ⬜ Unit 60b3b: Native Repair Pull Request
+**What**: Open the native repair PR and obtain protected CI/terminal review without merge, or validate no-PR when Unit 60b3a is no-op.
+**Output**: PR/head/run IDs and review state, or no-PR receipt.
+**Acceptance**: Exact head green with no unresolved/in-flight check; no merge/TestFlight/shipment.
+
+### ⬜ Unit 60b3c: Native Repair Merge
+**What**: Merge the reviewed native repair and verify exact main, or validate no-merge when Unit 60b3b is no-op.
+**Output**: Merge SHA/exact-main CI/TestFlight query or no-merge receipt.
+**Acceptance**: Native main green, zero in-flight TestFlight, and every native finding covered; no shipment.
+
+### ⬜ Unit 60c28: Conditional Replay of Unit 28
+**What**: Re-run merged-state pilot rebaseline when any delivery/web/native repair landed, otherwise issue a validated no-replay receipt.
+**Output**: Fresh Unit 28 rebaseline/freeze or no-replay receipt.
+**Acceptance**: Decision binds repair SHAs; any replay is green with zero in-flight mutation.
+
+### ⬜ Unit 60c29a: Conditional Replay of Unit 29a
+**What**: Re-run exact graph/change validation tests when Unit 60c28 changes dependencies, otherwise issue a validated no-replay receipt.
+**Output**: Fresh red/validation fixtures or no-replay receipt.
+**Acceptance**: Decision binds Unit 60c28 and detects every stale graph/freeze reference.
+
+### ⬜ Unit 60c29b: Conditional Replay of Unit 29b
+**What**: Update graph/change records to pass Unit 60c29a when invalidated, otherwise issue a validated no-replay receipt.
+**Output**: Fresh validated records/digests or no-replay receipt.
+**Acceptance**: Exactly one predicate per node and all dispositions valid; no PR or mutation.
+
+### ⬜ Unit 60c29c: Conditional Replay of Unit 29c
+**What**: Hostile-review updated records and make bounded data repairs when invalidated, otherwise issue a validated no-replay receipt.
+**Output**: Converged verdict/repair commits or no-replay receipt.
+**Acceptance**: No BLOCKER/MAJOR; validators green; no PR or mutation.
+
+### ⬜ Unit 60c29d: Conditional Replay of Unit 29d
+**What**: Open the updated records PR and obtain protected CI/review when invalidated, otherwise issue a validated no-replay receipt.
+**Output**: PR/head/run/review state or no-replay receipt.
+**Acceptance**: Exact head green, no unresolved/in-flight check, no merge or mutation.
+
+### ⬜ Unit 60c29e: Conditional Replay of Unit 29e
+**What**: Merge and exact-main verify the updated records when invalidated, otherwise issue a validated no-replay receipt.
+**Output**: Merge SHA/exact-main CI/digests or no-replay receipt.
+**Acceptance**: Decision binds Unit 60c28; delivery main green; no provider mutation.
 
 ### ⬜ Unit 60c30: Conditional Replay of Unit 30
 **What**: Evaluate dependency invalidation for Unit 30; replay it if invalidated, otherwise issue a validated no-replay receipt.
@@ -828,10 +893,15 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Output**: Dependency decision plus fresh Unit 57 run/ledger/cleanup/post-query or no-replay receipt.
 **Acceptance**: Any replay binds claim/graph/run, reaches terminal, and proves zero auth residue.
 
-### ⬜ Unit 60c58: Conditional Replay of Units 58a-58b
-**What**: Evaluate dependency invalidation for Units 58a-58b; replay invalidated parts, otherwise issue validated no-replay receipts.
-**Output**: Dependency decisions plus fresh classification/cleanup evidence or no-replay receipts.
-**Acceptance**: Any replay has correct read-only or claimed-mutation evidence and proves zero deletable artifact residue.
+### ⬜ Unit 60c58a: Conditional Replay of Unit 58a
+**What**: Evaluate dependency invalidation for provider-record classification; replay Unit 58a if invalidated, otherwise issue a validated no-replay receipt.
+**Output**: Dependency decision plus fresh read-only classification/post-query or no-replay receipt.
+**Acceptance**: Any replay is read-only and every retained record has one valid disposition.
+
+### ⬜ Unit 60c58b: Conditional Replay of Unit 58b
+**What**: Evaluate dependency invalidation for artifact/cache cleanup; replay Unit 58b if invalidated, otherwise issue a validated no-replay receipt.
+**Output**: Dependency decision plus fresh claim/run/receipt/terminal/post-query or no-replay receipt.
+**Acceptance**: Any replay binds exact claim/graph/run, reaches terminal-or-containment, and proves zero deletable artifact residue.
 
 ### ⬜ Unit 60c59: Conditional Replay of Unit 59
 **What**: Evaluate dependency invalidation for Unit 59; replay it if invalidated, otherwise issue a validated no-replay receipt.
@@ -901,3 +971,4 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 - 2026-07-20 21:48: Granularity pass fixed the pre-edit identity-freeze order, split delivery governance/review and every mixed source feature into atomic tracks, and decomposed the live pilot into one mutation, attestation, actor proof, rollback, cleanup, or ledger transition per unit with terminal evidence.
 - 2026-07-20 22:00: Granularity Round 2 split record review/PR/merge and final audit/repair/replay/convergence/cleanup, retained source worktrees through repairs, and completed missing deploy, supersession, and projection claim/receipt/terminal evidence.
 - 2026-07-20 22:16: Final granularity repair preserved the coordinating worktree, moved the `shipped` transition exclusively to Unit 64, split delivery/web/native repairs and every conditional Unit 30-59 replay, separated provider-record classification from claimed artifact deletion, and completed live mutation evidence chains.
+- 2026-07-20 22:27: Granularity convergence repair moved protected append proof after workflow merge, split every delivery/web/native repair into repair/PR/merge, replayed merged-state rebaseline and exact operation records before live proofs, and separated read-only versus claimed cleanup replay.
