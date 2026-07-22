@@ -849,235 +849,523 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Output**: State-machine matrix; private coverage-transcript locator and digest only in Desk until Unit 6c.
 **Acceptance**: 100% coverage, mutation testing spot checks reject removed guards including waiver-to-finalization/shipment barriers, zero warnings.
 
-### ⬜ Unit 5s1a: Typed Operation Graph Registry Operation Graphs - Tests
-**What**: Add source-agnostic red tests for static templates, typed dataflow, authoritative-query/prior-receipt inputs, branch cardinality, digests, drift, idempotency, retry, compensation, partial failure, typed rollback selection, a closed Worker invocation-surface inventory/preflight/containment graph with `WorkerOverrideBarrierV1`, two repository-distinct supervisor-envelope start/provisional-challenge/local-zero/provision-or-abort/rotate/retire graphs with start-commit and exact key/fingerprint preservation, distinct inert Ledger Writer and Delivery Guardian identity-registration/permission-elevation/key-import graphs, reviewer-key provision/rotate/revoke and one-use envelope consumption, Guardian exact-provenance check emission, one post-root delivery-governance/broker-upgrade graph, one root-authorized post-root `source-guardian-cutover-v1` graph with terminal event, and two reserved interactive roots: one-time `ledger-root-bootstrap-v1` with same-identity/prestate/target-only resume or exact rollback and permanent post-install disablement; plus target-environment bootstrap/resume/govern/recover. Worker fixtures reject implicit/default `preview_urls` or `workers_dev`, source/provider drift, unclassified external/internal invocation kinds, public version/alias exposure, a production hostname that accepts the correct candidate override, a staging hostname without exact Access service-auth, leaked/replayed/wrong-operation service tokens, any service-binding caller that forwards or can set the override header, alternate service/dispatch/binding/trigger target, incomplete denial probes, and barrier teardown before candidate disposition. Root tests require a closed attempt-start union: generation 1 from absent ref creates exact genesis and appends `RootAttemptStarted(1)`; generation 1 from exact unstarted `REMOTE_JOURNAL_CREATED` resumes by CAS-appending that same precomputed start to the genesis parent without recreating anything; generation N>1 requires exact `RootAttemptAborted(N-1)` head and byte-equal reviewed intent/prestate, then fast-forward appends `RootAttemptStarted(N)`. Cover crashes before ref dispatch, after remote ref commit before response, after response before local receipt, after local-state loss, and before/after each start CAS and observation. Use fictional provider fixtures; exact source inventories wait for Unit 13d.
-**Output**: Focused red Typed Operation Graph Registry operation-graph tests, fixtures, and private failing-transcript locator/digest.
-**Acceptance**: The focused command fails only on the asserted missing Typed Operation Graph Registry graph behavior; no implementation code is added; unrelated tests remain warning-free.
+### ⬜ Unit 5g1a: Typed Operation Graph Kernel - Tests
+**What**: Add red source-agnostic tests for static graph templates, closed method/path/node registries, typed dataflow, authoritative-query and prior-receipt inputs, branch cardinality, canonical expression resolution, template/resolved-request digests, drift, idempotency, retry, compensation, partial failure, typed rollback selection, deterministic total-order candidate selection, dry-run, revalidation, and receipt/containment linking. Reject unknown methods, unresolved or multiple values, stale prestate, ambiguous POST/PATCH/skip alternatives, and a selector that is not fail-closed.
+**Output**: Focused red Typed Operation Graph Kernel tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Typed Operation Graph Kernel behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 5s1b: Typed Operation Graph Registry Operation Graphs - Implementation
-**What**: Implement `src/operation-graph.ts`, `src/receipts.ts`, deterministic rollback-target selection/setup planning, closed source-agnostic Worker invocation-surface inventory/preflight/containment with `WorkerOverrideBarrierV1`, fixed source-agnostic governance, repository-distinct supervisor-envelope start/provisional-challenge/local-zero/provision-or-abort/rotate/retire graphs, distinct inert Ledger Writer and Delivery Guardian registration/permission-elevation/key-import graphs, root/reviewer/governance signer provision/challenge/retire graphs, reviewer-envelope consumption, Guardian exact-provenance check emission, a post-root delivery-governance/broker-upgrade graph, root-authorized `source-guardian-cutover-v1`, canonical expression resolution, dry-run/revalidation/receipt/containment, and `ledger-root-bootstrap-v1`. The Worker graph requires explicit false source config for preview URLs and `workers.dev`, byte-equal authoritative before/after inventories, and a barrier established before candidate upload: every production route/custom domain has a provider-enforced default-deny for the version-override header; one run-owned staging hostname is protected by one exact Access service-auth application/policy and a claim-bound broker-held provider token; every staged invocation consumes a distinct one-use broker authorization without exposing that token; every service-binding caller strips or rejects the header; and the exact header value/version ID are forbidden from public evidence. Correct-version hostile probes must fail without the broker identity on every external and internal path, while one authorized staging probe succeeds. Capability/order ambiguity, unknown surface, or inability to prove denial before upload requires redesign and a new reviewed graph; it never degrades to version-ID secrecy. Promotion removes the staging exception and revokes the provider token only after the candidate is normal production, while failure removes the candidate from deployment membership before barrier teardown; the permanent production-header denial remains. Key graphs bind Cloudflare secret prestate, provisional/active event generation, canonical X25519 key/fingerprint, exact Started commit, byte-identical repository/generation/key/fingerprint plus challenge/local-zero receipts in Provisioned, exact challenge/ordinary OIDC allowlists and non-consuming wrong-kind branches, active-run retention, bootstrap credential, delete/contain alternatives, and terminal. Identity registration permits only metadata-only/no-webhook/no-key/no-OAuth/no-bypass creation, records distinct provider IDs, and on ambiguity proves exact inert identities or removes them. Root installation is an ordered `rootAttemptGeneration` DAG with separate nodes for one-time journal genesis, later fast-forward attempt starts, each App elevation, each App key import, signer-policy activation, workflow permissions, merged-branch deletion, main rules, ledger rules, environment, tag rules, and ledger genesis. Generation 1 alone creates the absent journal and appends `RootAttemptStarted(1)`; generation N>1 consumes exact `RootAttemptAborted(N-1)` at the journal head and appends `RootAttemptStarted(N)` with byte-equal intent/prestate without replaying genesis. Every node has exact prestate/request/response-loss/post-query/rollback; failure appends `RootAttemptAborted`, increments generation, and cannot continue. Elevation permits only intent-bound Ledger Writer delivery `contents:write` plus `actions:read`/`checks:read`, and Guardian `actions:read`/`contents:read`/`checks:write`. Repository targets are exactly workflow `{read,false}` and `delete_branch_on_merge:true`. Guardian check emission accepts only exact workflow provenance and a canonical valid unconsumed reviewer envelope; it cannot append ledger. Source cutover binds exact root/retirement events, source identities/prestates/targets, journaled resume/rollback/containment, and terminal `SourceGuardianCutoverCompleted`. Post-root upgrade binds exact root event and all live settings/broker prestates, permits reviewed deltas/rollback/disable containment, and forbids root/genesis changes. Only `GENESIS_CREATED` permits `RootAuthorityInstalled`; its direct-child `RootSignerRetired` proves root private-key deletion before source cutover. Candidate selection retains documented total-order/fail-closed rules.
-**Output**: Typed Operation Graph Registry operation-graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 5s1a is green; the focused graph resolves one authorized branch per node and rejects illegal traversal without state or token consumption.
+### ⬜ Unit 5g1b: Typed Operation Graph Kernel - Implementation
+**What**: Implement src/operation-graph.ts and src/receipts.ts with canonical static templates, typed expressions and inputs, deterministic branch and rollback selection, total-order fail-closed candidate selection, dry-run/revalidation, hash-linked runtime receipts, idempotent retry, and containment. This kernel contains no provider-, repository-, actor-, Worker-, supervisor-, App-, root-, environment-, or finalization-specific graph.
+**Output**: Typed Operation Graph Kernel implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g1a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
 
-### ⬜ Unit 5s1c: Typed Operation Graph Registry Operation Graphs - Coverage
-**What**: Run the focused Typed Operation Graph Registry operation-graph suite across every node, legal and illegal edge, authoritative input, crash/response-loss boundary, stale/cross-operation input, idempotent replay, rollback/containment branch, receipt link, typecheck, warning scan, and coverage gate.
+### ⬜ Unit 5g1c: Typed Operation Graph Kernel - Coverage
+**What**: Exhaust parser, template, expression, dataflow, branch, digest, drift, idempotency, retry, rollback, candidate-order, receipt-link, and containment branches; mutation spot checks must fail when closed-registry, stale-input, or single-branch guards are removed.
 **Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
-**Acceptance**: 100% statements, branches, functions, and lines for the Typed Operation Graph Registry operation-graph slice; zero warnings; every traversal, denial, crash, and response-loss branch is exercised.
+**Acceptance**: 100% statements, branches, functions, and lines for the Typed Operation Graph Kernel slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
 
-### ⬜ Unit 5s2a: Release Tag Operation Graphs - Tests
+
+### ⬜ Unit 5g2a: Worker Invocation Surface and Override Barrier Graph - Tests
+**What**: Add red tests for a closed WorkerInvocationSurfaceV1 inventory and WorkerOverrideBarrierV1 graph. Require explicit preview_urls:false and workers_dev:false, complete external/internal surface classification, permanent production override-header denial, one run-owned Access-protected staging hostname, a broker-held service token with one-use operation grants, service-binding header stripping, correct-version hostile denial probes, one authorized staging probe, promotion teardown, and failure removal from deployment membership before temporary barrier teardown. Reject unknown surfaces, public version or alias exposure, leaked/replayed tokens, alternate targets, incomplete denial probes, capability ambiguity, or version-ID secrecy as a fallback.
+**Output**: Focused red Worker Invocation Surface and Override Barrier Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Worker Invocation Surface and Override Barrier Graph behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 5g2b: Worker Invocation Surface and Override Barrier Graph - Implementation
+**What**: Implement only the source-agnostic Worker inventory/preflight/barrier/containment graph. It freezes authoritative before/after inventories, installs permanent production header denial before candidate upload, permits one exact Access-protected staging exception through a claim-bound broker, validates all external/internal hostile probes, removes the staging exception and token on promotion, and removes failed candidates from deployment membership before temporary teardown. Unknown or unprovable surfaces force redesign; this family does not implement broker foundations or live source workflows.
+**Output**: Worker Invocation Surface and Override Barrier Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g2a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
+
+### ⬜ Unit 5g2c: Worker Invocation Surface and Override Barrier Graph - Coverage
+**What**: Cover every Worker config default, inventory kind, route/domain/alias/version/workers.dev/service-binding/trigger surface, Access identity, token grant, denial probe, promotion, failure cleanup, response loss, drift, and unknown-surface rejection at 100% coverage.
+**Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Worker Invocation Surface and Override Barrier Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 5g3a: Web Supervisor Envelope Lifecycle Graph - Tests
+**What**: Add red graph tests for the web repository's SupervisorEnvelopeKeyProvisioningStarted, provisional challenge, local-zero receipt, Provisioned-or-Aborted, rotation, retirement, and active-run retention lifecycle. Bind exact repository, generation, Started commit, canonical X25519 public key/fingerprint, challenge and ordinary OIDC allowlists, disjoint nonce namespaces, non-consuming wrong-kind rejection, bootstrap credential custody, local purge, delete-or-contain alternatives, and terminal state. Reject substituted keys, generation drift, provisional/ordinary branch confusion, replay, cross-repository use, or activation before challenge and local-zero proof.
+**Output**: Focused red Web Supervisor Envelope Lifecycle Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Web Supervisor Envelope Lifecycle Graph behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 5g3b: Web Supervisor Envelope Lifecycle Graph - Implementation
+**What**: Implement the web-specific supervisor-envelope operation graph and receipts only. Preserve exact Started commit/repository/generation/key/fingerprint through challenge and local-zero into Provisioned, expose disjoint provisional and ordinary branches, keep active-run generations until terminal, and require delete or expiry containment plus retirement proof. It does not implement the native lifecycle, provider foundation, workflow, or root composition.
+**Output**: Web Supervisor Envelope Lifecycle Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g3a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
+
+### ⬜ Unit 5g3c: Web Supervisor Envelope Lifecycle Graph - Coverage
+**What**: Exhaust web supervisor start/challenge/local-zero/provision/abort/rotate/retire, OIDC, nonce, key, fingerprint, response-loss, active-run, bootstrap-credential, purge, and containment branches.
+**Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Web Supervisor Envelope Lifecycle Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 5g4a: Native Supervisor Envelope Lifecycle Graph - Tests
+**What**: Add red graph tests for the native repository's independently generated supervisor envelope start, provisional challenge, local-zero, Provisioned-or-Aborted, rotation, retirement, and active-run lifecycle. Bind the native repository, exact Started commit/generation/canonical X25519 key/fingerprint, native workflow/job allowlists, disjoint nonce namespaces, local purge, bootstrap credential, and delete-or-contain terminal. Reject reuse of web identity, key, nonce, capsule, event, or generation and every provisional/ordinary substitution.
+**Output**: Focused red Native Supervisor Envelope Lifecycle Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Native Supervisor Envelope Lifecycle Graph behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 5g4b: Native Supervisor Envelope Lifecycle Graph - Implementation
+**What**: Implement the native-specific supervisor-envelope graph and receipts with a repository-distinct generation and key. Preserve Started-to-Provisioned equality, isolate provisional from ordinary unwrap authority, retain exact active-run generations, and prove local/bootstrap/provider cleanup or expiry containment before retirement. It does not share private state or a graph instance with web.
+**Output**: Native Supervisor Envelope Lifecycle Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g4a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
+
+### ⬜ Unit 5g4c: Native Supervisor Envelope Lifecycle Graph - Coverage
+**What**: Exhaust native supervisor lifecycle, cross-repository substitution, challenge/ordinary endpoint separation, OIDC, nonce, key/fingerprint, active-run, response-loss, purge, and containment branches.
+**Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Native Supervisor Envelope Lifecycle Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 5g5a: Ledger Writer App Identity Lifecycle Graph - Tests
+**What**: Add red graph tests for metadata-only Ledger Writer App registration, exact installation, bounded permission elevation, key download/import, broker custody, revocation, and teardown. Initial identity is inert: no webhook, private key, OAuth, bypass, secret, token, or route. Ambiguous registration must prove one exact identity or uninstall/delete every attempt. Elevation is intent-bound to delivery contents:write plus read-only Actions/Checks provenance and never grants Administration or Guardian authority.
+**Output**: Focused red Ledger Writer App Identity Lifecycle Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Ledger Writer App Identity Lifecycle Graph behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 5g5b: Ledger Writer App Identity Lifecycle Graph - Implementation
+**What**: Implement the Ledger Writer App identity-registration, installation, permission-elevation, key-import, custody, and teardown graph. Separate provider identity creation from later root-authorized activation; journal every prestate/request/response-loss/post-query/rollback boundary, stream key material only into its reviewed broker, and expose no Guardian/check or arbitrary repository route.
+**Output**: Ledger Writer App Identity Lifecycle Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g5a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
+
+### ⬜ Unit 5g5c: Ledger Writer App Identity Lifecycle Graph - Coverage
+**What**: Cover inert creation, duplicate/ambiguous identity, installation, permissions, reapproval, key download/import/revoke, lost responses, rollback, teardown, and every cross-App or over-privilege denial.
+**Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Ledger Writer App Identity Lifecycle Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 5g6a: Delivery Guardian App Identity Lifecycle Graph - Tests
+**What**: Add red graph tests for metadata-only Delivery Guardian App registration, exact installation, bounded permission elevation, key import, broker custody, revocation, and teardown. The inert identity has no webhook, key, OAuth, bypass, secret, token, or route. Later elevation permits only actions:read, contents:read, and checks:write; it can never append the ledger, bypass main, or reuse Ledger Writer identity/material.
+**Output**: Focused red Delivery Guardian App Identity Lifecycle Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Delivery Guardian App Identity Lifecycle Graph behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 5g6b: Delivery Guardian App Identity Lifecycle Graph - Implementation
+**What**: Implement the Delivery Guardian App identity-registration, installation, permission-elevation, key-import, custody, and teardown graph independently from Ledger Writer. Journal every provider boundary, reconcile ambiguity by exact immutable identity or complete removal, stream key material directly to its reviewed broker, and expose only the later exact-provenance check route.
+**Output**: Delivery Guardian App Identity Lifecycle Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g6a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
+
+### ⬜ Unit 5g6c: Delivery Guardian App Identity Lifecycle Graph - Coverage
+**What**: Cover inert creation, identity ambiguity, installation, permissions, reapproval, key custody/revocation, response loss, rollback, teardown, bypass denial, ledger denial, and cross-App substitution.
+**Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Delivery Guardian App Identity Lifecycle Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 5g7a: Reviewer Key and Guardian Check Graph - Tests
+**What**: Add red tests for workflow-inaccessible Secure Enclave reviewer-key provision, challenge, rotation, revocation, retirement, canonical one-use ReviewerEnvelopeV1 consumption, and Guardian exact-provenance check emission. Bind two fresh reviewer task/model/verdict/evidence records, head/tree/workflow blob, workflow database ID/path, event/run/attempt/job, nonce, expiry, signer generation, and revocation head. Reject forged, stale, replayed, revoked, wrong-head/workflow/job, same-Actions-App spoof, missing reviewer, or Guardian identity drift.
+**Output**: Focused red Reviewer Key and Guardian Check Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Reviewer Key and Guardian Check Graph behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 5g7b: Reviewer Key and Guardian Check Graph - Implementation
+**What**: Implement reviewer-key lifecycle and canonical envelope verification/one-use nonce consumption, then the Guardian's exact-provenance check graph. Guardian re-queries every workflow and artifact identity before emitting the required check and has no ledger append, source mutation, review-key access, or general checks route.
+**Output**: Reviewer Key and Guardian Check Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g7a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
+
+### ⬜ Unit 5g7c: Reviewer Key and Guardian Check Graph - Coverage
+**What**: Exhaust signer provisioning, ACL/non-exportability, challenge, generation rotation/revocation, canonical envelope bytes, two-reviewer binding, freshness, nonce replay, provenance queries, Guardian identity, check payload, crash uncertainty, and denied adjacent routes.
+**Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Reviewer Key and Guardian Check Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 5g8a: Post-Root Delivery Governance Upgrade Graph - Tests
+**What**: Add red tests for one root-authorized post-root delivery-governance and broker-upgrade graph bound to exact RootAuthorityInstalled plus complete live settings and broker prestates. Exercise reviewed deltas, response loss, rollback, disable containment, and terminal reconciliation. Reject root/genesis mutation, unreviewed scope, alternate broker, stale prestate, skipped journal node, or continuation after an aborted generation.
+**Output**: Focused red Post-Root Delivery Governance Upgrade Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Post-Root Delivery Governance Upgrade Graph behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 5g8b: Post-Root Delivery Governance Upgrade Graph - Implementation
+**What**: Implement the post-root governance upgrade graph as a separate claimed operation with exact prestate, reviewed delta, provider request journal, authoritative post-query, rollback, disable containment, and terminal. It cannot replay root bootstrap, change genesis, widen broker purpose, or target source repositories.
+**Output**: Post-Root Delivery Governance Upgrade Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g8a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
+
+### ⬜ Unit 5g8c: Post-Root Delivery Governance Upgrade Graph - Coverage
+**What**: Cover no-op, apply, response loss, poststate drift, rollback, containment, generation abort, stale root/settings/broker identity, and every forbidden root/genesis/source mutation.
+**Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Post-Root Delivery Governance Upgrade Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 5g9a: Source Guardian Cutover Graph - Tests
+**What**: Add red tests for one root-authorized source-guardian-cutover-v1 operation binding exact root/retirement events and web/native source identity, prestate, and target tuples. Exercise journaled start, partial cutover, response loss, same-target resume, exact rollback, containment, and SourceGuardianCutoverCompleted. Reject target substitution, unreviewed source, root signer still active, mixed prestate, skipped source, or completion without all authoritative post-queries.
+**Output**: Focused red Source Guardian Cutover Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Source Guardian Cutover Graph behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 5g9b: Source Guardian Cutover Graph - Implementation
+**What**: Implement the cutover graph with exact web/native source identities, prestate, targets, journaled per-source requests, loss reconciliation, same-target resume, rollback/containment, and terminal SourceGuardianCutoverCompleted. It exposes no generic source mutation and cannot run before root-signer retirement.
+**Output**: Source Guardian Cutover Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g9a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
+
+### ⬜ Unit 5g9c: Source Guardian Cutover Graph - Coverage
+**What**: Cover every web/native prestate-target combination, ordering, partial response, resume, rollback, containment, signer/root prerequisite, source substitution, and terminal proof.
+**Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Source Guardian Cutover Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 5g10a: Target Environment Lifecycle Graph - Tests
+**What**: Add red tests for target-environment bootstrap, same-identity/prestate/target-only resume, governance, recovery, exact required-reviewer/no-bypass settings, documented deployment:false compatibility, and rollback/containment. Reject changed target, actor, reviewer, branch policy, custom deployment protection rule, secret inventory, stale evidence, or unjournaled recovery.
+**Output**: Focused red Target Environment Lifecycle Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Target Environment Lifecycle Graph behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 5g10b: Target Environment Lifecycle Graph - Implementation
+**What**: Implement environment bootstrap|resume|govern|recover graph templates and receipts with exact identity, prestate, target, reviewer, branch/workflow policy, deployment:false/no-custom-protection compatibility, authoritative before/after queries, response-loss reconciliation, rollback, and containment. This family does not mutate a live source environment.
+**Output**: Target Environment Lifecycle Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g10a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
+
+### ⬜ Unit 5g10c: Target Environment Lifecycle Graph - Coverage
+**What**: Exhaust environment absent/existing/drifted states, reviewer/self-review/bypass/branch policy, deployment:false compatibility, resume identity/prestate/target, response loss, rollback, containment, and unknown settings.
+**Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Target Environment Lifecycle Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 5g11a: Ledger Writer - Tests
+**What**: Add red graph tests for the Ledger Writer broker's exact foundation_plan -> foundation_apply_or_reconcile -> foundation_terminal -> credential_import_or_explicit_none -> challenge -> operational_upgrade_or_teardown lifecycle. Exercise absent, exact-existing, partial, and drifted provider state; create/delete response loss; crashes at runtime, storage, route, and bootstrap boundaries; early import or route activation; wrong digest; cross-broker substitution; rollback; containment; and restart ownership. Bind the exact delivery repository, disabled Worker/Durable Object resources, Ledger Writer code/policy/config, inert App identity, and sole protected-ledger/release-tag purpose; deny Guardian or source routes.
+**Output**: Focused red Ledger Writer tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Ledger Writer behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 5g11b: Ledger Writer - Implementation
+**What**: Generate the Ledger Writer broker's typed BrokerFoundationV1 plan, authoritative query/reconciliation receipts, disabled runtime/storage/route/bootstrap identity, code/policy/config binding, import-or-explicit-none gate, challenge, same-foundation operational upgrade, rollback, and complete teardown. Namespace existence alone grants no credential or route authority. Bind the exact delivery repository, disabled Worker/Durable Object resources, Ledger Writer code/policy/config, inert App identity, and sole protected-ledger/release-tag purpose; deny Guardian or source routes.
+**Output**: Ledger Writer implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g11a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
+
+### ⬜ Unit 5g11c: Ledger Writer - Coverage
+**What**: Run the focused Ledger Writer foundation suite across every plan, provider prestate, create/query/delete uncertainty, crash, import gate, challenge, upgrade, rollback, teardown, cross-broker substitution, typecheck, warning, and coverage branch.
+**Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Ledger Writer slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 5g12a: Delivery Guardian - Tests
+**What**: Add red graph tests for the Delivery Guardian broker's exact foundation_plan -> foundation_apply_or_reconcile -> foundation_terminal -> credential_import_or_explicit_none -> challenge -> operational_upgrade_or_teardown lifecycle. Exercise absent, exact-existing, partial, and drifted provider state; create/delete response loss; crashes at runtime, storage, route, and bootstrap boundaries; early import or route activation; wrong digest; cross-broker substitution; rollback; containment; and restart ownership. Bind the exact delivery repository, disabled runtime/storage/route, Guardian code/policy/config, inert App identity, and sole provenance-check purpose; deny ledger, bypass, source, or provider-release routes.
+**Output**: Focused red Delivery Guardian tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Delivery Guardian behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 5g12b: Delivery Guardian - Implementation
+**What**: Generate the Delivery Guardian broker's typed BrokerFoundationV1 plan, authoritative query/reconciliation receipts, disabled runtime/storage/route/bootstrap identity, code/policy/config binding, import-or-explicit-none gate, challenge, same-foundation operational upgrade, rollback, and complete teardown. Namespace existence alone grants no credential or route authority. Bind the exact delivery repository, disabled runtime/storage/route, Guardian code/policy/config, inert App identity, and sole provenance-check purpose; deny ledger, bypass, source, or provider-release routes.
+**Output**: Delivery Guardian implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g12a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
+
+### ⬜ Unit 5g12c: Delivery Guardian - Coverage
+**What**: Run the focused Delivery Guardian foundation suite across every plan, provider prestate, create/query/delete uncertainty, crash, import gate, challenge, upgrade, rollback, teardown, cross-broker substitution, typecheck, warning, and coverage branch.
+**Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Delivery Guardian slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 5g13a: Web Supervisor - Tests
+**What**: Add red graph tests for the web supervisor broker's exact foundation_plan -> foundation_apply_or_reconcile -> foundation_terminal -> credential_import_or_explicit_none -> challenge -> operational_upgrade_or_teardown lifecycle. Exercise absent, exact-existing, partial, and drifted provider state; create/delete response loss; crashes at runtime, storage, route, and bootstrap boundaries; early import or route activation; wrong digest; cross-broker substitution; rollback; containment; and restart ownership. Bind the web repository envelope generation, provisional/ordinary endpoints, code/policy/config, and zero source credential import before the exact foundation terminal; deny native and provider-deploy routes.
+**Output**: Focused red Web Supervisor tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Web Supervisor behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 5g13b: Web Supervisor - Implementation
+**What**: Generate the web supervisor broker's typed BrokerFoundationV1 plan, authoritative query/reconciliation receipts, disabled runtime/storage/route/bootstrap identity, code/policy/config binding, import-or-explicit-none gate, challenge, same-foundation operational upgrade, rollback, and complete teardown. Namespace existence alone grants no credential or route authority. Bind the web repository envelope generation, provisional/ordinary endpoints, code/policy/config, and zero source credential import before the exact foundation terminal; deny native and provider-deploy routes.
+**Output**: Web Supervisor implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g13a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
+
+### ⬜ Unit 5g13c: Web Supervisor - Coverage
+**What**: Run the focused web supervisor foundation suite across every plan, provider prestate, create/query/delete uncertainty, crash, import gate, challenge, upgrade, rollback, teardown, cross-broker substitution, typecheck, warning, and coverage branch.
+**Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Web Supervisor slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 5g14a: Native Supervisor - Tests
+**What**: Add red graph tests for the native supervisor broker's exact foundation_plan -> foundation_apply_or_reconcile -> foundation_terminal -> credential_import_or_explicit_none -> challenge -> operational_upgrade_or_teardown lifecycle. Exercise absent, exact-existing, partial, and drifted provider state; create/delete response loss; crashes at runtime, storage, route, and bootstrap boundaries; early import or route activation; wrong digest; cross-broker substitution; rollback; containment; and restart ownership. Bind the native repository envelope generation, provisional/ordinary endpoints, code/policy/config, and zero ASC/source credential import before the exact foundation terminal; deny web and TestFlight mutation routes.
+**Output**: Focused red Native Supervisor tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Native Supervisor behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 5g14b: Native Supervisor - Implementation
+**What**: Generate the native supervisor broker's typed BrokerFoundationV1 plan, authoritative query/reconciliation receipts, disabled runtime/storage/route/bootstrap identity, code/policy/config binding, import-or-explicit-none gate, challenge, same-foundation operational upgrade, rollback, and complete teardown. Namespace existence alone grants no credential or route authority. Bind the native repository envelope generation, provisional/ordinary endpoints, code/policy/config, and zero ASC/source credential import before the exact foundation terminal; deny web and TestFlight mutation routes.
+**Output**: Native Supervisor implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g14a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
+
+### ⬜ Unit 5g14c: Native Supervisor - Coverage
+**What**: Run the focused native supervisor foundation suite across every plan, provider prestate, create/query/delete uncertainty, crash, import gate, challenge, upgrade, rollback, teardown, cross-broker substitution, typecheck, warning, and coverage branch.
+**Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Native Supervisor slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 5g15a: ASC Read - Tests
+**What**: Add red graph tests for the ASC read broker's exact foundation_plan -> foundation_apply_or_reconcile -> foundation_terminal -> credential_import_or_explicit_none -> challenge -> operational_upgrade_or_teardown lifecycle. Exercise absent, exact-existing, partial, and drifted provider state; create/delete response loss; crashes at runtime, storage, route, and bootstrap boundaries; early import or route activation; wrong digest; cross-broker substitution; rollback; containment; and restart ownership. Bind the GET-only ASC credential lane, exact app/team/provider inventory routes, read broker code/policy/config, and no mutation capsule or Transporter route.
+**Output**: Focused red ASC Read tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing ASC Read behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 5g15b: ASC Read - Implementation
+**What**: Generate the ASC read broker's typed BrokerFoundationV1 plan, authoritative query/reconciliation receipts, disabled runtime/storage/route/bootstrap identity, code/policy/config binding, import-or-explicit-none gate, challenge, same-foundation operational upgrade, rollback, and complete teardown. Namespace existence alone grants no credential or route authority. Bind the GET-only ASC credential lane, exact app/team/provider inventory routes, read broker code/policy/config, and no mutation capsule or Transporter route.
+**Output**: ASC Read implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g15a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
+
+### ⬜ Unit 5g15c: ASC Read - Coverage
+**What**: Run the focused ASC read foundation suite across every plan, provider prestate, create/query/delete uncertainty, crash, import gate, challenge, upgrade, rollback, teardown, cross-broker substitution, typecheck, warning, and coverage branch.
+**Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the ASC Read slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 5g16a: ASC Mutation - Tests
+**What**: Add red graph tests for the ASC mutation broker's exact foundation_plan -> foundation_apply_or_reconcile -> foundation_terminal -> credential_import_or_explicit_none -> challenge -> operational_upgrade_or_teardown lifecycle. Exercise absent, exact-existing, partial, and drifted provider state; create/delete response loss; crashes at runtime, storage, route, and bootstrap boundaries; early import or route activation; wrong digest; cross-broker substitution; rollback; containment; and restart ownership. Bind the exact-operation ASC mutation lane, selected custody mode, broker code/policy/config, Transporter-compatible route, and no GET-generalization or read-credential reuse.
+**Output**: Focused red ASC Mutation tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing ASC Mutation behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 5g16b: ASC Mutation - Implementation
+**What**: Generate the ASC mutation broker's typed BrokerFoundationV1 plan, authoritative query/reconciliation receipts, disabled runtime/storage/route/bootstrap identity, code/policy/config binding, import-or-explicit-none gate, challenge, same-foundation operational upgrade, rollback, and complete teardown. Namespace existence alone grants no credential or route authority. Bind the exact-operation ASC mutation lane, selected custody mode, broker code/policy/config, Transporter-compatible route, and no GET-generalization or read-credential reuse.
+**Output**: ASC Mutation implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g16a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
+
+### ⬜ Unit 5g16c: ASC Mutation - Coverage
+**What**: Run the focused ASC mutation foundation suite across every plan, provider prestate, create/query/delete uncertainty, crash, import gate, challenge, upgrade, rollback, teardown, cross-broker substitution, typecheck, warning, and coverage branch.
+**Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the ASC Mutation slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 5g17a: Finalization Retrieval Repair - Tests
+**What**: Add red graph tests for the finalization retrieval-only repair broker's exact foundation_plan -> foundation_apply_or_reconcile -> foundation_terminal -> credential_import_or_explicit_none -> challenge -> operational_upgrade_or_teardown lifecycle. Exercise absent, exact-existing, partial, and drifted provider state; create/delete response loss; crashes at runtime, storage, route, and bootstrap boundaries; early import or route activation; wrong digest; cross-broker substitution; rollback; containment; and restart ownership. Bind one root-reviewed retrieval-only template and later operation/generation plan; permit writes only to its infrastructure journal, prove zero frozen-operation-storage writes, and deny package bytes, semantic changes, or transport/provider mutation.
+**Output**: Focused red Finalization Retrieval Repair tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Finalization Retrieval Repair behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 5g17b: Finalization Retrieval Repair - Implementation
+**What**: Generate the finalization retrieval-only repair broker's typed BrokerFoundationV1 plan, authoritative query/reconciliation receipts, disabled runtime/storage/route/bootstrap identity, code/policy/config binding, import-or-explicit-none gate, challenge, same-foundation operational upgrade, rollback, and complete teardown. Namespace existence alone grants no credential or route authority. Bind one root-reviewed retrieval-only template and later operation/generation plan; permit writes only to its infrastructure journal, prove zero frozen-operation-storage writes, and deny package bytes, semantic changes, or transport/provider mutation.
+**Output**: Finalization Retrieval Repair implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g17a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
+
+### ⬜ Unit 5g17c: Finalization Retrieval Repair - Coverage
+**What**: Run the focused finalization retrieval-only repair foundation suite across every plan, provider prestate, create/query/delete uncertainty, crash, import gate, challenge, upgrade, rollback, teardown, cross-broker substitution, typecheck, warning, and coverage branch.
+**Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Finalization Retrieval Repair slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 5g18a: Finalization Transport Repair - Tests
+**What**: Add red graph tests for the finalization transport/provider-adapter repair broker's exact foundation_plan -> foundation_apply_or_reconcile -> foundation_terminal -> credential_import_or_explicit_none -> challenge -> operational_upgrade_or_teardown lifecycle. Exercise absent, exact-existing, partial, and drifted provider state; create/delete response loss; crashes at runtime, storage, route, and bootstrap boundaries; early import or route activation; wrong digest; cross-broker substitution; rollback; containment; and restart ownership. Bind one root-reviewed transport/provider-adapter template and later operation/generation plan; allow only reviewed adapter deployment for the exact candidate path, with no parser/scanner/evidence/candidate-builder/DO-state change.
+**Output**: Focused red Finalization Transport Repair tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Finalization Transport Repair behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 5g18b: Finalization Transport Repair - Implementation
+**What**: Generate the finalization transport/provider-adapter repair broker's typed BrokerFoundationV1 plan, authoritative query/reconciliation receipts, disabled runtime/storage/route/bootstrap identity, code/policy/config binding, import-or-explicit-none gate, challenge, same-foundation operational upgrade, rollback, and complete teardown. Namespace existence alone grants no credential or route authority. Bind one root-reviewed transport/provider-adapter template and later operation/generation plan; allow only reviewed adapter deployment for the exact candidate path, with no parser/scanner/evidence/candidate-builder/DO-state change.
+**Output**: Finalization Transport Repair implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g18a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
+
+### ⬜ Unit 5g18c: Finalization Transport Repair - Coverage
+**What**: Run the focused finalization transport/provider-adapter repair foundation suite across every plan, provider prestate, create/query/delete uncertainty, crash, import gate, challenge, upgrade, rollback, teardown, cross-broker substitution, typecheck, warning, and coverage branch.
+**Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Finalization Transport Repair slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 5g19a: Ledger Root Bootstrap Composition Graph - Tests
+**What**: Add red tests for the one-time ledger-root-bootstrap-v1 composition after all component identity, signer, settings, environment, tag, and foundation graphs exist. Generation 1 creates exact genesis and RootAttemptStarted(1); generation 1 may resume an exact unstarted REMOTE_JOURNAL_CREATED by appending the same precomputed start; generation N>1 requires exact RootAttemptAborted(N-1) plus byte-equal reviewed intent/prestate. Crash before/after ref dispatch, response, local receipt, every node CAS, and observation. Reject replayed genesis, skipped/reordered nodes, changed intent/prestate/target, root key export/substitution, or continuation after abort.
+**Output**: Focused red Ledger Root Bootstrap Composition Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Ledger Root Bootstrap Composition Graph behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 5g19b: Ledger Root Bootstrap Composition Graph - Implementation
+**What**: Compose the previously implemented component graphs into the ordered rootAttemptGeneration DAG: journal genesis/start, Ledger Writer and Guardian elevations/imports, signer policy, workflow defaults, merged-branch deletion, main and ledger rules, environment, release-tag rules, and ledger genesis. Every node owns exact prestate/request/response-loss/post-query/rollback. Failure appends RootAttemptAborted and only a fresh generation may continue. GENESIS_CREATED alone permits RootAuthorityInstalled; its direct-child RootSignerRetired proves private-key deletion before source cutover.
+**Output**: Ledger Root Bootstrap Composition Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g19a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
+
+### ⬜ Unit 5g19c: Ledger Root Bootstrap Composition Graph - Coverage
+**What**: Exhaust generation-1 genesis/resume, later aborted-parent restart, every ordered node, crash and lost response, orphan object/ref reconciliation, rollback, root signature/key lifecycle, skipped/replayed generation, intent/prestate drift, and permanent post-install disablement.
+**Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Ledger Root Bootstrap Composition Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 5g20a: Release Tag Operation Graph - Tests
 **What**: Add fictional-provider red coverage for a root-bound namespace-ruleset install/reconcile graph, root-authorized three-GET-only `release-tag-ruleset-observe-v1`, and separately claimed `release-tag-project-v1` create-if-absent graph. Cover switched `/user`, collaborator custom/non-admin role, mismatched user identity, stale/skewed Date, missing request ID, `304`, cache hit, omitted bypass actors, missing/changing ruleset ETag, stale/replayed/cross-signed snapshots, nonce/expiry, pre/post mismatch, implicit-tag Release creation, every collision/response-loss/stale-ruleset/alternate principal/object, and forbidden observer/broker update/delete/general-read path.
-**Output**: Focused red Release Tag operation-graph tests, fixtures, and private failing-transcript locator/digest.
-**Acceptance**: The focused command fails only on the asserted missing Release Tag graph behavior; no implementation code is added; unrelated tests remain warning-free.
+**Output**: Focused red Release Tag Operation Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Release Tag Operation Graph behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 5s2b: Release Tag Operation Graphs - Implementation
+### ⬜ Unit 5g20b: Release Tag Operation Graph - Implementation
 **What**: Implement root-install, local three-GET-only observation, and projection graphs. In one credential-bound process the observer sends `Cache-Control: no-cache` to `GET /user`, the exact delivery collaborator-permission endpoint, and the policy-pinned exact ruleset endpoint; requires three fresh `200`s, exact `16390116`/`arimendelow` user identity, exact collaborator identity with built-in `permission: admin` and `role_name: admin`, complete bypass actors, bound bodies/Date/request IDs, and stable ruleset ETag; then emits one-use governance-key-signed `ProtectedReleaseTagSnapshotV1`. It rejects cache/identity/role/time drift and cannot mutate or call other GETs. Projection binds a fresh pre-snapshot, allows only Ledger Writer broker creation of one pre-existing canonical annotated tag/ref from an exact observed publication, then waits for and consumes a fresh post-snapshot with identical ETag/normalized digest before terminal. Reconcile complete tag/Release equality on retry; implicit tag creation, mismatched existing state, and any update/delete/upload route contain.
-**Output**: Release Tag operation-graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 5s2a is green; the focused graph resolves one authorized branch per node and rejects illegal traversal without state or token consumption.
+**Output**: Release Tag Operation Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g20a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
 
-### ⬜ Unit 5s2c: Release Tag Operation Graphs - Coverage
+### ⬜ Unit 5g20c: Release Tag Operation Graph - Coverage
 **What**: Run the focused Release Tag operation-graph suite across every node, legal and illegal edge, authoritative input, crash/response-loss boundary, stale/cross-operation input, idempotent replay, rollback/containment branch, receipt link, typecheck, warning scan, and coverage gate.
 **Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
-**Acceptance**: 100% statements, branches, functions, and lines for the Release Tag operation-graph slice; zero warnings; every traversal, denial, crash, and response-loss branch is exercised.
+**Acceptance**: 100% statements, branches, functions, and lines for the Release Tag Operation Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
 
-### ⬜ Unit 5s3a: Finalization Recovery Operation Graphs - Tests
+
+### ⬜ Unit 5g21a: Finalization Recovery Operation Graph - Tests
 **What**: Add fictional-provider red coverage for exact-duration validator leases anchored to the protected-ledger-ref GitHub Date and a no-egress validation transaction over stored bytes. Prove the external request/response/runner contains no package/candidate; crash yields rollback or observable commit; stale/caller-timed/early-fenced attempts fail. Cover persistent primary release failure, independently encoded read-only fallback retrieval with full digest verification, both-path failure, the retrieval-only zero-storage-write repair, sealed recovery, other protected repair, and mandatory post-publication teardown/nonreachability. Exercise response loss, fallback substitution/mutation/shared-code defects, semantic repair rejection, candidate change, rollback, and retry.
-**Output**: Focused red Finalization Recovery operation-graph tests, fixtures, and private failing-transcript locator/digest.
-**Acceptance**: The focused command fails only on the asserted missing Finalization Recovery graph behavior; no implementation code is added; unrelated tests remain warning-free.
+**Output**: Focused red Finalization Recovery Operation Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Finalization Recovery Operation Graph behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 5s3b: Finalization Recovery Operation Graphs - Implementation
+### ⬜ Unit 5g21b: Finalization Recovery Operation Graph - Implementation
 **What**: Implement exact-Date validator-lease trigger/reconcile, first-dispatch, independent raw fallback retrieval, sealed-recovery, retrieval-only repair, and other repair DAGs. The trigger carries only identity/nonces into no-egress validation; rollback/commit and stale-attempt fencing prevent partial state. First dispatch returns validated bytes only after commit; persistent primary response failure uses the distinct digest-verifying read-only fallback. If both readers fail, only the root-allowlisted retrieval adapter may change under zero-storage-write proof. Repair brokers deactivate or expiry-contain operation route/version/secrets and prove nonreachability before terminal observation. Frozen semantic/candidate/transition state cannot change.
-**Output**: Finalization Recovery operation-graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 5s3a is green; the focused graph resolves one authorized branch per node and rejects illegal traversal without state or token consumption.
+**Output**: Finalization Recovery Operation Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g21a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
 
-### ⬜ Unit 5s3c: Finalization Recovery Operation Graphs - Coverage
+### ⬜ Unit 5g21c: Finalization Recovery Operation Graph - Coverage
 **What**: Run the focused Finalization Recovery operation-graph suite across every node, legal and illegal edge, authoritative input, crash/response-loss boundary, stale/cross-operation input, idempotent replay, rollback/containment branch, receipt link, typecheck, warning scan, and coverage gate.
 **Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
-**Acceptance**: 100% statements, branches, functions, and lines for the Finalization Recovery operation-graph slice; zero warnings; every traversal, denial, crash, and response-loss branch is exercised.
+**Acceptance**: 100% statements, branches, functions, and lines for the Finalization Recovery Operation Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
 
-### ⬜ Unit 5s4a: Replay Execution Operation Graphs - Tests
+
+### ⬜ Unit 5g22a: Replay Execution Operation Graph - Tests
 **What**: Add red CAS/race fixtures for every exact pass/node/cursor transition and `replayNodeLeaseDurationMs=900000`. Exercise sole p1 `ReplayPassGenesisV1` from absent pointer/zero history, response-loss reconciliation, competing candidates, illegal repeat genesis, later supersession, exact protected-ledger-ref Date acquisition/renewal/fencing, derived deadlines, equality/one-millisecond boundaries, wrong endpoint/ref/cache/body, caller time, identity-changing/late/no-progress renewal, durable journals, idempotency, old-claimant fencing, direct/recovered terminals, consumption, blocking, uncertainty, and repair closure. Validate the complete `ReplayNodeIdentityV1` original-to-executor bijection and reject any executor ID as a state or cursor key. Exercise `ReplayManifestCursorV1` first-node install, exact-successor advance, complete, and failed states. Reject out-of-order claims, concurrent claims, a next claim while the cursor node is claimed/recovering/terminal, terminal successor state, and a next-claim-versus-containment race. Fail a mixed required/no-replay/refresh suffix and prove the containment CAS itself consumes the causal node and blocks every remaining original-ID node atomically. Activate a zero-`replay_required` pass and prove every node still emits a no-replay/refresh decision receipt, reaches consumed in manifest order, and resolves only at Unit 60c59. Prove crashes cannot double-execute or deadlock and decision resolution remains distinct from required-operation success.
-**Output**: Focused red Replay Execution operation-graph tests, fixtures, and private failing-transcript locator/digest.
-**Acceptance**: The focused command fails only on the asserted missing Replay Execution graph behavior; no implementation code is added; unrelated tests remain warning-free.
+**Output**: Focused red Replay Execution Operation Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Replay Execution Operation Graph behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 5s4b: Replay Execution Operation Graphs - Implementation
+### ⬜ Unit 5g22b: Replay Execution Operation Graph - Implementation
 **What**: Implement one active pointer, sole absent-pointer/zero-history `ReplayPassGenesisV1`, later resolved/repair-completed supersession, complete `ReplayNodeIdentityV1` bijection, `ReplayManifestCursorV1`, exact root-duration lease records, and the converged pass/node schemas from Unit 2z. Canonical original Unit IDs alone key pass state, cursor, and successor maps; executor IDs are immutable dispatch metadata. Cursor at the first node gates the first claim and opens draining. Every claim requires the exact cursor node, consumed prefix, unclaimed suffix, and no other claimed/recovering/terminal node. Each node journals before provider access and reaches terminal only on exact result. Green/no-replay/refresh consumption advances the cursor atomically; containment consumption atomically consumes the causal node, blocks the full suffix regardless disposition, sets cursor failed, and changes pass to failed. Original Unit 36 fences only when current-pass Unit 60c31 retained a fresh available generation. When Unit 60c31 is no-replay, original Unit 36 must also be no-replay and consume against exact prior retirement plus zero candidate without a fence; mixed cohort decisions fail. Lease takeover uses a fresh protected-ledger-ref Date, fences the claimant, and resolves only no-call retry, exact result, or continuing uncertainty while retaining the cursor. Unit 60d1c checkpoints; Unit 60c29f installs repair closure. Each activated pass traverses the complete manifest order, including all-no-replay passes, and only cursor complete plus Unit 60c59 exact consumption resolves it.
-**Output**: Replay Execution operation-graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 5s4a is green; the focused graph resolves one authorized branch per node and rejects illegal traversal without state or token consumption.
+**Output**: Replay Execution Operation Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g22a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
 
-### ⬜ Unit 5s4c: Replay Execution Operation Graphs - Coverage
+### ⬜ Unit 5g22c: Replay Execution Operation Graph - Coverage
 **What**: Run the focused Replay Execution operation-graph suite across every node, legal and illegal edge, authoritative input, crash/response-loss boundary, stale/cross-operation input, idempotent replay, rollback/containment branch, receipt link, typecheck, warning scan, and coverage gate.
 **Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
-**Acceptance**: 100% statements, branches, functions, and lines for the Replay Execution operation-graph slice; zero warnings; every traversal, denial, crash, and response-loss branch is exercised.
+**Acceptance**: 100% statements, branches, functions, and lines for the Replay Execution Operation Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
 
-### ⬜ Unit 5s5a: Live-Stage Failure Operation Graphs - Tests
+
+### ⬜ Unit 5g23a: Live-Stage Failure Operation Graph - Tests
 **What**: Bind the exact ordered `LiveStageNodeSetV1`, derived `LiveStageSuccessorIndexV1`, closed `LiveStageCheckpointIndexV1`, Unit 31-frozen `StagedWorkerCleanupAuthorityV1`, and independent `StagedWorkerReadAuthorityV1`. Inject failure at each ordinary member except Unit 36 and prove node-specific cleanup plus provider reconciliation atomically creates one generic `LiveStageFailedV1`, blocks the exact suffix, and routes only through the causal node's forward web, native, or safety checkpoint triplet and then Unit 60a. Reject every cross-stage or backward checkpoint edge. At Unit 32, Unit 33, Unit 34, and Unit 35, race cleanup activation against that causal node's green consumption; cleanup requires exact-purpose mutation plus authoritative GET-only reconciliation before containment, while green permanently stales only its sibling cleanup edge. Unit 36 later fences the still-available generation from its own legal cursor and has exactly one pending bridge to Unit 51. Inject lost responses at every mutation/query/terminal boundary and reject self-attestation, missing private-read authority, a blocked-and-executed Unit 51, retained-state dead-end, cleanup overreach, or provider mutation by a blocked node.
-**Output**: Focused red Live-Stage Failure operation-graph tests, fixtures, and private failing-transcript locator/digest.
-**Acceptance**: The focused command fails only on the asserted missing Live-Stage Failure graph behavior; no implementation code is added; unrelated tests remain warning-free.
+**Output**: Focused red Live-Stage Failure Operation Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Live-Stage Failure Operation Graph behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 5s5b: Live-Stage Failure Operation Graphs - Implementation
+### ⬜ Unit 5g23b: Live-Stage Failure Operation Graph - Implementation
 **What**: Generate the exact live node set, successor index, and one generic-failure-only checkpoint index from the protected Product Change order. The generated checkpoint table has exactly these key sets: web Unit 31, Unit 32, Unit 33, Unit 34, Unit 35, Unit 51, Unit 37, Unit 37a, Unit 38, Unit 39, Unit 40, Unit 41, and Unit 42; native Unit 43, Unit 44, Unit 45, Unit 46, Unit 47, Unit 48, Unit 49, and Unit 50; safety Unit 52, Unit 53, Unit 54, Unit 54a, Unit 55, Unit 56, Unit 57, Unit 58a, Unit 58b, and Unit 59. Their values are respectively Unit 42a, Unit 42b, Unit 42c; Unit 50a, Unit 50b, Unit 50c; and Unit 59a, Unit 59b, Unit 59c. Assert key `36` is absent and no edge targets a checkpoint earlier than its causal stage. Unit 31 retained success freezes permanent exact-purpose mutation/read services and run-scoped cleanup grants. At Unit 32, Unit 33, Unit 34, and Unit 35, cleanup activation is an exclusive sibling of that node's green consumption; the winning branch consumes the exact parent. The mutation broker idempotently performs only exact cleanup while active and never tears itself down or certifies terminal state. Independent `StagedWorkerReadAuthorityV1` supplies non-exportable exact-GET provider reads; its reconciler alone closes cleanup and atomically retires both grants. Every causal member except Unit 36 receives one generic failure edge. Unit 36 claims and fences the still-available generation only from its own legal cursor, then has exactly `LiveStageContainmentPendingV1 -> Unit 51`; Unit 51 cleanup alone emits `LiveStageFailedV1` and selects Unit 42a.
-**Output**: Live-Stage Failure operation-graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 5s5a is green; the focused graph resolves one authorized branch per node and rejects illegal traversal without state or token consumption.
+**Output**: Live-Stage Failure Operation Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g23a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
 
-### ⬜ Unit 5s5c: Live-Stage Failure Operation Graphs - Coverage
+### ⬜ Unit 5g23c: Live-Stage Failure Operation Graph - Coverage
 **What**: Run the focused Live-Stage Failure operation-graph suite across every node, legal and illegal edge, authoritative input, crash/response-loss boundary, stale/cross-operation input, idempotent replay, rollback/containment branch, receipt link, typecheck, warning scan, and coverage gate.
 **Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
-**Acceptance**: 100% statements, branches, functions, and lines for the Live-Stage Failure operation-graph slice; zero warnings; every traversal, denial, crash, and response-loss branch is exercised.
+**Acceptance**: 100% statements, branches, functions, and lines for the Live-Stage Failure Operation Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
 
-### ⬜ Unit 5s6a: Broker Foundation Operation Graphs - Tests
-**What**: For each Ledger Writer, Guardian, web supervisor, native supervisor, ASC read, ASC mutation, finalization retrieval-only repair, and finalization transport/provider-adapter repair broker, require `foundation_plan -> foundation_apply_or_reconcile -> foundation_terminal -> credential_import_or_explicit_none -> challenge -> operational_upgrade_or_teardown`. Exercise absent/exact-existing/partial/drifted provider state, apply and delete response loss, crash at every runtime/storage/route/bootstrap boundary, import attempted early, route activation attempted early, wrong foundation digest, cross-broker substitution, rollback, and containment. The two repair lanes are distinct, operation/generation-scoped, and pre-bind a separate foundation-recovery owner; retrieval-only foundation writes may touch only their own infrastructure journal and never the frozen operation Durable Object. No credential-bearing or route-bearing node is claimable from namespace existence alone.
-**Output**: Focused red Broker Foundation operation-graph tests, fixtures, and private failing-transcript locator/digest.
-**Acceptance**: The focused command fails only on the asserted missing Broker Foundation graph behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 5s6b: Broker Foundation Operation Graphs - Implementation
-**What**: Generate typed foundation nodes and receipts for exact disabled Worker/Durable Object runtime, storage, route, bootstrap identity, and code/policy/config. Secret import or route/dispatch activation expressions resolve only from an authoritative matching `BrokerFoundationV1` terminal. Rollback and teardown consume the same plan and exact observed poststate; an operational upgrade consumes the foundation plus exact imported-credential-or-explicit-none inventory and cannot silently create a replacement runtime. Generate separate finalization retrieval-only and transport/provider-adapter repair foundation DAGs whose concrete operation/generation plans are frozen credential-free in Unit 63a, whose active claim-recovery owner can reconcile every boundary through exact brokers without package bytes or provider credentials, and whose teardown removes the complete foundation before `RecoveryUpgradeObservedV1`.
-**Output**: Broker Foundation operation-graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 5s6a is green; the focused graph resolves one authorized branch per node and rejects illegal traversal without state or token consumption.
-
-### ⬜ Unit 5s6c: Broker Foundation Operation Graphs - Coverage
-**What**: Run the focused Broker Foundation operation-graph suite across every node, legal and illegal edge, authoritative input, crash/response-loss boundary, stale/cross-operation input, idempotent replay, rollback/containment branch, receipt link, typecheck, warning scan, and coverage gate.
-**Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
-**Acceptance**: 100% statements, branches, functions, and lines for the Broker Foundation operation-graph slice; zero warnings; every traversal, denial, crash, and response-loss branch is exercised.
-
-### ⬜ Unit 5s7a: Installed Queue Recovery Operation Graphs - Tests
+### ⬜ Unit 5g24a: Installed Queue Recovery Operation Graph - Tests
 **What**: Add the exact queue-authority node before Unit 34 seed and mandatory queue-recovery prerequisites on every causal failure path at Unit 34, Unit 35, Unit 36, Unit 51, Unit 37, Unit 37a, Unit 38, and Unit 39. The Unit 36 pending bridge carries both Worker and queue cleanup contexts; Unit 51 resolves them independently before failure. Mirror the graph for Unit 60c34, Unit 60c35, Unit 60c36, Unit 60c51, Unit 60c37, Unit 60c37a, Unit 60c38, and Unit 60c39 and require failed replay/checkpoint paths to prove queue terminal. Refuse a fresh seed when inventory finds any nonterminal prior authority, even after crash, lost response, unavailable device, or a new pass.
-**Output**: Focused red Installed Queue Recovery operation-graph tests, fixtures, and private failing-transcript locator/digest.
-**Acceptance**: The focused command fails only on the asserted missing Installed Queue Recovery graph behavior; no implementation code is added; unrelated tests remain warning-free.
+**Output**: Focused red Installed Queue Recovery Operation Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Installed Queue Recovery Operation Graph behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 5s7b: Installed Queue Recovery Operation Graphs - Implementation
+### ⬜ Unit 5g24b: Installed Queue Recovery Operation Graph - Implementation
 **What**: Generate `InstalledQueueRecoveryAuthorityV1` before queue seed, preserve it across Unit 34 green, attach its terminal prerequisite to every later causal failure through Unit 39, and carry it in live/replay Unit 36-to-Unit-51 bridge records. Queue and staged-Worker cleanup execute independently but both terminal proofs are required before failure. Successful Unit 39 replay consumes the same authority and retires it. Inventory-before-seed rejects every prior nonterminal generation.
-**Output**: Installed Queue Recovery operation-graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 5s7a is green; the focused graph resolves one authorized branch per node and rejects illegal traversal without state or token consumption.
+**Output**: Installed Queue Recovery Operation Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g24a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
 
-### ⬜ Unit 5s7c: Installed Queue Recovery Operation Graphs - Coverage
+### ⬜ Unit 5g24c: Installed Queue Recovery Operation Graph - Coverage
 **What**: Run the focused Installed Queue Recovery operation-graph suite across every node, legal and illegal edge, authoritative input, crash/response-loss boundary, stale/cross-operation input, idempotent replay, rollback/containment branch, receipt link, typecheck, warning scan, and coverage gate.
 **Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
-**Acceptance**: 100% statements, branches, functions, and lines for the Installed Queue Recovery operation-graph slice; zero warnings; every traversal, denial, crash, and response-loss branch is exercised.
+**Acceptance**: 100% statements, branches, functions, and lines for the Installed Queue Recovery Operation Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
 
-### ⬜ Unit 5s8a: Finalization Pre-Claim Operation Graphs - Tests
+
+### ⬜ Unit 5g25a: Finalization Pre-Claim Operation Graph - Tests
 **What**: Add attempt-specific `FinalizationPreRegistrationRecoveryAuthorityV1`, fsynced `FinalizationRegistrationPlanV1`, on-ledger exclusive `FinalizationRegistrationAttemptV1`, fsynced `FinalizationRegistrationDispatchIntentV1`, sibling `FinalizationPreRegistrationCloseStartedV1`, supervisor cleanup request/effect/signed-WAL-receipt nodes, exact `FinalizationPreRegistrationClosedV1`, nonreachability proof, authority retirement, registered-open with root-timed `FinalizationRegistrationLeaseV1`, canonical `FinalizationClaimDispatchIntentV1`, regression-safe strict `IntentHeadAnchorV1`, CAS-exclusive `FinalizationPreClaimCloseStartedV1`, claimed, closed, and persistent `FinalizationResolverLockV1` nodes. Plan precedes the reservation CAS. A different successor from the plan parent permanently prevents dispatch and routes to plan-only cleanup; an uncertain still-parent state remains recovery-owned. Exact attempt reserves the global ledger head and has exactly two legal children: registration and close-start. Registration advances the same resolver lock to registered-open, whose only legal children are claim intent and close-start; claim intent advances it again, and its only legal children are claim and close-start. Exact claim or exact close releases the lock. Derive deadline from exact attempt head, fsync exact sibling bytes/idempotency, then dispatch registration. After dispatch intent, cleanup waits for one winner. A close-start winner plus zero registration/claim lets the restartable recovery authority invoke only the cleanup supervisor's registration-independent Unit 64b edge, reconcile its signed result, append the exact closed terminal, prove complete nonreachability, and retire; the supervisor has no append edge and recovery has no direct cleanup edge. Registration preserves the exact attempt-specific service identity/public key, retires only its pre-registration grants, and installs `FinalizationRegisteredRecoveryAuthorityV1` grants. Confirmed claim intent alone may obtain an exact-intent-head anchor whose Date lies between registration issue and deadline reserve, then start claim within the monotonic bound. Race unrelated appends at registered-open and claim-intent heads and require denial without changing the legal winner. Crash coordinator, recovery, and supervisor at every close/cleanup/receipt/terminal/nonreachability/teardown edge. Every closure cancels/fences jobs, destroys keys/context, enters Unit 64a1 with `finalization_generation=null`, and cannot create a Durable Object operation or reach claim-dependent cleanup.
-**Output**: Focused red Finalization Pre-Claim operation-graph tests, fixtures, and private failing-transcript locator/digest.
-**Acceptance**: The focused command fails only on the asserted missing Finalization Pre-Claim graph behavior; no implementation code is added; unrelated tests remain warning-free.
+**Output**: Focused red Finalization Pre-Claim Operation Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Finalization Pre-Claim Operation Graph behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 5s8b: Finalization Pre-Claim Operation Graphs - Implementation
+### ⬜ Unit 5g25b: Finalization Pre-Claim Operation Graph - Implementation
 **What**: Registration reservation, registration dispatch, and claim are distinct graph nodes under one persistent `FinalizationResolverLockV1`. An attempt-specific independently restartable `FinalizationPreRegistrationRecoveryAuthorityV1` and durable off-ledger plan precede the on-ledger `FinalizationRegistrationAttemptV1`. If a different parent successor wins, no registration dispatch exists and plan-only cleanup is legal after exact reconciliation. If the attempt wins, root policy serializes the global ledger so only registration or the recovery authority's sibling close-start edge may consume it. Exact attempt-head timing plus fsynced dispatch intent precedes registration CAS. After dispatch intent, only winning close-start or observed registration permits progress. On close-start plus zero registration/claim, the same authority invokes the cleanup supervisor's exact registration-independent subset, reconciles the signed WAL/receipt, appends only exact closed terminal, proves complete nonreachability, and then retires; recovery has no direct cleanup edge and the supervisor has no ledger edge. Registration preserves the root deadline, lock, and exact attempt-specific service identity/public key while atomically rotating pre-registration grants into `FinalizationRegisteredRecoveryAuthorityV1` grants; only claim intent or pre-claim close-start may consume registered-open, and only claim or pre-claim close-start may consume claim-intent. Exact claim or close releases the lock. Exact observed claim continues; exact winning pre-claim close-start plus zero claim uses claim-independent cleanup. Unrelated parent drift at an open lock is integrity containment, not a closure. Every crash resumes from exact authority, cleanup, and ledger journals. Every closure proves no Durable Object operation, destroys applicable capability/context/keys, and routes to Unit 64a1 with `finalization_generation=null`.
-**Output**: Finalization Pre-Claim operation-graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 5s8a is green; the focused graph resolves one authorized branch per node and rejects illegal traversal without state or token consumption.
+**Output**: Finalization Pre-Claim Operation Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g25a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
 
-### ⬜ Unit 5s8c: Finalization Pre-Claim Operation Graphs - Coverage
+### ⬜ Unit 5g25c: Finalization Pre-Claim Operation Graph - Coverage
 **What**: Run the focused Finalization Pre-Claim operation-graph suite across every node, legal and illegal edge, authoritative input, crash/response-loss boundary, stale/cross-operation input, idempotent replay, rollback/containment branch, receipt link, typecheck, warning scan, and coverage gate.
 **Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
-**Acceptance**: 100% statements, branches, functions, and lines for the Finalization Pre-Claim operation-graph slice; zero warnings; every traversal, denial, crash, and response-loss branch is exercised.
+**Acceptance**: 100% statements, branches, functions, and lines for the Finalization Pre-Claim Operation Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
 
-### ⬜ Unit 5s9a: Reservation-Loss Recovery Operation Graphs - Tests
+
+### ⬜ Unit 5g26a: Reservation-Loss Recovery Operation Graph - Tests
 **What**: Give the divergent-parent branch its own exact recovery edge from complete attempt-OID ancestry exclusion plus zero dispatch intent/registration/claim to supervisor plan-only cleanup, signed receipt, closed append, nonreachability, and recovery retirement. It shares no close-start precondition and cannot lose its owner with the coordinator.
-**Output**: Focused red Reservation-Loss Recovery operation-graph tests, fixtures, and private failing-transcript locator/digest.
-**Acceptance**: The focused command fails only on the asserted missing Reservation-Loss Recovery graph behavior; no implementation code is added; unrelated tests remain warning-free.
+**Output**: Focused red Reservation-Loss Recovery Operation Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Reservation-Loss Recovery Operation Graph behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 5s9b: Reservation-Loss Recovery Operation Graphs - Implementation
+### ⬜ Unit 5g26b: Reservation-Loss Recovery Operation Graph - Implementation
 **What**: From a planned parent that advanced to a complete lineage excluding the deterministic attempt OID, the recovery graph requires zero dispatch intent/registration/claim and then alone invokes the bound supervisor plan-only subset. It reconciles signed effects, appends exact closed, proves nonreachability, and retires. This branch is restartable without coordinator or close-start and cannot enter the reserved-attempt graph.
-**Output**: Reservation-Loss Recovery operation-graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 5s9a is green; the focused graph resolves one authorized branch per node and rejects illegal traversal without state or token consumption.
+**Output**: Reservation-Loss Recovery Operation Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g26a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
 
-### ⬜ Unit 5s9c: Reservation-Loss Recovery Operation Graphs - Coverage
+### ⬜ Unit 5g26c: Reservation-Loss Recovery Operation Graph - Coverage
 **What**: Run the focused Reservation-Loss Recovery operation-graph suite across every node, legal and illegal edge, authoritative input, crash/response-loss boundary, stale/cross-operation input, idempotent replay, rollback/containment branch, receipt link, typecheck, warning scan, and coverage gate.
 **Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
-**Acceptance**: 100% statements, branches, functions, and lines for the Reservation-Loss Recovery operation-graph slice; zero warnings; every traversal, denial, crash, and response-loss branch is exercised.
+**Acceptance**: 100% statements, branches, functions, and lines for the Reservation-Loss Recovery Operation Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
 
-### ⬜ Unit 5s10a: Registered-Recovery Carryover Operation Graphs - Tests
+
+### ⬜ Unit 5g27a: Registered-Recovery Carryover Operation Graph - Tests
 **What**: Make registration one atomic same-identity grant-rotation node whose only recovery successor is `FinalizationRegisteredRecoveryAuthorityV1`; no zero-owner or dual-grant intermediate exists. Give that node only strict GET, exact close-start edges from registered-open and claim-intent-open, the supervisor-cleanup edge, the receipt/nonreachability-gated exact closed edge, and nonreachability-query edges. Only registered recovery can traverse them, while Unit 61 has a wake edge only, direct coordinator authentication is rejected, and no claim-intent/claim/general-ledger edge exists.
-**Output**: Focused red Registered-Recovery Carryover operation-graph tests, fixtures, and private failing-transcript locator/digest.
-**Acceptance**: The focused command fails only on the asserted missing Registered-Recovery Carryover graph behavior; no implementation code is added; unrelated tests remain warning-free.
+**Output**: Focused red Registered-Recovery Carryover Operation Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Registered-Recovery Carryover Operation Graph behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 5s10b: Registered-Recovery Carryover Operation Graphs - Implementation
+### ⬜ Unit 5g27b: Registered-Recovery Carryover Operation Graph - Implementation
 **What**: Registration preserves the service identity/public key while atomically exchanging pre-registration grants for the closed registered GET/close-start/supervisor-cleanup/closed/nonreachability graph. Registered recovery owns each close-start and closed Ledger Writer edge and remains restartable through the exact pre-claim-close supervisor-cleanup terminal. Unit 61 can signal only, coordinator credentials traverse no registered edge, and registered recovery has no claim-intent, claim, direct-cleanup, or general-ledger edge.
-**Output**: Registered-Recovery Carryover operation-graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 5s10a is green; the focused graph resolves one authorized branch per node and rejects illegal traversal without state or token consumption.
+**Output**: Registered-Recovery Carryover Operation Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g27a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
 
-### ⬜ Unit 5s10c: Registered-Recovery Carryover Operation Graphs - Coverage
+### ⬜ Unit 5g27c: Registered-Recovery Carryover Operation Graph - Coverage
 **What**: Run the focused Registered-Recovery Carryover operation-graph suite across every node, legal and illegal edge, authoritative input, crash/response-loss boundary, stale/cross-operation input, idempotent replay, rollback/containment branch, receipt link, typecheck, warning scan, and coverage gate.
 **Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
-**Acceptance**: 100% statements, branches, functions, and lines for the Registered-Recovery Carryover operation-graph slice; zero warnings; every traversal, denial, crash, and response-loss branch is exercised.
+**Acceptance**: 100% statements, branches, functions, and lines for the Registered-Recovery Carryover Operation Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
 
-### ⬜ Unit 5s11a: Claim-Recovery Handoff Operation Graphs - Tests
-**What**: Pre-freeze a disjoint hosted `FinalizationClaimRecoveryAuthorityV1` node with one strict-ledger observer edge and one fixed mTLS endpoint whose operational edges all carry an exact-claim predicate. Before claim every operational edge rejects. Exact claim atomically consumes registered recovery and makes only operation initialization/status, validator recovery, safe close/withdrawal, next-relay-generation authorization, exact foundation-broker recovery, closed recovery-ledger methods, observation request, and teardown edges traversable without provider-side activation. The independent observer edge must initialize after coordinator death. Pre-claim close leaves operational edges denied and routes the service only to supervisor purge/nonreachability/teardown. Reject post-claim registered edges, pre-claim operational traversal, direct provider/candidate/publication edges, observer escalation, and every no-owner/dual-owner intermediate.
-**Output**: Focused red Claim-Recovery Handoff operation-graph tests, fixtures, and private failing-transcript locator/digest.
-**Acceptance**: The focused command fails only on the asserted missing Claim-Recovery Handoff graph behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 5s11b: Claim-Recovery Handoff Operation Graphs - Implementation
-**What**: Generate a distinct hosted claim-recovery node before registration with an always-present strict-ledger observer edge and fixed endpoint; bind it into every pre-claim object. Every operational edge is preinstalled with an exact-claim predicate. The claim ledger edge atomically disables registered traversal and enables only operation initialization/status, validator/mailbox recovery, replacement-relay generation authorization, exact broker-mediated foundation recovery, recovery-ledger terminals, observation request, and teardown, with no provider-side activation node. Every post-claim generic `recovery` edge resolves to this byte-blind, provider-credentialless identity; no post-claim edge resolves to `FinalizationRegisteredRecoveryAuthorityV1`.
-**Output**: Claim-Recovery Handoff operation-graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 5s11a is green; the focused graph resolves one authorized branch per node and rejects illegal traversal without state or token consumption.
+### ⬜ Unit 5g28a: Claim-Recovery Handoff Operation Graph - Tests
+**What**: Pre-freeze a disjoint hosted `FinalizationClaimRecoveryAuthorityV1` node with one strict-ledger observer edge and one fixed mTLS endpoint whose core operational edges all carry an exact-claim predicate. Before claim every operational edge rejects. Exact claim atomically consumes registered recovery and makes only operation initialization/status, validator recovery, safe close/withdrawal, next-relay-generation authorization, exact foundation-broker recovery, and teardown edges traversable without provider-side activation. Recovery-ledger terminal and Guardian observation edges remain absent and typed-denied until Unit 5g29b. The independent observer edge must initialize after coordinator death. Pre-claim close leaves operational edges denied and routes the service only to supervisor purge/nonreachability/teardown. Reject post-claim registered edges, pre-claim operational traversal, terminal/observation traversal, direct provider/candidate/publication edges, observer escalation, and every no-owner/dual-owner intermediate.
+**Output**: Focused red Claim-Recovery Handoff Operation Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Claim-Recovery Handoff Operation Graph behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 5s11c: Claim-Recovery Handoff Operation Graphs - Coverage
+### ⬜ Unit 5g28b: Claim-Recovery Handoff Operation Graph - Implementation
+**What**: Generate a distinct hosted claim-recovery node before registration with an always-present strict-ledger observer edge and fixed endpoint; bind it into every pre-claim object. Every core operational edge is preinstalled with an exact-claim predicate. The claim ledger edge atomically disables registered traversal and enables only operation initialization/status, validator/mailbox recovery, replacement-relay generation authorization, exact broker-mediated foundation recovery, and teardown, with no provider-side activation node. It deliberately materializes no recovery-ledger terminal or observation-request edge; Unit 5g29b adds those from their own red tests. Every post-claim generic `recovery` edge resolves to this byte-blind, provider-credentialless identity; no post-claim edge resolves to `FinalizationRegisteredRecoveryAuthorityV1`.
+**Output**: Claim-Recovery Handoff Operation Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g28a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
+
+### ⬜ Unit 5g28c: Claim-Recovery Handoff Operation Graph - Coverage
 **What**: Run the focused Claim-Recovery Handoff operation-graph suite across every node, legal and illegal edge, authoritative input, crash/response-loss boundary, stale/cross-operation input, idempotent replay, rollback/containment branch, receipt link, typecheck, warning scan, and coverage gate.
 **Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
-**Acceptance**: 100% statements, branches, functions, and lines for the Claim-Recovery Handoff operation-graph slice; zero warnings; every traversal, denial, crash, and response-loss branch is exercised.
+**Acceptance**: 100% statements, branches, functions, and lines for the Claim-Recovery Handoff Operation Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
 
-### ⬜ Unit 5s12a: Claim-Recovery Ledger and Observation Operation Graphs - Tests
+
+### ⬜ Unit 5g29a: Claim-Recovery Ledger and Observation Operation Graph - Tests
 **What**: Expand the recovery-ledger terminal node into exactly four labeled edges for `ValidatorRecoveryCompletedV1`, `RecoveryRepairActivatedV1`, `RecoveryUpgradeObservedV1`, and safe `FinalizationAborted`, each guarded by its root-bound parent/state/receipt predicates. Add one disjoint `ClaimRecoveryObservationRouteV1` edge to Guardian's independent ref-query/check/artifact graph for non-ledger `PublicationObserved`. Assert there is no claim-recovery edge to `ReleaseSetPublished`, arbitrary append, alternate parent, or any other event/request, and that rejected traversal leaves ledger/Guardian tokens and state unchanged.
-**Output**: Focused red Claim-Recovery Ledger and Observation operation-graph tests, fixtures, and private failing-transcript locator/digest.
-**Acceptance**: The focused command fails only on the asserted missing Claim-Recovery Ledger and Observation graph behavior; no implementation code is added; unrelated tests remain warning-free.
+**Output**: Focused red Claim-Recovery Ledger and Observation Operation Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Claim-Recovery Ledger and Observation Operation Graph behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 5s12b: Claim-Recovery Ledger and Observation Operation Graphs - Implementation
+### ⬜ Unit 5g29b: Claim-Recovery Ledger and Observation Operation Graph - Implementation
 **What**: Materialize the four `ClaimRecoveryLedgerTerminalSetV1` edges directly from root policy and bind every edge to its exact event predicate. Materialize `ClaimRecoveryObservationRouteV1` in a disjoint Guardian-check/artifact graph with no ledger edge. Generate no wildcard terminal/ledger/observation edge. Keep the relay's `ReleaseSetPublished` edge disjoint and prove graph construction fails if claim-recovery, observation, and relay authority sets overlap.
-**Output**: Claim-Recovery Ledger and Observation operation-graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 5s12a is green; the focused graph resolves one authorized branch per node and rejects illegal traversal without state or token consumption.
+**Output**: Claim-Recovery Ledger and Observation Operation Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g29a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
 
-### ⬜ Unit 5s12c: Claim-Recovery Ledger and Observation Operation Graphs - Coverage
+### ⬜ Unit 5g29c: Claim-Recovery Ledger and Observation Operation Graph - Coverage
 **What**: Run the focused Claim-Recovery Ledger and Observation operation-graph suite across every node, legal and illegal edge, authoritative input, crash/response-loss boundary, stale/cross-operation input, idempotent replay, rollback/containment branch, receipt link, typecheck, warning scan, and coverage gate.
 **Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
-**Acceptance**: 100% statements, branches, functions, and lines for the Claim-Recovery Ledger and Observation operation-graph slice; zero warnings; every traversal, denial, crash, and response-loss branch is exercised.
+**Acceptance**: 100% statements, branches, functions, and lines for the Claim-Recovery Ledger and Observation Operation Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
 
-### ⬜ Unit 5s13a: Replacement Relay Operation Graphs - Tests
+
+### ⬜ Unit 5g30a: Replacement Relay Operation Graph - Tests
 **What**: Freeze one operation-scoped relay authority and exercise monotonic generation authorization, exact committed-payload retrieval, one-use Ledger Writer append, object/CAS crash points, tokenless observation, and higher-generation same-candidate recovery. Reject recovery as appender, arbitrary-byte input, alternate candidate/parent, parallel/skipped generation, unrelated ledger route, abort, or withdrawal.
-**Output**: Focused red Replacement Relay operation-graph tests, fixtures, and private failing-transcript locator/digest.
-**Acceptance**: The focused command fails only on the asserted missing Replacement Relay graph behavior; no implementation code is added; unrelated tests remain warning-free.
+**Output**: Focused red Replacement Relay Operation Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Replacement Relay Operation Graph behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 5s13b: Replacement Relay Operation Graphs - Implementation
+### ⬜ Unit 5g30b: Replacement Relay Operation Graph - Implementation
 **What**: Pre-register exact service identity/policy and a monotonic generation state machine. Recovery can authorize only the next generation after committed dispatch; the relay can retrieve only exact committed bytes and invoke only exact-candidate Ledger Writer append with one-use authority. Journals and tokenless queries resolve every crash while preserving candidate/parent.
-**Output**: Replacement Relay operation-graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 5s13a is green; the focused graph resolves one authorized branch per node and rejects illegal traversal without state or token consumption.
+**Output**: Replacement Relay Operation Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g30a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
 
-### ⬜ Unit 5s13c: Replacement Relay Operation Graphs - Coverage
+### ⬜ Unit 5g30c: Replacement Relay Operation Graph - Coverage
 **What**: Run the focused Replacement Relay operation-graph suite across every node, legal and illegal edge, authoritative input, crash/response-loss boundary, stale/cross-operation input, idempotent replay, rollback/containment branch, receipt link, typecheck, warning scan, and coverage gate.
 **Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
-**Acceptance**: 100% statements, branches, functions, and lines for the Replacement Relay operation-graph slice; zero warnings; every traversal, denial, crash, and response-loss branch is exercised.
+**Acceptance**: 100% statements, branches, functions, and lines for the Replacement Relay Operation Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
 
-### ⬜ Unit 5s14a: Final Timing Operation Graphs - Tests
+
+### ⬜ Unit 5g31a: Final Timing Operation Graph - Tests
 **What**: Add fictional-provider `S/R/C` response, timeout, and transport-error fixtures with exact source-ref anchors, provider response metadata, no-cache rules, and order/skew/batch/age equations. Reject retry after nonresponse and every wrong/missing/malformed anchor or provider Date.
-**Output**: Focused red Final Timing operation-graph tests, fixtures, and private failing-transcript locator/digest.
-**Acceptance**: The focused command fails only on the asserted missing Final Timing graph behavior; no implementation code is added; unrelated tests remain warning-free.
+**Output**: Focused red Final Timing Operation Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Final Timing Operation Graph behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 5s14b: Final Timing Operation Graphs - Implementation
+### ⬜ Unit 5g31b: Final Timing Operation Graph - Implementation
 **What**: Generate strict two-anchor/provider-response query nodes. `S` and `C` bind the same frozen source ref and GitHub no-cache policy; `R` binds exact provider response. Timeout/error records still obtain `C`, fail closed, and expose no retry edge. Successful records enforce every order/skew/batch/age equation before package assembly.
-**Output**: Final Timing operation-graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 5s14a is green; the focused graph resolves one authorized branch per node and rejects illegal traversal without state or token consumption.
+**Output**: Final Timing Operation Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g31a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
 
-### ⬜ Unit 5s14c: Final Timing Operation Graphs - Coverage
+### ⬜ Unit 5g31c: Final Timing Operation Graph - Coverage
 **What**: Run the focused Final Timing operation-graph suite across every node, legal and illegal edge, authoritative input, crash/response-loss boundary, stale/cross-operation input, idempotent replay, rollback/containment branch, receipt link, typecheck, warning scan, and coverage gate.
 **Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
-**Acceptance**: 100% statements, branches, functions, and lines for the Final Timing operation-graph slice; zero warnings; every traversal, denial, crash, and response-loss branch is exercised.
+**Acceptance**: 100% statements, branches, functions, and lines for the Final Timing Operation Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
 
-### ⬜ Unit 5s15a: Replay Descendant Reconciliation Operation Graphs - Tests
+
+### ⬜ Unit 5g32a: Replay Descendant Reconciliation Operation Graph - Tests
 **What**: Require each ordinary consumption edge to store `ReplayNodeConsumedV1` in the same CAS. Lose A's response and advance B/C through claim, consumption, containment, pass completion, resolution, and supersession; accept A only through a gap-free monotonic descendant chain under the same pass/manifest and reject duplicate advance or a forked chain.
-**Output**: Focused red Replay Descendant Reconciliation operation-graph tests, fixtures, and private failing-transcript locator/digest.
-**Acceptance**: The focused command fails only on the asserted missing Replay Descendant Reconciliation graph behavior; no implementation code is added; unrelated tests remain warning-free.
+**Output**: Focused red Replay Descendant Reconciliation Operation Graph tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Replay Descendant Reconciliation Operation Graph behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 5s15b: Replay Descendant Reconciliation Operation Graphs - Implementation
+### ⬜ Unit 5g32b: Replay Descendant Reconciliation Operation Graph - Implementation
 **What**: Ordinary cursor advance emits immutable `ReplayNodeConsumedV1` atomically. Recovery validates either immediate poststate or a gap-free receipt path to a monotonic descendant in the same pass/manifest, including a later active node, failed containment, complete/resolved state, or exact supersession lineage; it has no write/retry edge.
-**Output**: Replay Descendant Reconciliation operation-graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 5s15a is green; the focused graph resolves one authorized branch per node and rejects illegal traversal without state or token consumption.
+**Output**: Replay Descendant Reconciliation Operation Graph implementation, canonical graph/receipt artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 5g32a is green; the family exposes only its declared graph and rejects illegal traversal without state, token, credential, or provider mutation.
 
-### ⬜ Unit 5s15c: Replay Descendant Reconciliation Operation Graphs - Coverage
+### ⬜ Unit 5g32c: Replay Descendant Reconciliation Operation Graph - Coverage
 **What**: Run the focused Replay Descendant Reconciliation operation-graph suite across every node, legal and illegal edge, authoritative input, crash/response-loss boundary, stale/cross-operation input, idempotent replay, rollback/containment branch, receipt link, typecheck, warning scan, and coverage gate.
 **Output**: Focused graph matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
-**Acceptance**: 100% statements, branches, functions, and lines for the Replay Descendant Reconciliation operation-graph slice; zero warnings; every traversal, denial, crash, and response-loss branch is exercised.
+**Acceptance**: 100% statements, branches, functions, and lines for the Replay Descendant Reconciliation Operation Graph slice; zero warnings; every legal edge, denial, crash, and response-loss branch is exercised.
+
 
 ### ⬜ Unit 5z: Typed Operation Graph Convergence Gate
 **What**: Cover each graph node/alternative, every live-stage causal failure/checkpoint route with staged-Worker cleanup at Unit 32, Unit 33, Unit 34, and Unit 35 plus Unit 36's pending bridge whose sole successor is Unit 51, plan-absent/reservation-loss/pre-registration-close and registration-lease/claim-intent/pre-claim-close/registered-zero-claim cleanup, replacement-relay authority/generation/append recovery, strict `S/C/R` response/nonresponse timing, replay genesis and competing/lost-response branches, original/executor identity rejection, cursor order/advance/complete/failed states, immutable consumption receipts and monotonic descendant states, out-of-order/concurrent/next-claim-versus-containment races, mixed-decision full-remainder failure, validator/replay lease takeover, idempotent recovery, repair-broker teardown, retry/compensation branch, and receipt-link failure.
 **Output**: DAG matrix; private coverage-transcript locator and digest only in Desk until Unit 6c.
 **Acceptance**: 100% coverage and zero warnings.
+
 
 ### ⬜ Unit 6a: Evidence Classification and Redaction - Tests
 **What**: Add red adversarial tests for secrets, tokens, headers, emails, names, account/device IDs, private paths, D1 rows, queue payloads, media metadata, images, logs, summaries, annotations, caches, artifacts, unknown fields/classes, ANSI/multiline/encoded leaks, and raw provider failures. Include every retained private transcript fixture named by the exact generated `PreGateTranscriptManifestV1`; prove its key set equals every code/test unit before Unit 6c and prove no pre-gate raw byte or absolute path is repository-reachable.
@@ -1109,160 +1397,347 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Output**: Coverage and warning logs.
 **Acceptance**: 100% coverage and zero warnings.
 
-### ⬜ Unit 8s1a: Protected Ledger Append and Finalization Core - Tests
-**What**: Add red workflow/semantic tests for sole-App append/authority/recovery/resolver/finalization plus executable Linux/macOS supervisor isolation: distinct child UID/session, peer-credential-gated signer service, no inherited signer FD/socket/mount, ptrace/task-port/privilege denial, read-only host mounts, cgroup/UID-wide exhaustion, cancellation recovery, and fail-closed unsupported host. Cover an ordinary write-enabled `GITHUB_TOKEN` ledger rejection, alternate-App rejection, staged tombstone through lock-gated post-fsync `PROMOTED`, a separately isolated pre-bound promotion witness that reads final state under shared lock and signs exact tombstone/package digests, and one claim-bound non-exportable promotion-submitter key plus strict atomic `PromotionPackageSubmittedV1` submit-and-seal/status protocol. Add `absent_open_with_live_submitter` and signer-free `sealed_recovery` branches; atomic close-versus-seal; credentialless `presealed_validator` with no Git/provider-write token; exact no-egress Durable Object validation from immutable sealed record through atomic `PromotionPackageValidatedV1` plus canonical-candidate storage and `unvalidated -> validated_pending_dispatch`; validation-failure withdrawal; fresh-`E` dispatch-versus-withdraw from validated state; serialized same-candidate replacement relays; and the active-claim `FinalizationRecoveryRepairV1` PR/Guardian/protected-merge/root-policy-workflow-reconciliation/isolated-broker-deploy/post-query/rollback/activation DAG. Exercise crashes and response loss before/after close, seal, trigger lease, validation-transaction commit, validation status observation, dispatch commit, repair PR/merge/deploy/activation, Git CAS, abort authorization, and observation. Reject unauthorized submitters/validators/repairs, wrong operation/claim/coordinator/submission nonce, stale trigger nonce, package/candidate egress, stale/substituted witness, alternate/oversized bytes, parser/privacy failure-to-dispatch, partial validation state, duplicate mismatch, replay, post-close/post-seal write, parser/scanner/evidence-policy/candidate-builder/DO repair, unrelated active-claim merge, and every transaction race. Prove no accepted-but-unsealed state, late seal after abort, unvalidated dispatch, validator runner byte access, or dispatch/withdrawal split; unused pre-dispatch `E` cannot prevent safe withdrawal; and only validated dispatch is irreversible.
-**Output**: Focused red Protected Ledger Append and Finalization Core tests, fixtures, and private failing-transcript locator/digest.
-**Acceptance**: The focused command fails only on the asserted missing Protected Ledger Append and Finalization Core behavior; no implementation code is added; unrelated tests remain warning-free.
+### ⬜ Unit 8g1a: Protected Ledger Append Authorization and Supervisor Isolation - Tests
+**What**: Add red workflow and semantic tests for sole-Ledger-Writer-App append authority, expected-parent CAS, resolver ownership, and executable Linux/macOS supervisor isolation. Require distinct child UID/session, peer-credential-gated signer service, no inherited signer FD/socket/mount, ptrace/task-port/privilege denial, read-only host mounts, cgroup or UID-wide descendant exhaustion, cancellation recovery, and fail-closed unsupported hosts. Reject ordinary write-enabled GITHUB_TOKEN, alternate App, wrong parent/workflow/claim, signer substitution, leaked key/FD/socket, hostile child escape, or projection-only shipment.
+**Output**: Focused red Protected Ledger Append Authorization and Supervisor Isolation tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Protected Ledger Append Authorization and Supervisor Isolation behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 8s1b: Protected Ledger Append and Finalization Core - Implementation
-**What**: Implement finalization/cleanup/projection libraries, supervisor/recovery CLI, ledger/coordinator/abort-recovery/evidence/projection workflows, and attestations. Coordinator registers recovery then claims. Resolver gates merges/transitions and permits only pre-authorized retrieval-only or transport/provider-adapter repair, never unrelated work. Matching recovery can expire/abort before dispatch, execute exact repair after `dispatch_committed`, authorize a monotonic replacement-relay generation, or request Guardian's protected non-ledger `PublicationObserved` after exact ref observation, but cannot emit that proof itself, receive package bytes, or append publication. Cleanup uses staged receipts, source teardown, isolated `PromotionObservedV1` witness, and distinct claim-bound submitter. One Durable Object transaction atomically stores/seals from `absent_open`; recovery close competes as `absent_open -> closed_before_submission`. Relay starts `unvalidated`. The trigger sends only identity/nonces. Lease claim derives issue/deadline from the exact protected-ledger-ref Date, the attempt's journaled expected head, and root 120000ms duration. Validation transaction reads sealed state, derives strict verdict/candidate, stores immutable validation plus canonical primary and independently encoded raw fallback payloads, and installs `validated_pending_dispatch`; crash rolls back and response loss is observable. First dispatch with fresh `E` commits `dispatch_committed` before primary return. Persistent primary return failure authorizes the next independent replacement relay to use the read-only fallback with digest verification and zero writes. Dual-reader deterministic failure permits only retrieval-adapter changes proved zero-storage-write; other repair excludes parser/scanner/evidence/candidate-builder/DO state-transition paths. Both repair branches execute exact PR, Guardian checks, protected merge, reconciliation, isolated deploy, post-query, rollback/containment, activation, and terminal teardown. Withdrawal is pre-dispatch only; replacement relays preserve package/candidate. No coordinator seal, accepted intermediate, unvalidated dispatch, or post-close submission exists.
-**Output**: Protected Ledger Append and Finalization Core implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 8s1a is green; legal behavior is deterministic/idempotent and illegal transitions reject without state, token, or provider mutation.
+### ⬜ Unit 8g1b: Protected Ledger Append Authorization and Supervisor Isolation - Implementation
+**What**: Implement only the protected ledger append adapter, expected-parent authority checks, shared finalization record primitives, and Linux/macOS supervisor isolation harness. Ledger signing remains in the peer-authenticated supervisor service; children inherit no key, FD, socket, writable host mount, privilege, or alternate append route. This family does not implement tombstone promotion, mailbox submission, validation, dispatch, timing, recovery, relays, registration, or repair foundations.
+**Output**: Protected Ledger Append Authorization and Supervisor Isolation implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 8g1a is green; the family exposes only its declared behavior and rejects illegal transitions without state, token, credential, or provider mutation.
 
-### ⬜ Unit 8s1c: Protected Ledger Append and Finalization Core - Coverage
-**What**: Run the focused Protected Ledger Append and Finalization Core finalization suite across every legal and illegal transition, authority boundary, crash/response-loss point, stale/cross-operation input, idempotent replay, rollback/containment branch, typecheck, warning scan, and coverage gate.
+### ⬜ Unit 8g1c: Protected Ledger Append Authorization and Supervisor Isolation - Coverage
+**What**: Exhaust actor/App/parent/workflow/claim checks, CAS uncertainty, supervisor UID/session/peer credentials, FD/socket/mount inheritance, ptrace/task-port/privilege denial, descendant exhaustion, cancellation, teardown, hostile children, unsupported hosts, and projection-only rejection.
 **Output**: Focused finalization matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
-**Acceptance**: 100% statements, branches, functions, and lines for the Protected Ledger Append and Finalization Core slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
+**Acceptance**: 100% statements, branches, functions, and lines for the Protected Ledger Append Authorization and Supervisor Isolation slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
 
-### ⬜ Unit 8s2a: Finalization Timing and Recovery - Tests
-**What**: Bind claim epoch/deadline to strict GitHub Date and test equality, one-millisecond shortfall, spread, delayed/missing/malformed/cached anchors, mixed clocks, restart, and barrier loss with zero provider calls. Bind validator lease acquisition/fencing to the exact protected-ledger-ref request and 120000ms duration; reject caller times, wrong responses, early fence, and renewal. Assert the trigger sends only identity/nonces and crash injection yields rollback or observable validation. Persistently fail primary committed-payload return, prove independent raw fallback success and digest equality; fail both readers and require the zero-storage-write retrieval-only repair. Test stale nonce, higher trigger, withdrawal, and repair-broker teardown; observation remains ineffective until nonreachability.
-**Output**: Focused red Finalization Timing and Recovery tests, fixtures, and private failing-transcript locator/digest.
-**Acceptance**: The focused command fails only on the asserted missing Finalization Timing and Recovery behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 8s2b: Finalization Timing and Recovery - Implementation
-**What**: Derive claim and validator-lease times only from strict exact-ref GitHub-Date policy. Implement the two-phase zero-provider-call barrier. Validator service mutations are the root-duration lease CAS and no-egress validation transaction; commit stores independent primary/raw payload representations. Primary post-dispatch response failure routes to read-only fallback, and both-reader failure routes only to zero-storage-write retrieval repair. If any repair activates an isolated broker, publication enters teardown-pending until route/dispatch removal, secret revocation, version deactivation-or-expiry containment, and full nonreachability query complete. Reconcile loss idempotently; only then emit terminal recovery/effective observation.
-**Output**: Finalization Timing and Recovery implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 8s2a is green; legal behavior is deterministic/idempotent and illegal transitions reject without state, token, or provider mutation.
+### ⬜ Unit 8g2a: Promotion Tombstone and Independent Witness - Tests
+**What**: Add red tests for the staged local tombstone state machine through lock-gated post-fsync PROMOTED and for a separately isolated pre-bound promotion witness that reads final state under the shared lock and signs exact tombstone/package digests. Exercise rename/fsync/lock crashes, stale or substituted witness, partial visibility, wrong package digest, response loss, verifier race, and cleanup. Prove neither a visible-but-unpromoted tombstone nor coordinator self-attestation is acceptable.
+**Output**: Focused red Promotion Tombstone and Independent Witness tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Promotion Tombstone and Independent Witness behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 8s2c: Finalization Timing and Recovery - Coverage
-**What**: Run the focused Finalization Timing and Recovery finalization suite across every legal and illegal transition, authority boundary, crash/response-loss point, stale/cross-operation input, idempotent replay, rollback/containment branch, typecheck, warning scan, and coverage gate.
+### ⬜ Unit 8g2b: Promotion Tombstone and Independent Witness - Implementation
+**What**: Implement the local tombstone prepare/write/fsync/rename/directory-fsync/lock/PROMOTED sequence and an independently isolated witness process with a pre-bound key and read-only final-state path. The witness signs only exact PROMOTED tombstone/package digests under the shared lock; it cannot mutate the tombstone, submit a package, append the ledger, or certify its own setup.
+**Output**: Promotion Tombstone and Independent Witness implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 8g2a is green; the family exposes only its declared behavior and rejects illegal transitions without state, token, credential, or provider mutation.
+
+### ⬜ Unit 8g2c: Promotion Tombstone and Independent Witness - Coverage
+**What**: Cover every filesystem and lock boundary, crash and response-loss point, stale/substituted witness, digest mismatch, partial visibility, duplicate observation, teardown, and denied mutation/self-attestation path.
 **Output**: Focused finalization matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
-**Acceptance**: 100% statements, branches, functions, and lines for the Finalization Timing and Recovery slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
+**Acceptance**: 100% statements, branches, functions, and lines for the Promotion Tombstone and Independent Witness slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
 
-### ⬜ Unit 8s3a: Replacement Relay Authority - Tests
+
+### ⬜ Unit 8g3a: Promotion Submit-and-Seal Mailbox - Tests
+**What**: Add red tests for one claim-bound non-exportable promotion-submitter key and the atomic PromotionPackageSubmittedV1 submit-and-seal/status protocol. Cover absent_open_with_live_submitter, signer-free sealed_recovery, atomic close-versus-seal, wrong operation/claim/submission nonce, alternate or oversized bytes, duplicate-equal and duplicate-mismatch submissions, crash before/after transaction commit or response, post-close/post-seal writes, late seal after abort, and submitter loss. Prove no accepted-but-unsealed state exists.
+**Output**: Focused red Promotion Submit-and-Seal Mailbox tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Promotion Submit-and-Seal Mailbox behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 8g3b: Promotion Submit-and-Seal Mailbox - Implementation
+**What**: Implement the claim-bound submitter identity and one Durable Object transaction that validates the canonical package, stores it, appends PromotionPackageSubmittedV1, and seals from absent_open atomically. Recovery may observe sealed state without the signer or win absent_open -> closed_before_submission; no accepted intermediate, coordinator seal, post-close submission, or alternate submitter path exists.
+**Output**: Promotion Submit-and-Seal Mailbox implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 8g3a is green; the family exposes only its declared behavior and rejects illegal transitions without state, token, credential, or provider mutation.
+
+### ⬜ Unit 8g3c: Promotion Submit-and-Seal Mailbox - Coverage
+**What**: Exhaust submitter identity/key/nonce, package bounds, absent/open/sealed/closed states, seal-versus-close races, commit and response loss, signer loss, duplicate equality/mismatch, abort timing, and every forbidden write.
+**Output**: Focused finalization matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Promotion Submit-and-Seal Mailbox slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 8g4a: No-Egress Validation Transaction and Candidate Storage - Tests
+**What**: Add red tests for a credentialless presealed_validator with no Git/provider-write token and an exact no-egress Durable Object validation transaction over the immutable sealed record. Exercise strict parse/privacy/evidence-policy/candidate derivation, rollback-or-observable-commit, atomic PromotionPackageValidatedV1 plus canonical candidate storage and unvalidated -> validated_pending_dispatch, validation-failure withdrawal eligibility, stale trigger nonce, alternate/oversized bytes, parser/privacy failures, partial state, package/candidate egress, runner byte access, and shared-code fallback defects.
+**Output**: Focused red No-Egress Validation Transaction and Candidate Storage tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing No-Egress Validation Transaction and Candidate Storage behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 8g4b: No-Egress Validation Transaction and Candidate Storage - Implementation
+**What**: Implement the no-egress validation transaction. It reads only the sealed record inside the Durable Object, runs strict parser/privacy/evidence/candidate derivation, and atomically stores PromotionPackageValidatedV1, immutable canonical candidate, primary committed payload, and validated_pending_dispatch; any failure rolls back to the prior observable state and records a typed rejection. The external trigger and runner receive identity/nonces and verdict receipts only, never package or candidate bytes.
+**Output**: No-Egress Validation Transaction and Candidate Storage implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 8g4a is green; the family exposes only its declared behavior and rejects illegal transitions without state, token, credential, or provider mutation.
+
+### ⬜ Unit 8g4c: No-Egress Validation Transaction and Candidate Storage - Coverage
+**What**: Cover parser/privacy/evidence/candidate branches, transaction commit/rollback/response loss, state partiality, trigger nonce, byte egress, runner access, alternate/oversized payload, withdrawal eligibility, duplicate validation, and immutable storage.
+**Output**: Focused finalization matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the No-Egress Validation Transaction and Candidate Storage slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 8g5a: Validated Dispatch and Withdrawal Arbitration - Tests
+**What**: Add red tests for fresh-E dispatch-versus-withdrawal from validated_pending_dispatch. Dispatch must atomically install dispatch_committed before returning primary bytes; withdrawal is legal only before dispatch. Race dispatch, validation-failure withdrawal, abort, and response loss at every boundary. Reject unvalidated dispatch, reused or stale E, split dispatch/withdraw winners, post-dispatch abort/withdrawal, candidate mutation, and any branch where an unused pre-dispatch E blocks safe withdrawal.
+**Output**: Focused red Validated Dispatch and Withdrawal Arbitration tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Validated Dispatch and Withdrawal Arbitration behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 8g5b: Validated Dispatch and Withdrawal Arbitration - Implementation
+**What**: Implement the validated-state arbitration CAS. A fresh E may consume validated_pending_dispatch into dispatch_committed and only then release the immutable primary payload to the first relay; the competing withdrawal CAS may consume only the still-undispatched state. Reconcile lost responses by exact state equality. This family provides no replacement relay, fallback reader, timing lease, or repair path.
+**Output**: Validated Dispatch and Withdrawal Arbitration implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 8g5a is green; the family exposes only its declared behavior and rejects illegal transitions without state, token, credential, or provider mutation.
+
+### ⬜ Unit 8g5c: Validated Dispatch and Withdrawal Arbitration - Coverage
+**What**: Exhaust fresh/stale/replayed E, dispatch-versus-withdraw and abort races, CAS/response uncertainty, pre/post-dispatch states, payload release ordering, candidate immutability, and all illegal split or unvalidated outcomes.
+**Output**: Focused finalization matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Validated Dispatch and Withdrawal Arbitration slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 8g6a: Finalization Claim Timing Barrier - Tests
+**What**: Add red tests binding claim epoch/deadline to strict no-cache GitHub Date anchors and the two-phase zero-provider-call barrier. Cover equality, one-millisecond shortfall, spread, delayed/missing/malformed/cached/wrong-ref anchors, mixed clocks, restart, barrier loss, and every path that would unwrap a credential or call a provider before the full evidence window remains.
+**Output**: Focused red Finalization Claim Timing Barrier tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Finalization Claim Timing Barrier behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 8g6b: Finalization Claim Timing Barrier - Implementation
+**What**: Implement claim timing from exact frozen-ref GitHub Date only, with durable phase-one and phase-two anchor receipts and monotonic local elapsed bounds. Provider credentials remain wrapped and provider-call counters remain zero until every order, skew, batch, and remaining-window predicate passes; failure is terminal for the attempt.
+**Output**: Finalization Claim Timing Barrier implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 8g6a is green; the family exposes only its declared behavior and rejects illegal transitions without state, token, credential, or provider mutation.
+
+### ⬜ Unit 8g6c: Finalization Claim Timing Barrier - Coverage
+**What**: Exhaust anchor parsing/cache/ref/body/request identity, equality and one-millisecond timing boundaries, local/GitHub clock separation, restart, barrier loss, zero-call enforcement, and terminal failure.
+**Output**: Focused finalization matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Finalization Claim Timing Barrier slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 8g7a: Validator Lease and No-Egress Trigger - Tests
+**What**: Add red tests for validator lease acquisition and fencing against the exact protected-ledger-ref response with root duration 120000ms. Reject caller time, wrong/cached response, early fence, identity-changing or late renewal, and stale trigger nonce. Assert the trigger sends only identity/nonces and crash injection yields either transaction rollback or an observable committed validation state.
+**Output**: Focused red Validator Lease and No-Egress Trigger tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Validator Lease and No-Egress Trigger behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 8g7b: Validator Lease and No-Egress Trigger - Implementation
+**What**: Implement the root-duration validator lease CAS, exact-ref GitHub-Date issue/deadline derivation, durable progress-bound renewal, fencing, and identity/nonces-only trigger into the already implemented no-egress transaction. Reconcile loss idempotently without exposing stored bytes.
+**Output**: Validator Lease and No-Egress Trigger implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 8g7a is green; the family exposes only its declared behavior and rejects illegal transitions without state, token, credential, or provider mutation.
+
+### ⬜ Unit 8g7c: Validator Lease and No-Egress Trigger - Coverage
+**What**: Cover acquisition, renewal, expiry/fence equality boundaries, wrong head/ref/cache/body/identity, stale nonce, crash before/after trigger and transaction, response loss, rollback, observable commit, and byte nonreachability.
+**Output**: Focused finalization matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Validator Lease and No-Egress Trigger slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 8g8a: Committed Payload Fallback Recovery - Tests
+**What**: After dispatch_committed, persistently fail the primary committed-payload return and require success only through an independently encoded read-only raw fallback with full digest equality. Fail both readers and require a typed retrieval-repair authorization without changing frozen storage. Cover substitution, mutation, shared-code defects, partial read, stale nonce, higher trigger, withdrawal, response loss, and premature observation. Prove fallback is read-only and dual failure cannot authorize semantic or state-machine changes.
+**Output**: Focused red Committed Payload Fallback Recovery tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Committed Payload Fallback Recovery behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 8g8b: Committed Payload Fallback Recovery - Implementation
+**What**: Add the independently encoded raw fallback representation and read-only reader for the exact committed candidate. Primary return failure routes to fallback with full digest recomputation; dual deterministic reader failure emits only the retrieval-repair authorization consumed by the later repair-foundation family. No parser, scanner, evidence, candidate, mailbox, or state-transition code changes here.
+**Output**: Committed Payload Fallback Recovery implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 8g8a is green; the family exposes only its declared behavior and rejects illegal transitions without state, token, credential, or provider mutation.
+
+### ⬜ Unit 8g8c: Committed Payload Fallback Recovery - Coverage
+**What**: Exhaust primary/fallback success and failure, independent encoding/digest equality, substitution/shared-defect fixtures, read-only enforcement, dual-failure authorization, stale/higher trigger, response loss, withdrawal denial, and observation gating.
+**Output**: Focused finalization matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Committed Payload Fallback Recovery slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 8g9a: Replacement Relay Authority - Tests
 **What**: Freeze `ReplacementRelayAuthorityV1` independently from recovery and first dispatch. After `dispatch_committed`, kill the first dispatcher before append and at each object/CAS/response boundary. Recovery may authorize exactly the next `ReplacementRelayGenerationV1` but cannot retrieve or append; the relay alone retrieves immutable bytes, validates bindings, and invokes the Ledger Writer's exact-candidate method with a one-use token. Prove tokenless observation and higher-generation recovery converge without candidate change or finite-generation exhaustion.
 **Output**: Focused red Replacement Relay Authority tests, fixtures, and private failing-transcript locator/digest.
 **Acceptance**: The focused command fails only on the asserted missing Replacement Relay Authority behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 8s3b: Replacement Relay Authority - Implementation
+### ⬜ Unit 8g9b: Replacement Relay Authority - Implementation
 **What**: Pre-register an operation-scoped relay service identity/code/policy and monotonic generation state before claim. Matching recovery remains unable to append publication; after `dispatch_committed` it can authorize only the next generation. The relay independently retrieves and revalidates the immutable committed candidate, receives a one-use exact-candidate Ledger Writer token, journals deterministic object/CAS progress, and observes tokenlessly. A higher generation is allowed only after exact predecessor reconciliation and can never change bytes, parent, or candidate.
 **Output**: Replacement Relay Authority implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 8s3a is green; legal behavior is deterministic/idempotent and illegal transitions reject without state, token, or provider mutation.
+**Acceptance**: Every assertion from Unit 8g9a is green; the family exposes only its declared behavior and rejects illegal transitions without state, token, credential, or provider mutation.
 
-### ⬜ Unit 8s3c: Replacement Relay Authority - Coverage
+### ⬜ Unit 8g9c: Replacement Relay Authority - Coverage
 **What**: Run the focused Replacement Relay Authority finalization suite across every legal and illegal transition, authority boundary, crash/response-loss point, stale/cross-operation input, idempotent replay, rollback/containment branch, typecheck, warning scan, and coverage gate.
 **Output**: Focused finalization matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
 **Acceptance**: 100% statements, branches, functions, and lines for the Replacement Relay Authority slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
 
-### ⬜ Unit 8s4a: Pre-Registration Finalization - Tests
-**What**: Fail Unit 60f3a, Unit 60f4, and Unit 60f4a before a plan and prove direct plan-absent cleanup. Then fsync attempt-specific `FinalizationPreRegistrationRecoveryAuthorityV1` plus `FinalizationRegistrationPlanV1` and race the on-ledger `FinalizationRegistrationAttemptV1` reservation against an unrelated append. A divergent winner permits plan-only cleanup with zero dispatch; an unchanged or ambiguous parent remains recovery-owned. When the attempt wins, prove global append exclusion, derive the lease from exact attempt head, fsync `FinalizationRegistrationDispatchIntentV1`, delay/lose registration at every boundary, and race it against exact `FinalizationPreRegistrationCloseStartedV1` from the reserved head at/after deadline. Registration winner preserves resources and the exact attempt-specific service identity/public key, retires only pre-registration grants, and atomically installs the closed registered GET/pre-claim-close-start/supervisor-cleanup/pre-claim-closed/nonreachability grant set. Close-start winner permanently fences registration; the same restartable authority proves zero registration/claim, invokes only the cleanup supervisor's registration-independent Unit 64b subset, reconciles its signed WAL/receipt, appends exact `FinalizationPreRegistrationClosedV1`, proves complete nonreachability, and retires only afterward. Kill coordinator, recovery, and supervisor before and after close, cleanup invocation/effect, receipt, terminal append/response, nonreachability, and teardown. Reject destructive cleanup before reconciliation/winner, direct cleanup by recovery, ledger append by supervisor, later registration, unrelated append under reservation, premature authority retirement, Unit 64b1, claim-dependent cleanup, or stranded recovery authority.
-**Output**: Focused red Pre-Registration Finalization tests, fixtures, and private failing-transcript locator/digest.
-**Acceptance**: The focused command fails only on the asserted missing Pre-Registration Finalization behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 8s4b: Pre-Registration Finalization - Implementation
-**What**: Use Unit 60f3a's attempt-specific independently supervised `FinalizationPreRegistrationRecoveryAuthorityV1`. Fsync exact parent/resource/reservation/cleanup-supervisor/closed-graph bytes as `FinalizationRegistrationPlanV1`, then CAS on-ledger `FinalizationRegistrationAttemptV1`. Exact divergent-parent loss routes to plan-only cleanup with zero dispatch; ambiguity remains recovery-owned. Exact attempt activates global append exclusion. Derive the lease from its strict head, fsync registration/idempotency/deadline/close bytes as `FinalizationRegistrationDispatchIntentV1`, then dispatch registration. Registration and `FinalizationPreRegistrationCloseStartedV1` are the attempt's only successors. After dispatch intent, cleanup waits for exact close-start or observed registration. Registration preserves resources and the exact attempt-specific service identity/public key, retires only pre-registration grants, and installs the closed registered GET/pre-claim-close-start/supervisor-cleanup/pre-claim-closed/nonreachability grant set. Close-start plus zero registration/claim lets that same restartable authority invoke only the cleanup supervisor's registration-independent Unit 64b subset, reconcile exact signed WAL/receipts, append only exact `FinalizationPreRegistrationClosedV1`, prove complete nonreachability, and retire afterward; recovery cannot clean directly and the supervisor cannot append. Lost responses and process crashes reconcile without a total retry cap from the authority, cleanup, and protected-ledger journals.
-**Output**: Pre-Registration Finalization implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 8s4a is green; legal behavior is deterministic/idempotent and illegal transitions reject without state, token, or provider mutation.
+### ⬜ Unit 8g10a: Pre-Registration Plan and Ledger Reservation - Tests
+**What**: Add red tests that first prove plan-absent failures route only to direct plan-absent cleanup. Then fsync an attempt-specific FinalizationPreRegistrationRecoveryAuthorityV1 and FinalizationRegistrationPlanV1 before CAS-appending the deterministic FinalizationRegistrationAttemptV1 reservation. Exercise absent/exact parent, unrelated winner, uncertain parent, response loss, coordinator death, reservation exclusivity, deterministic OID ancestry, and zero dispatch before a confirmed reservation. Do not test registration, close, cleanup, or grant rotation yet.
+**Output**: Focused red Pre-Registration Plan and Ledger Reservation tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Pre-Registration Plan and Ledger Reservation behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 8s4c: Pre-Registration Finalization - Coverage
-**What**: Run the focused Pre-Registration Finalization finalization suite across every legal and illegal transition, authority boundary, crash/response-loss point, stale/cross-operation input, idempotent replay, rollback/containment branch, typecheck, warning scan, and coverage gate.
+### ⬜ Unit 8g10b: Pre-Registration Plan and Ledger Reservation - Implementation
+**What**: Implement durable pre-registration recovery identity plus FinalizationRegistrationPlanV1 and the exclusive on-ledger FinalizationRegistrationAttemptV1 reservation CAS. Exact divergent-parent loss records complete ancestry evidence for the later reservation-loss family; unchanged or ambiguous parent remains recovery-owned. A confirmed attempt installs the resolver reservation but performs no registration dispatch, close, cleanup, or grant rotation.
+**Output**: Pre-Registration Plan and Ledger Reservation implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 8g10a is green; the family exposes only its declared behavior and rejects illegal transitions without state, token, credential, or provider mutation.
+
+### ⬜ Unit 8g10c: Pre-Registration Plan and Ledger Reservation - Coverage
+**What**: Cover plan absence, plan fsync, deterministic attempt OID, parent equality/divergence/ambiguity, CAS and response loss, coordinator death, exclusivity, ancestry evidence, zero early dispatch, and recovery ownership.
 **Output**: Focused finalization matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
-**Acceptance**: 100% statements, branches, functions, and lines for the Pre-Registration Finalization slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
+**Acceptance**: 100% statements, branches, functions, and lines for the Pre-Registration Plan and Ledger Reservation slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
 
-### ⬜ Unit 8s5a: Reservation-Loss Append - Tests
+
+### ⬜ Unit 8g11a: Registration Lease and Dispatch Intent - Tests
+**What**: From an exact confirmed reservation, add red tests deriving FinalizationRegistrationLeaseV1 solely from the exact attempt-head GitHub Date, fsyncing canonical FinalizationRegistrationDispatchIntentV1 with exact registration/idempotency/deadline/close bytes, and refusing provider dispatch before both are durable. Cover cached/wrong Date, equality/one-millisecond deadline bounds, local clock use, fsync loss, changed bytes, response uncertainty, and restart.
+**Output**: Focused red Registration Lease and Dispatch Intent tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Registration Lease and Dispatch Intent behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 8g11b: Registration Lease and Dispatch Intent - Implementation
+**What**: Implement exact attempt-head Date acquisition, root-duration registration lease derivation, and fsynced FinalizationRegistrationDispatchIntentV1. The intent freezes registration and sibling close bytes plus idempotency before any registration call. It exposes the two legal successor candidates but does not append either, rotate grants, or clean resources.
+**Output**: Registration Lease and Dispatch Intent implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 8g11a is green; the family exposes only its declared behavior and rejects illegal transitions without state, token, credential, or provider mutation.
+
+### ⬜ Unit 8g11c: Registration Lease and Dispatch Intent - Coverage
+**What**: Exhaust Date/ref/cache/body identity, lease arithmetic, fsync and restart, canonical byte equality, idempotency, pre-intent dispatch denial, response loss, and successor-candidate freezing.
+**Output**: Focused finalization matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Registration Lease and Dispatch Intent slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 8g12a: Atomic Registration and Recovery Grant Rotation - Tests
+**What**: Add red tests for the registration successor atomically preserving resources and the exact attempt-specific service identity/public key while exchanging only pre-registration grants for FinalizationRegisteredRecoveryAuthorityV1. Lose registration and grant-rotation responses independently. Require no zero-owner or dual-grant state and exact equality of registration, identity, key, lease, resolver lock, and closed registered grant set. Reject old grants after registration, changed identity/key, incomplete grants, claim/general-ledger access, or coordinator substitution.
+**Output**: Focused red Atomic Registration and Recovery Grant Rotation tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Atomic Registration and Recovery Grant Rotation behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 8g12b: Atomic Registration and Recovery Grant Rotation - Implementation
+**What**: Implement FinalizationRecoveryRegistered as one ledger transition that preserves the attempt identity/public key, resources, lease, and resolver lock while atomically revoking pre-registration grants and installing only strict GET, parent-bound pre-claim-close-start, supervisor-cleanup, receipt/nonreachability-bound pre-claim-closed, and nonreachability-query grants. This family does not execute close or cleanup.
+**Output**: Atomic Registration and Recovery Grant Rotation implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 8g12a is green; the family exposes only its declared behavior and rejects illegal transitions without state, token, credential, or provider mutation.
+
+### ⬜ Unit 8g12c: Atomic Registration and Recovery Grant Rotation - Coverage
+**What**: Cover registration/rotation atomicity, response loss, same-identity/key equality, old/new grant visibility, no owner gap or overlap, exact closed method set, resolver/lease preservation, and every forbidden coordinator/claim/general-ledger method.
+**Output**: Focused finalization matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Atomic Registration and Recovery Grant Rotation slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 8g13a: Registration-versus-Close Arbitration - Tests
+**What**: Add red tests racing the exact registration successor against FinalizationPreRegistrationCloseStartedV1 from the reserved attempt head at or after the root deadline. Exactly one sibling may win. Exercise registration and close CAS/response loss, early close, unrelated append under reservation, stale parent, later registration after close, close after registration, coordinator/recovery crashes, and restart reconciliation. Do not perform destructive cleanup in this family.
+**Output**: Focused red Registration-versus-Close Arbitration tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Registration-versus-Close Arbitration behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 8g13b: Registration-versus-Close Arbitration - Implementation
+**What**: Add the sibling close-start transition and resolver arbitration around the existing registration successor. The reserved attempt head permits only exact registration or root-deadline-eligible close-start; either winner permanently fences the other, while unrelated appends deny without consuming the reservation. Close-start records cleanup authority but performs no cleanup or terminal append.
+**Output**: Registration-versus-Close Arbitration implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 8g13a is green; the family exposes only its declared behavior and rejects illegal transitions without state, token, credential, or provider mutation.
+
+### ⬜ Unit 8g13c: Registration-versus-Close Arbitration - Coverage
+**What**: Exhaust registration/close ordering, deadline equality and one-millisecond bounds, CAS and response loss, stale/unrelated parents, winner fencing, actor crashes, restart, and zero pre-winner cleanup.
+**Output**: Focused finalization matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Registration-versus-Close Arbitration slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 8g14a: Pre-Registration Cleanup and Closure - Tests
+**What**: From an exact close-start winner plus zero registration/claim, add red tests requiring the same restartable pre-registration recovery identity to invoke only the cleanup supervisor's registration-independent subset, reconcile signed WAL/effect/receipt, append exact FinalizationPreRegistrationClosedV1, prove complete nonreachability, and retire afterward. Kill coordinator, recovery, and supervisor before/after every invocation, effect, receipt, terminal append/response, proof, and teardown. Reject direct recovery cleanup, supervisor ledger append, claim-dependent cleanup, premature retirement, or stranded authority.
+**Output**: Focused red Pre-Registration Cleanup and Closure tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Pre-Registration Cleanup and Closure behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 8g14b: Pre-Registration Cleanup and Closure - Implementation
+**What**: Implement the close-winner cleanup protocol. Recovery authenticates to the supervisor's registration-independent subset, supervisor performs and signs effects but cannot append, recovery reconciles the receipt, appends only FinalizationPreRegistrationClosedV1, proves complete nonreachability, then retires. Every response-loss state remains restart-owned without a retry cap; closure routes with finalization_generation=null.
+**Output**: Pre-Registration Cleanup and Closure implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 8g14a is green; the family exposes only its declared behavior and rejects illegal transitions without state, token, credential, or provider mutation.
+
+### ⬜ Unit 8g14c: Pre-Registration Cleanup and Closure - Coverage
+**What**: Exhaust every three-actor crash and response-loss boundary, authentication, signed WAL/receipt, exact terminal bytes, nonreachability, ordered retirement, direct-cleanup and supervisor-append denial, claim-dependent denial, and no-owner prevention.
+**Output**: Focused finalization matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Pre-Registration Cleanup and Closure slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 8g15a: Reservation-Loss Append - Tests
 **What**: After a divergent winner, kill the coordinator and require the attempt-specific recovery authority to verify full protected ancestry exclusion plus zero dispatch intent/registration/claim, invoke only supervisor plan-only cleanup, reconcile the signed receipt, append exact closed terminal, prove complete nonreachability, and retire. Crash recovery/supervisor at every boundary and reject an unchanged parent, shallow lineage, a fabricated close-start, or coordinator dependency.
 **Output**: Focused red Reservation-Loss Append tests, fixtures, and private failing-transcript locator/digest.
 **Acceptance**: The focused command fails only on the asserted missing Reservation-Loss Append behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 8s5b: Reservation-Loss Append - Implementation
+### ⬜ Unit 8g15b: Reservation-Loss Append - Implementation
 **What**: Exact divergent-parent loss is not coordinator-owned. The same durable recovery authority verifies complete attempt-OID ancestry exclusion and zero dispatch intent/registration/claim, invokes only the supervisor's plan-only subset, reconciles its signed receipt, appends exact `FinalizationPreRegistrationClosedV1`, proves complete nonreachability, and retires. It does not append close-start or enter the reserved-attempt state.
 **Output**: Reservation-Loss Append implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 8s5a is green; legal behavior is deterministic/idempotent and illegal transitions reject without state, token, or provider mutation.
+**Acceptance**: Every assertion from Unit 8g15a is green; the family exposes only its declared behavior and rejects illegal transitions without state, token, credential, or provider mutation.
 
-### ⬜ Unit 8s5c: Reservation-Loss Append - Coverage
+### ⬜ Unit 8g15c: Reservation-Loss Append - Coverage
 **What**: Separately exhaust complete-lineage exclusion, zero-dispatch proof, recovery-owned supervisor cleanup, exact closed append, nonreachability, and retirement under coordinator/recovery/supervisor crash and response loss; never satisfy these branches with close-start evidence or coordinator availability.
 **Output**: Focused finalization matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
 **Acceptance**: 100% statements, branches, functions, and lines for the Reservation-Loss Append slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
 
-### ⬜ Unit 8s6a: Registered-Recovery Append - Tests
-**What**: Lose registration and grant-rotation responses independently and require exact ledger/journal equality to preserve one identity and one active grant set. Kill coordinator, registered recovery, and supervisor around every pre-claim close/cleanup/receipt/closed/nonreachability/teardown boundary; only registered recovery may invoke, while coordinator credentials are rejected without state consumption.
-**Output**: Focused red Registered-Recovery Append tests, fixtures, and private failing-transcript locator/digest.
-**Acceptance**: The focused command fails only on the asserted missing Registered-Recovery Append behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 8s6b: Registered-Recovery Append - Implementation
-**What**: `FinalizationRecoveryRegistered` atomically rotates the same attempt-specific identity into the exact registered strict-GET, parent-bound `FinalizationPreClaimCloseStartedV1`, supervisor-cleanup, receipt/nonreachability-bound `FinalizationPreClaimClosedV1`, and nonreachability-query grants, revoking only pre-registration grants. Registered recovery alone dispatches and reconciles pre-claim close-start from either legal parent, invokes the supervisor, appends the exact closed terminal, proves nonreachability, and tears down; Unit 61 is wake-only and neither actor gains claim-intent, claim, or general-ledger authority.
-**Output**: Registered-Recovery Append implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 8s6a is green; legal behavior is deterministic/idempotent and illegal transitions reject without state, token, or provider mutation.
+### ⬜ Unit 8g16a: Registered-Recovery Close and Append - Tests
+**What**: After atomic registration/grant rotation, kill coordinator, registered recovery, and supervisor around every pre-claim close-start, cleanup, signed receipt, FinalizationPreClaimClosedV1 append, nonreachability, and teardown boundary. Only registered recovery may invoke the closed methods; Unit 61 is wake-only and coordinator credentials reject typed/non-consuming. Cover both registered-open and claim-intent-open legal parents, response loss, duplicate equality, wrong receipt, and forbidden claim/general-ledger routes.
+**Output**: Focused red Registered-Recovery Close and Append tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Registered-Recovery Close and Append behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 8s6c: Registered-Recovery Append - Coverage
-**What**: Separately exhaust same-identity registration/grant rotation, old-grant denial, no owner gap, registered-recovery-only pre-claim cleanup, coordinator rejection, signed receipt, exact `FinalizationPreClaimClosedV1`, nonreachability, and teardown.
+### ⬜ Unit 8g16b: Registered-Recovery Close and Append - Implementation
+**What**: Implement registered recovery's execution of its already installed closed grant set: exact parent-bound pre-claim close-start, supervisor cleanup invocation/reconciliation, receipt/nonreachability-gated FinalizationPreClaimClosedV1 append, proof, and teardown. Unit 61 only wakes it; coordinator and every broader method remain denied.
+**Output**: Registered-Recovery Close and Append implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 8g16a is green; the family exposes only its declared behavior and rejects illegal transitions without state, token, credential, or provider mutation.
+
+### ⬜ Unit 8g16c: Registered-Recovery Close and Append - Coverage
+**What**: Exhaust both legal parents, registered-recovery authentication, coordinator rejection, supervisor crashes, signed receipt, exact append/idempotency, nonreachability, teardown, forbidden methods, and token/state non-consumption on denial.
 **Output**: Focused finalization matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
-**Acceptance**: 100% statements, branches, functions, and lines for the Registered-Recovery Append slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
+**Acceptance**: 100% statements, branches, functions, and lines for the Registered-Recovery Close and Append slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
 
-### ⬜ Unit 8s7a: Claim-Recovery Handoff - Tests
-**What**: Freeze a distinct hosted `FinalizationClaimRecoveryAuthorityV1` before plan with `ClaimRecoveryObserverGrantV1`, a fixed mTLS endpoint, and zero operational/mutating grants; bind it through every pre-claim record. Race exact claim against pre-claim close. Claim must atomically retire registered authority and make only exact-claim preinstalled methods authorize from ledger state, with no provider-side activation. Kill the coordinator and observer before/after claim, restart the observer, and require operation initialization/reconciliation; close must preserve operational denial and supervisor-purge the service. Lose every response and crash each actor at observation, operation initialization, validator recovery, mailbox close/withdrawal, replacement-relay generation, foundation broker recovery, ledger terminal, Guardian observation request, and teardown. Reject wrong-phase credentials, observer escalation, direct provider routes, package/candidate reads, exact-candidate append, arbitrary foundation/general-ledger methods, and authority overlap/gap.
+
+### ⬜ Unit 8g17a: Claim-Recovery Handoff - Tests
+**What**: Freeze a distinct hosted `FinalizationClaimRecoveryAuthorityV1` before plan with `ClaimRecoveryObserverGrantV1`, a fixed mTLS endpoint, and zero operational/mutating grants; bind it through every pre-claim record. Race exact claim against pre-claim close. Claim must atomically retire registered authority and make only exact-claim preinstalled core methods authorize from ledger state, with no provider-side activation. Kill the coordinator and observer before/after claim, restart the observer, and require operation initialization/reconciliation; close must preserve operational denial and supervisor-purge the service. Lose every response and crash each actor at claim observation, operation initialization, validator recovery, mailbox close/withdrawal, replacement-relay generation, foundation broker recovery, and teardown. Require recovery-ledger terminal and Guardian observation requests to remain typed-denied until Unit 8g18b. Reject wrong-phase credentials, observer escalation, direct provider routes, package/candidate reads, exact-candidate append, arbitrary foundation/general-ledger methods, and authority overlap/gap.
 **Output**: Focused red Claim-Recovery Handoff tests, fixtures, and private failing-transcript locator/digest.
 **Acceptance**: The focused command fails only on the asserted missing Claim-Recovery Handoff behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 8s7b: Claim-Recovery Handoff - Implementation
-**What**: Unit 60f3a freezes a distinct hosted `FinalizationClaimRecoveryAuthorityV1` identity/public key/code/policy/journal, immutable strict-ledger `ClaimRecoveryObserverGrantV1`, fixed mTLS endpoint, and independent observer loop, and binds them through plan, attempt, registration, and claim intent. Before claim, operational methods are preinstalled but ledger-predicate-denied. Exact `FinalizationClaim` atomically retires registered authority and makes only root-bound operation status, validator/mailbox recovery, safe close/withdrawal, replacement-relay generation, exact foundation-broker, recovery-ledger, observation-request, and teardown methods accept; no route/grant activation call exists. The observer reconciles claim response loss and initializes the frozen operation after coordinator death. The authority remains package/candidate-blind and provider-credentialless and retires only after terminal publication/abort plus complete operation/foundation nonreachability.
+### ⬜ Unit 8g17b: Claim-Recovery Handoff - Implementation
+**What**: Unit 60f3a freezes a distinct hosted `FinalizationClaimRecoveryAuthorityV1` identity/public key/code/policy/journal, immutable strict-ledger `ClaimRecoveryObserverGrantV1`, fixed mTLS endpoint, and independent observer loop, and binds them through plan, attempt, registration, and claim intent. Before claim, core operational methods are preinstalled but ledger-predicate-denied. Exact `FinalizationClaim` atomically retires registered authority and makes only root-bound operation status, validator/mailbox recovery, safe close/withdrawal, replacement-relay generation, exact foundation-broker, and teardown methods accept; no route/grant activation call exists. Recovery-ledger terminal and observation-request handlers remain absent and typed-denied until Unit 8g18b. The observer reconciles claim response loss and initializes the frozen operation after coordinator death. The authority remains package/candidate-blind and provider-credentialless and retires only after terminal publication/abort plus complete operation/foundation nonreachability.
 **Output**: Claim-Recovery Handoff implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 8s7a is green; legal behavior is deterministic/idempotent and illegal transitions reject without state, token, or provider mutation.
+**Acceptance**: Every assertion from Unit 8g17a is green; the family exposes only its declared behavior and rejects illegal transitions without state, token, credential, or provider mutation.
 
-### ⬜ Unit 8s7c: Claim-Recovery Handoff - Coverage
-**What**: Separately exhaust hosted identity/observer/endpoint binding, zero operational grants, pre-claim typed denial, exact ledger-derived claim handoff, no provider-side activation call, pre-claim-close supervisor teardown, operation initialization after coordinator/observer death, validator/mailbox/relay/foundation recovery, recovery ledger terminals and Guardian observation request, forbidden post-claim registered credentials and byte/provider/general-ledger access, terminal nonreachability, and teardown.
+### ⬜ Unit 8g17c: Claim-Recovery Handoff - Coverage
+**What**: Separately exhaust hosted identity/observer/endpoint binding, zero operational grants, pre-claim typed denial, exact ledger-derived claim handoff, no provider-side activation call, pre-claim-close supervisor teardown, operation initialization after coordinator/observer death, validator/mailbox/relay/foundation recovery, explicit pre-Unit-8g18 terminal/observation denial, forbidden post-claim registered credentials and byte/provider/general-ledger access, terminal nonreachability, and teardown.
 **Output**: Focused finalization matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
 **Acceptance**: 100% statements, branches, functions, and lines for the Claim-Recovery Handoff slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
 
-### ⬜ Unit 8s8a: Claim-Recovery Ledger and Observation - Tests
+
+### ⬜ Unit 8g18a: Claim-Recovery Ledger and Observation - Tests
 **What**: Request all four `ClaimRecoveryLedgerTerminalSetV1` events through the Ledger Writer under exact legal and illegal parents, operation/claim bindings, and receipt predicates. Separately request `PublicationObserved` through `ClaimRecoveryObservationRouteV1` and prove Guardian independently queries/emits only the non-ledger check/artifact. Lose responses and replay identical requests. Require exact idempotent append/observation; reject duplicates with changed bytes, `ReleaseSetPublished`, alternate candidate/object/ref bytes, missing or substituted receipts, wrong-state parents, and every unlisted event/request without consuming the method token or observation nonce.
 **Output**: Focused red Claim-Recovery Ledger and Observation tests, fixtures, and private failing-transcript locator/digest.
 **Acceptance**: The focused command fails only on the asserted missing Claim-Recovery Ledger and Observation behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 8s8b: Claim-Recovery Ledger and Observation - Implementation
+### ⬜ Unit 8g18b: Claim-Recovery Ledger and Observation - Implementation
 **What**: Expose exactly the four root-generated `ClaimRecoveryLedgerTerminalSetV1` Ledger Writer methods with event-specific canonicalizers, predicates, and one-use tokens. Expose `ClaimRecoveryObservationRouteV1` only through Guardian's exact independent ref-query/check/artifact path with a one-use observation nonce and no ledger parent/event/token. Reconcile lost responses against the correct ledger or check/artifact surface. Do not route `ReleaseSetPublished` or any generic append through claim recovery; only the independent relay receives the exact-candidate publication method.
 **Output**: Claim-Recovery Ledger and Observation implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 8s8a is green; legal behavior is deterministic/idempotent and illegal transitions reject without state, token, or provider mutation.
+**Acceptance**: Every assertion from Unit 8g18a is green; the family exposes only its declared behavior and rejects illegal transitions without state, token, credential, or provider mutation.
 
-### ⬜ Unit 8s8c: Claim-Recovery Ledger and Observation - Coverage
+### ⬜ Unit 8g18c: Claim-Recovery Ledger and Observation - Coverage
 **What**: Exhaust each of the four allowed `ClaimRecoveryLedgerTerminalSetV1` methods plus the disjoint `ClaimRecoveryObservationRouteV1` Guardian request, all ledger parent/state/receipt and observation eligibility predicates, exact replay after response loss, changed-byte duplicate rejection, and the complement set of forbidden events/requests/bytes/parents including relay-only `ReleaseSetPublished`, with zero token/nonce/state consumption on rejection.
 **Output**: Focused finalization matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
 **Acceptance**: 100% statements, branches, functions, and lines for the Claim-Recovery Ledger and Observation slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
 
-### ⬜ Unit 8s9a: Pre-Claim Finalization - Tests
+
+### ⬜ Unit 8g19a: Pre-Claim Finalization - Tests
 **What**: Append `FinalizationRecoveryRegistered` with strict root-timed `FinalizationRegistrationLeaseV1` and the attempt's still-active `FinalizationResolverLockV1`; crash before claim intent, lose its response, regress/fail/delay `IntentHeadAnchorV1`, crash after anchor, and lose claim CAS. Require exact claim intent, then an exact-intent-head anchor satisfying `registrationIssuedAtDateMs <= intentAnchorDateMs <= registrationDeadlineMs-5000`, then claim launch within `0..5000` monotonic milliseconds. Test both equalities and one-millisecond violations. At deadline race claim intent against pre-claim close-start and an unrelated append from registration head; race claim against close-start and an unrelated append from claim-intent head. Exactly one legal sibling wins and every unrelated append is denied without consuming or releasing the lock. Exact close-start plus zero claim runs only claim-independent cleanup and `FinalizationPreClaimClosedV1`. Reject caller time, Date regression, delayed claim, early close, cleanup without close-start, later claim, or unrelated drift treated as closure.
 **Output**: Focused red Pre-Claim Finalization tests, fixtures, and private failing-transcript locator/digest.
 **Acceptance**: The focused command fails only on the asserted missing Pre-Claim Finalization behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 8s9b: Pre-Claim Finalization - Implementation
+### ⬜ Unit 8g19b: Pre-Claim Finalization - Implementation
 **What**: Registration freezes the root-timed lease and preserves `FinalizationResolverLockV1`. Before claim dispatch, CAS canonical claim intent from registration head, whose only sibling is pre-claim close-start. Only a confirmed response may obtain exact-intent-head `IntentHeadAnchorV1` with Date inside the inclusive issue-to-deadline-reserve interval; only that anchor starts claim within the monotonic bound. Claim-intent's only sibling is pre-claim close-start. Exact claim or exact close atomically releases the lock. Exact claim alone permits Durable Object creation. Exact close-start plus zero claim runs only claim-independent Unit 64b cleanup, revokes/contains registration capability, and emits null-generation `FinalizationPreClaimClosedV1`; Unit 64b1 and claim-dependent transitions are forbidden. Unrelated drift is denied or enters root-integrity containment and cannot create a closure terminal.
 **Output**: Pre-Claim Finalization implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 8s9a is green; legal behavior is deterministic/idempotent and illegal transitions reject without state, token, or provider mutation.
+**Acceptance**: Every assertion from Unit 8g19a is green; the family exposes only its declared behavior and rejects illegal transitions without state, token, credential, or provider mutation.
 
-### ⬜ Unit 8s9c: Pre-Claim Finalization - Coverage
+### ⬜ Unit 8g19c: Pre-Claim Finalization - Coverage
 **What**: Run the focused Pre-Claim Finalization finalization suite across every legal and illegal transition, authority boundary, crash/response-loss point, stale/cross-operation input, idempotent replay, rollback/containment branch, typecheck, warning scan, and coverage gate.
 **Output**: Focused finalization matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
 **Acceptance**: 100% statements, branches, functions, and lines for the Pre-Claim Finalization slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
 
-### ⬜ Unit 8s10a: Finalization Repair Foundation - Tests
-**What**: For both retrieval-only and transport/provider-adapter lanes, freeze the root-reviewed template and Unit 63a operation/generation-specific `BrokerFoundationV1` plan before deterministic failure. Inject crashes and response loss before/after plan fsync, disabled Worker/Durable Object runtime creation, foundation-only storage/route/bootstrap creation, authoritative post-query, operation-secret import or explicit-none recording, challenge, same-foundation operational upgrade, dispatch activation, rollback, teardown, and terminal observation. Require claim recovery to reconcile exact broker-mediated provider state without package bytes and either continue the same foundation or restore/tear down every component. Reject registered-recovery credentials post-claim, direct provider routes/credentials, route/dispatch/secret before foundation terminal, replacement runtime, cross-lane foundation, retrieval access to operation-storage writes, orphaned bootstrap identity, unowned partial state, and `RecoveryUpgradeObservedV1` before full foundation nonreachability.
-**Output**: Focused red Finalization Repair Foundation tests, fixtures, and private failing-transcript locator/digest.
-**Acceptance**: The focused command fails only on the asserted missing Finalization Repair Foundation behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 8s10b: Finalization Repair Foundation - Implementation
-**What**: Pre-register distinct root-reviewed retrieval-only and transport/provider-adapter `BrokerFoundationV1` templates. Unit 63a derives and freezes their exact operation/generation namespace, absent-or-equal prestate, disabled Worker/Durable Object runtime, foundation-only storage, routes, bootstrap identity, code/policy/config, import-or-explicit-none, challenge, operational-upgrade, rollback, teardown, and claim-recovery-owner records without mutation. When deterministic failure authorizes one lane, `FinalizationClaimRecoveryAuthorityV1` fsyncs its claim and calls only the exact foundation broker to establish/reconcile the disabled foundation; only an authoritative full-tuple terminal permits broker-held operation-secret import or route/dispatch activation. Upgrade only the same foundation. Claim recovery has no direct provider credential/route. Retrieval repair can write only its disjoint infrastructure journal and has machine-proved zero frozen-operation-storage writes. Every response loss remains owned; rollback/teardown removes credentials, routes, storage, runtime, and bootstrap identity or preserves a disabled claim-recovery-owned exact state. Effective observation waits for complete foundation nonreachability.
-**Output**: Finalization Repair Foundation implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
-**Acceptance**: Every assertion from Unit 8s10a is green; legal behavior is deterministic/idempotent and illegal transitions reject without state, token, or provider mutation.
+### ⬜ Unit 8g20a: Retrieval-Only Repair Foundation Lifecycle - Tests
+**What**: Freeze the root-reviewed retrieval-only BrokerFoundationV1 template and Unit 63a operation/generation plan before deterministic dual-reader failure. Inject crashes and response loss before/after plan fsync, disabled runtime creation, foundation-only storage/route/bootstrap creation, authoritative query, explicit-none or credential import, challenge, same-foundation upgrade, activation, rollback, teardown, and observation. Reject package bytes, direct provider credentials, operation-storage writes, replacement runtime, cross-lane foundation, route/secret before terminal, orphan state, or RecoveryUpgradeObservedV1 before complete nonreachability.
+**Output**: Focused red Retrieval-Only Repair Foundation Lifecycle tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Retrieval-Only Repair Foundation Lifecycle behavior; no implementation code is added; unrelated tests remain warning-free.
 
-### ⬜ Unit 8s10c: Finalization Repair Foundation - Coverage
-**What**: Run the focused Finalization Repair Foundation finalization suite across every legal and illegal transition, authority boundary, crash/response-loss point, stale/cross-operation input, idempotent replay, rollback/containment branch, typecheck, warning scan, and coverage gate.
+### ⬜ Unit 8g20b: Retrieval-Only Repair Foundation Lifecycle - Implementation
+**What**: Implement only the retrieval-only repair foundation lifecycle. Unit 63a freezes exact operation/generation namespace, absent-or-equal prestate, disabled runtime/storage/routes/bootstrap identity/code/policy/config and claim-recovery owner. The broker alone establishes and queries the foundation; exact terminal gates import-or-none, challenge, and same-foundation upgrade. Retrieval writes only its infrastructure journal and machine-proves zero frozen-operation-storage writes. Rollback/teardown removes every component or preserves one disabled recovery-owned exact state; observation waits for full nonreachability.
+**Output**: Retrieval-Only Repair Foundation Lifecycle implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 8g20a is green; the family exposes only its declared behavior and rejects illegal transitions without state, token, credential, or provider mutation.
+
+### ⬜ Unit 8g20c: Retrieval-Only Repair Foundation Lifecycle - Coverage
+**What**: Exhaust retrieval plan/apply/query/import-or-none/challenge/upgrade/activation/rollback/teardown, every provider crash and response loss, zero operation-storage write proof, cross-lane/replacement/orphan denial, ownership, and nonreachability gating.
 **Output**: Focused finalization matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
-**Acceptance**: 100% statements, branches, functions, and lines for the Finalization Repair Foundation slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
+**Acceptance**: 100% statements, branches, functions, and lines for the Retrieval-Only Repair Foundation Lifecycle slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
+
+
+### ⬜ Unit 8g21a: Transport and Provider-Adapter Repair Foundation Lifecycle - Tests
+**What**: Freeze the distinct root-reviewed transport/provider-adapter BrokerFoundationV1 template and Unit 63a operation/generation plan before deterministic adapter failure. Inject crashes and response loss across plan, disabled runtime/storage/route/bootstrap creation, query, exact operation-secret import, challenge, same-foundation upgrade, reviewed PR/Guardian/protected merge reconciliation, isolated deployment, activation, rollback, teardown, and observation. Reject parser/scanner/evidence/candidate-builder/DO transition changes, retrieval-lane substitution, direct recovery provider access, replacement runtime, early secret/route/dispatch, unowned partial state, or observation before nonreachability.
+**Output**: Focused red Transport and Provider-Adapter Repair Foundation Lifecycle tests, fixtures, and private failing-transcript locator/digest.
+**Acceptance**: The focused command fails only on the asserted missing Transport and Provider-Adapter Repair Foundation Lifecycle behavior; no implementation code is added; unrelated tests remain warning-free.
+
+### ⬜ Unit 8g21b: Transport and Provider-Adapter Repair Foundation Lifecycle - Implementation
+**What**: Implement only the transport/provider-adapter repair foundation lifecycle. Freeze the exact reviewed adapter code/policy/config and operation/generation namespace; claim recovery calls only the foundation broker. Authoritative full-tuple terminal gates exact operation-secret import, challenge, and upgrade of that same foundation. Activation binds the reviewed PR, Guardian checks, protected merge, isolated deploy, and post-query. Rollback/teardown removes credentials, routes, storage, runtime, and bootstrap identity or leaves one disabled recovery-owned exact state; observation waits for complete nonreachability.
+**Output**: Transport and Provider-Adapter Repair Foundation Lifecycle implementation, canonical workflow/ledger artifacts, stable typed errors, and exact focused commit.
+**Acceptance**: Every assertion from Unit 8g21a is green; the family exposes only its declared behavior and rejects illegal transitions without state, token, credential, or provider mutation.
+
+### ⬜ Unit 8g21c: Transport and Provider-Adapter Repair Foundation Lifecycle - Coverage
+**What**: Exhaust transport plan/apply/query/import/challenge/upgrade/PR/check/merge/deploy/activate/rollback/teardown, provider uncertainty, same-foundation enforcement, semantic/frozen-state denials, cross-lane/replacement/orphan denial, ownership, and nonreachability.
+**Output**: Focused finalization matrix, coverage report, warning scan, and private transcript locator/digest for later Unit 6c sanitization.
+**Acceptance**: 100% statements, branches, functions, and lines for the Transport and Provider-Adapter Repair Foundation Lifecycle slice; zero warnings; every legal transition, denial, crash, and response-loss branch is exercised.
+
 
 ### ⬜ Unit 8z: Protected Ledger and Finalization Convergence Gate
 **What**: Cover finalization/signer races, plan-absent and reservation-loss cleanup, pre-registration registration-versus-close response loss and cleanup fencing, attempt-specific recovery through supervisor cleanup/signed receipt/exact closed append/nonreachability/retirement, registered-zero-claim response loss/cleanup/closure, seal/close, exact-Date lease derivation/fencing, intent-anchor regression bounds, no-egress validation rollback-or-commit, primary dispatch death and replacement-relay authorization/append recovery, independent raw fallback, retrieval-only repair, sealed recovery, strict `S/C/R` timing, both repair `BrokerFoundationV1` plan/apply/reconcile/import-or-none/challenge/same-foundation-upgrade/rollback/teardown paths, withdrawal, abort, observation, and projection. Exhaustively cover coordinator/recovery/supervisor crashes and response loss at every pre-registration close/cleanup/receipt/terminal/nonreachability/teardown boundary plus registration/claim/lease GitHub-Date and repair-foundation boundaries. Reject caller lease time, wrong ref/cache/body, early fence, unrelated append under reservation, delayed registration after cleanup, recovery direct cleanup, supervisor ledger append, premature authority retirement, package/candidate egress, partial validation, shared or mutating fallback, operation-storage-writing retrieval repair, recovery-as-publisher, wrong relay generation, unvalidated dispatch, post-dispatch abort, semantic repair, alternate candidate, namespace-only or replacement foundation, secret/route/dispatch before foundation terminal, unowned partial foundation, reachable repair capability, missing teardown, and unsealed mailbox.
 **Output**: Finalization matrix and coverage logs.
 **Acceptance**: 100% coverage, zero warnings, workflow contracts green.
+
 
 ### ⬜ Unit 8d: Release Set Supersession - Tests
 **What**: Add red state-machine, CLI, and projection tests for `ReleaseSetSuperseded`. It may reference only one exact effective `ReleaseSetPublished` plus its `PublicationObserved`, records reason/actor/policy/new Product Change ID, and never rewrites the old event, main pointer, protected tag, or GitHub Release. A successor is authoritative only after its own fresh `FinalizationClaim -> ReleaseSetPublished` direct-child transition and matching `PublicationObserved`; until then the old record remains historical and the current projection is explicitly superseded-without-successor, never silently shipped. Cover duplicate/missing/wrong-old publication, pending/unobserved old or new records, cycles, self-supersession, stale policy, same-generation reuse, projection races, and immutable tag/Release mutation attempts.
@@ -1524,7 +1999,7 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: 100% changed-code coverage, full suite green, zero warnings.
 
 ### ⬜ Unit 16a: Web Provider Attestor - Tests
-**What**: Add red tests for exact identities/provider queries and the Linux supervisor profile tested in Unit 8s1a, implemented in Unit 8s1b, and covered in Unit 8s1c: credential-free preflight signer bootstrap bound to claim, distinct UID/cgroup, peer-credential signer ACL, no signer FD/socket/host mount, ptrace/privilege denial, supervisor-held lease, read-only root/private tmpfs, descendant exhaustion, cancellation recovery, and separate no-secret verifier. Include alternate/self-signed key, hostile signer/`/proc`/FD/lock/fork/signal children, teardown/residue, evidence, expiry, and wrong run/ref/event.
+**What**: Add red tests for exact identities/provider queries and the Linux supervisor profile tested in Unit 8g1a, implemented in Unit 8g1b, and covered in Unit 8g1c: credential-free preflight signer bootstrap bound to claim, distinct UID/cgroup, peer-credential signer ACL, no signer FD/socket/host mount, ptrace/privilege denial, supervisor-held lease, read-only root/private tmpfs, descendant exhaustion, cancellation recovery, and separate no-secret verifier. Include alternate/self-signed key, hostile signer/`/proc`/FD/lock/fork/signal children, teardown/residue, evidence, expiry, and wrong run/ref/event.
 **Output**: Web attestor red tests.
 **Acceptance**: Self-authored deploy summaries and broad/mutable evidence fail verification.
 
@@ -1940,7 +2415,7 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: Main contains Unit 50a-reviewed records. Green native state retires `live-r2` and creates clean `live-r3`; native failure retires `live-r2`, creates clean `repair-i1-r4`, and proceeds only to Unit 60a without backward checkpoint execution.
 
 ### ⬜ Unit 52: Capability Rollback Proof
-**What**: Build candidate universe from every current-Product-Change run-owned subject/override manifest from Unit 37 and Unit 40 plus authoritative backend inventory. Run Unit 5s1b's total-order selector no more than 120 seconds before apply. Tier 1 requires exact graph/subject ownership, run-only ACL/reachability, and cleanup capability; tier 2 is one claim-digest-derived run-owned subject/isolated override with claimed setup/cleanup; otherwise fail. Global capability mutation is forbidden. Live disable/restore selected target; simulation is negative-only.
+**What**: Build candidate universe from every current-Product-Change run-owned subject/override manifest from Unit 37 and Unit 40 plus authoritative backend inventory. Run Unit 5g1b's total-order selector no more than 120 seconds before apply. Tier 1 requires exact graph/subject ownership, run-only ACL/reachability, and cleanup capability; tier 2 is one claim-digest-derived run-owned subject/isolated override with claimed setup/cleanup; otherwise fail. Global capability mutation is forbidden. Live disable/restore selected target; simulation is negative-only.
 **Output**: Selector/candidate/isolation evidence, optional setup/cleanup claims/receipts/terminals, proof authorization/claim/terminal-or-containment, run/attempt ID, disable/restore receipt digests, capability states, and authoritative post-query.
 **Acceptance**: Selector schema lists all candidates/reasons, follows priority deterministically, and has fresh reachability/isolation proof; setup and cleanup have claims/receipts/terminals; live receipts bind exact target/claim/graph/run; degraded behavior and exact restore pass; unrelated users unchanged. No eligible target blocks shipment.
 
@@ -1950,7 +2425,7 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: Receipt binds exact claim/graph/run; terminal-or-containment appended; previous clients compatible; no data loss.
 
 ### ⬜ Unit 54: Native Candidate Supersession Proof
-**What**: Build candidate universe from every current-Product-Change run-owned ASC build manifest plus authoritative ASC inventory. Run Unit 5s1b's total-order selector no more than 120 seconds before apply. Tier 1 requires non-selected build ID, exact app/source/pack, run ownership, eligible provider state, and no external tester distribution; tier 2 is one claim-digest-derived new signed sacrificial build/fresh build number with claimed archive/upload setup; otherwise fail. Selected-candidate mutation/deletion is forbidden. Live-supersede selected sacrificial build; simulation is negative-only.
+**What**: Build candidate universe from every current-Product-Change run-owned ASC build manifest plus authoritative ASC inventory. Run Unit 5g1b's total-order selector no more than 120 seconds before apply. Tier 1 requires non-selected build ID, exact app/source/pack, run ownership, eligible provider state, and no external tester distribution; tier 2 is one claim-digest-derived new signed sacrificial build/fresh build number with claimed archive/upload setup; otherwise fail. Selected-candidate mutation/deletion is forbidden. Live-supersede selected sacrificial build; simulation is negative-only.
 **Output**: Selector/candidate/isolation evidence, optional sacrificial-build setup claim/provenance/receipts/terminal, proof authorization/claim/terminal, run/attempt ID, supersession receipt digest, selected/contained build dispositions, and authoritative ASC post-query.
 **Acceptance**: Selector schema lists all candidates/reasons, follows priority deterministically, proves fresh ASC state and distinct build IDs; any setup has claim/provenance/receipt/terminal; live supersession matches exact target/claim; sacrificial build cannot ship; selected build remains eligible/unchanged. No eligible target, containment, or simulation-only evidence blocks shipment.
 
@@ -1985,7 +2460,7 @@ Build and pilot a production-grade delivery system that carries one Spoonjoy pro
 **Acceptance**: Receipt binds exact claim/graph/run; terminal-or-containment appended; zero deletable artifact/cache or temporary staging-barrier residue; Unit 51 already proves zero run-owned external/internal staged candidate reachability and exact persistent production denial across the closed registries; worktrees remain.
 
 ### ⬜ Unit 59: Negative Finalization Proof
-**What**: Against a disposable non-shipping authorization, attempt finalization with stale digest, wrong claim, mismatched provider identity, forged/missing cleanup, cached/late pre-CAS Date, and original cancellation before append. Separately inject `deferred`, `waived`, `superseded`, `rolled_back`, and `BLOCKED_HUMAN` node dispositions plus valid and invalid `ProductChangeReleasedWithWaiver` terminals; attempt Unit 61 claim, Unit 64c publication, main projection, protected tag, and GitHub Release paths and require pre-mutation rejection. Prove a valid waiver terminal projects only `released_with_waiver`, binds complete containment, and atomically creates one distinct canonical empty successor with no inherited authorization/proof/generation. Live-test missing-successor bytes, existing/colliding successor, concurrent waiver-versus-successor creation, and lost append response: failures leave the current Product Change open, while only exact composite-event reconciliation closes it and exposes the usable successor. Exercise lost-response/pending-observation races only in the isolated fixture ledger from Unit 8s1a, where recovery observation cannot affect the Product Change.
+**What**: Against a disposable non-shipping authorization, attempt finalization with stale digest, wrong claim, mismatched provider identity, forged/missing cleanup, cached/late pre-CAS Date, and original cancellation before append. Separately inject `deferred`, `waived`, `superseded`, `rolled_back`, and `BLOCKED_HUMAN` node dispositions plus valid and invalid `ProductChangeReleasedWithWaiver` terminals; attempt Unit 61 claim, Unit 64c publication, main projection, protected tag, and GitHub Release paths and require pre-mutation rejection. Prove a valid waiver terminal projects only `released_with_waiver`, binds complete containment, and atomically creates one distinct canonical empty successor with no inherited authorization/proof/generation. Live-test missing-successor bytes, existing/colliding successor, concurrent waiver-versus-successor creation, and lost append response: failures leave the current Product Change open, while only exact composite-event reconciliation closes it and exposes the usable successor. Exercise lost-response/pending-observation races only in the isolated fixture ledger from Unit 8g1a, where recovery observation cannot affect the Product Change.
 **Output**: Rejected original/recovery/waiver run IDs; disposition/authority/expiry/scope/successor/timing/cleanup error codes; ledger parent/abort-or-waiver terminal; atomic successor-genesis/no-inheritance proof; successor collision/race/lost-response receipts; fixture pending/observation race receipts; no-shipment and no-provider-mutation post-query.
 **Acceptance**: No effective production `ReleaseSetPublished`; every live disposable claim aborts; every non-shipping disposition and `released_with_waiver` blocks finalization/publication/projection. A valid waiver has exactly one atomic empty successor; collision or ambiguity cannot terminate the current change; successor work requires fresh authorization/proofs. Fixture pending events cannot project; recovery never appends publication; only explicit non-shipping test records/proofs change.
 
@@ -2516,7 +2991,7 @@ Timestamp acceptance additionally preserves `created_at` beside the exact peeled
 - The first-install bootstrap family (`github-environment-ui-bootstrap-v1` plus same-target-only resume) and restore-only `github-environment-ui-recovery-v1` are the only operations exempt from their target environment's approval gate: all require protected ledger authorization/claim, authenticated actor-ID proof, bounded UI changes, UI/API evidence, and unambiguous terminal state; none can invoke source/provider mutation code. Bootstrap installs a new gate once; recovery requires proven drift and can only restore the last attested policy. All policy changes use the installed gate.
 - Cross-provider publication uses exact, age-bounded, source-owned point-in-time attestations plus a durable protected coordinator; it must never claim an atomic distributed snapshot or lock across Cloudflare and ASC because those control planes expose no shared transaction. Later external changes create new state and require a new Product Change.
 - Root-policy-governed `ReplayPassGenesisV1` atomically creates/opens the sole first p1 from absent pointer and zero history with `ReplayManifestCursorV1` at the first original ID; subsequent passes use resolved/repair-completed supersession and a fresh first-node cursor. `ReplayNodeIdentityV1` maps each original Unit ID to one executor, but original IDs alone key replay state and cursor. Each `ReplayNodeSetV1` member claims only the exact cursor node through root-duration `ReplayNodeClaimV1` after proving a consumed prefix, unclaimed suffix, and no other claimed/recovering/terminal node. At original Unit 32, Unit 33, Unit 34, and Unit 35 with current-pass retained staged state, green consumption and staged-Worker cleanup activation are exclusive same-parent successors; a cleanup winner must finish node-specific cleanup, authoritative read proof, and cleanup terminal before containment, while a green winner stales only its staged-Worker sibling. Original Unit 34 first proves all prior queue authorities terminal, creates one pass/generation-bound `InstalledQueueRecoveryAuthorityV1`, and leaves it `seeded_pending` on green. A non-green original Unit 35, Unit 36, Unit 51, Unit 37, Unit 37a, Unit 38, or Unit 39 must terminally reconcile that queue before replay failure/checkpoint; device unavailability keeps the cursor recovering and forbids a fresh seed. Original Unit 36 later fences those four Worker activation routes only when current-pass Unit 60c31 retained a fresh available generation, while preserving one dormant original Unit 51 route and the separate queue authority. Its green terminal retires the Worker generation; its non-green terminal carries both Worker and queue contexts through the sole pending bridge, advances only to Unit 51, and leaves later suffix unclaimed. Unit 51 cleanup resolves both contexts before blocking its suffix and failing the pass. Unit 60c39 success alone replays and terminally retires the queue generation. If Unit 60c31 is no-replay against prior terminal Worker retirement, zero retained candidate, and zero current-pass queue, original Unit 36 must also be no-replay and consumes without a fence. Every activated pass, including an all-no-replay pass, traverses its full manifest and Unit 60c59 before resolution. A replay inherits original acceptance; failed or missing proof blocks Unit 60d and Unit 61.
-- `LiveStageNodeSetV1` is the exact ordered live sequence Unit 31, Unit 32, Unit 33, Unit 34, Unit 35, Unit 36, Unit 51, Unit 37, Unit 37a, Unit 38, Unit 39, Unit 40, Unit 41, Unit 42, Unit 43, Unit 44, Unit 45, Unit 46, Unit 47, Unit 48, Unit 49, Unit 50, Unit 52, Unit 53, Unit 54, Unit 54a, Unit 55, Unit 56, Unit 57, Unit 58a, Unit 58b, and Unit 59. `LiveStageCheckpointIndexV1` contains only generic-failure causal IDs and therefore excludes Unit 36. Its exact web, native, and safety key sets and values are generated once by Unit 5s5b and reused everywhere; no stage routes backward. Unit 31 retained success freezes candidate-specific `StagedWorkerCleanupAuthorityV1`, a permanent exact-purpose mutation broker, and independent `StagedWorkerReadAuthorityV1`, each with one run-scoped ledger-gated generation containing four causal routes and one dormant Unit 51 route. At Unit 32, Unit 33, Unit 34, and Unit 35, staged-Worker cleanup activation and green terminal/consumption are exclusive successors of that causal node's parent. Cleanup runs mutation and node reconciliation independently; green permanently stales only its staged-Worker sibling. Unit 34 additionally freezes separate `InstalledQueueRecoveryAuthorityV1` before seed; green leaves it `seeded_pending` and executable. The GET-only read authority alone proves exact Worker provider state, and its reconciler's cleanup-terminal CAS retires the Worker generation. Unit 36 later fences the four Worker causal routes only at its legal cursor. Green promotion retires the dormant Worker route but preserves queue authority; a non-green Unit 36 can only append `LiveStageContainmentPendingV1` carrying both contexts, activate Unit 51, and wait. Unit 51 resolves both Worker and queue cleanup before emitting causal Unit 51 `LiveStageFailedV1`; a failure at Unit 35, Unit 37, Unit 37a, Unit 38, or Unit 39 likewise requires queue terminal first. Unit 39 success alone replays and retires the queue generation. No mutation broker may certify its own cleanup, no retained resource or installed queue may lose an executable owner, and no blocked successor may call a provider.
+- `LiveStageNodeSetV1` is the exact ordered live sequence Unit 31, Unit 32, Unit 33, Unit 34, Unit 35, Unit 36, Unit 51, Unit 37, Unit 37a, Unit 38, Unit 39, Unit 40, Unit 41, Unit 42, Unit 43, Unit 44, Unit 45, Unit 46, Unit 47, Unit 48, Unit 49, Unit 50, Unit 52, Unit 53, Unit 54, Unit 54a, Unit 55, Unit 56, Unit 57, Unit 58a, Unit 58b, and Unit 59. `LiveStageCheckpointIndexV1` contains only generic-failure causal IDs and therefore excludes Unit 36. Its exact web, native, and safety key sets and values are generated once by Unit 5g23b and reused everywhere; no stage routes backward. Unit 31 retained success freezes candidate-specific `StagedWorkerCleanupAuthorityV1`, a permanent exact-purpose mutation broker, and independent `StagedWorkerReadAuthorityV1`, each with one run-scoped ledger-gated generation containing four causal routes and one dormant Unit 51 route. At Unit 32, Unit 33, Unit 34, and Unit 35, staged-Worker cleanup activation and green terminal/consumption are exclusive successors of that causal node's parent. Cleanup runs mutation and node reconciliation independently; green permanently stales only its staged-Worker sibling. Unit 34 additionally freezes separate `InstalledQueueRecoveryAuthorityV1` before seed; green leaves it `seeded_pending` and executable. The GET-only read authority alone proves exact Worker provider state, and its reconciler's cleanup-terminal CAS retires the Worker generation. Unit 36 later fences the four Worker causal routes only at its legal cursor. Green promotion retires the dormant Worker route but preserves queue authority; a non-green Unit 36 can only append `LiveStageContainmentPendingV1` carrying both contexts, activate Unit 51, and wait. Unit 51 resolves both Worker and queue cleanup before emitting causal Unit 51 `LiveStageFailedV1`; a failure at Unit 35, Unit 37, Unit 37a, Unit 38, or Unit 39 likewise requires queue terminal first. Unit 39 success alone replays and retires the queue generation. No mutation broker may certify its own cleanup, no retained resource or installed queue may lose an executable owner, and no blocked successor may call a provider.
 - Finalization registration reservation, registration dispatch, and claim are separate protected transitions under one root-bound `FinalizationResolverLockV1`. Before any ledger call, an attempt-specific independently restartable `FinalizationPreRegistrationRecoveryAuthorityV1` fsyncs `FinalizationRegistrationPlanV1`; the coordinator then CASes on-ledger `FinalizationRegistrationAttemptV1`. An exact divergent successor proves the reservation lost before registration dispatch and permits plan-only cleanup, while an unchanged or ambiguous parent remains recovery-owned. Exact attempt admits only `FinalizationRecoveryRegistered` or sibling `FinalizationPreRegistrationCloseStartedV1`; registered-open admits only `FinalizationClaimDispatchIntentV1` or sibling `FinalizationPreClaimCloseStartedV1`; claim-intent-open admits only exact claim or sibling close-start. A strict attempt-head anchor derives the root-bound lease; fsynced `FinalizationRegistrationDispatchIntentV1` precedes registration. Destructive cleanup after dispatch intent waits for one observed sibling winner. If pre-registration close-start wins with zero registration/claim, the pre-registration authority survives coordinator death through supervisor cleanup, signed receipt reconciliation, exact `FinalizationPreRegistrationClosedV1`, complete nonreachability, and ordered teardown. If registration wins, it preserves the exact attempt-specific identity/public key and atomically replaces only pre-registration grants with `FinalizationRegisteredRecoveryAuthorityV1` grants. Unit 61 may only wake that identity; after winning pre-claim close-start plus zero claim, registered recovery alone invokes supervisor cleanup, reconciles the signed receipt, appends exact `FinalizationPreClaimClosedV1`, proves complete nonreachability, and tears itself down. Coordinator credentials are typed/non-consuming rejects, recovery cannot clean directly, and the supervisor cannot append. Coordinator, recovery, and supervisor crashes converge at every boundary. Only a confirmed claim-intent response may obtain a strict exact-intent-head anchor satisfying `registrationIssuedAtDateMs <= intentAnchorDateMs <= registrationDeadlineMs-5000`, and that anchor alone launches claim within `0..5000` monotonic milliseconds. Exact claim or exact authorized close releases the lock. Exact claim alone permits Durable Object operation creation; either exact close-start permits only its matching registration-independent or claim-independent cleanup and null-generation closure. Unrelated drift is a root-integrity failure, never a close cause.
 - Canonical `FinalizationRegisteredRecoveryPolicyV1` closes the post-registration liveness graph: the same attempt-specific identity receives only strict protected-ledger-ref GET, exact parent-bound `FinalizationPreClaimCloseStartedV1`, claim-independent supervisor cleanup, receipt/nonreachability-bound exact `FinalizationPreClaimClosedV1`, and nonreachability queries. Registered recovery alone owns both Ledger Writer methods and cleanup reconciliation; Unit 61 is wake-only. Coordinator credentials and registered claim-intent, claim, direct-cleanup, package/source/provider, or general-ledger calls are typed/non-consuming rejects. Missing routes, grant overlap/gaps, and teardown before exact closed plus complete nonreachability fail.
 - Canonical `FinalizationClaimRecoveryPolicyV1` closes the post-claim liveness graph through a distinct identity frozen dormant before plan. Exact claim atomically retires registered recovery and activates only frozen operation initialization/status, validator/mailbox recovery, next-relay-generation authorization, exact broker-mediated foundation recovery, non-candidate-publishing recovery terminals, and teardown; pre-claim close purges the dormant identity. Claim recovery has no provider credential/direct route, package/candidate bytes, exact-candidate `ReleaseSetPublished` append, source rerun, arbitrary foundation, or general ledger method. Claim-response loss and coordinator death preserve one owner through terminal operation/foundation nonreachability and teardown.
@@ -2604,3 +3079,4 @@ Timestamp acceptance additionally preserves `created_at` beside the exact peeled
 - 2026-07-22 01:35: Tinfoil Round 48 installed root `AGENTS.md` before scrutiny, changed doing status to `NEEDS_REVIEW`, made Unit 1b validate the pre-existing authority file, and corrected the then-current finalization coverage to cover four `ClaimRecoveryLedgerTerminalSetV1` methods plus one disjoint `ClaimRecoveryObservationRouteV1` request. The two-clean-pass sequence remains at zero.
 - 2026-07-22 01:55: Tinfoil Round 49 reset the clean sequence with two findings: it questioned GitHub Actions `deployment: false` environment syntax and identified the remaining multi-session graph/finalization phases. The provider claim was subsequently checked against current official documentation; the granularity finding remained valid and replaced the two aggregate phases with 25 focused red/green/coverage families plus convergence gates.
 - 2026-07-22 02:00: Provider-fidelity Round 50 proved from current official GitHub documentation that `environment: {name, deployment: false}` is supported, preserves wait timers and required reviewers, creates no Deployment object, and rejects custom deployment protection rules. The stale audit-record schema/state/workflow changes were removed while the valid decomposition remained. The graph now has 465 unique units and the clean sequence stays at zero because the tree changed.
+- 2026-07-22 02:19: Tinfoil Round 51 reset the clean sequence after finding that the first graph/finalization split still hid multiple actor and infrastructure lifecycles, while the initial finalization implementation already supplied timing, fallback, relay, and repair behavior expected to fail in later red tests. Units 5g1-5g32 and 8g1-8g21 now give each kernel, Worker, supervisor, App, reviewer, governance, cutover, environment, broker foundation, promotion, validation, dispatch, timing, recovery, registration actor boundary, and repair lane its own red/green/coverage family. Claim handoff leaves terminal/observation handlers absent until their next red family. The graph has 549 unique units/headings, no stale references or missing fields, and the clean sequence remains at zero.
