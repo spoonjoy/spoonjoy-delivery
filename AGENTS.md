@@ -6,7 +6,7 @@ This repository is Spoonjoy's public cross-client delivery control plane. It own
 
 - Use the installed `work-planner` and `work-doer` skills for substantial work.
 - Keep planning and doing documents under `<agent>/tasks/` on an agent-scoped branch in a dedicated worktree.
-- The adjacent doing document is the implementation source of truth. Follow its units in exact document order and use strict test-then-implement-then-coverage sequencing.
+- The adjacent doing document is the implementation source of truth. Follow lexical document order for each unit's first eligible invocation, then follow only the document's explicit exact-successor routes. Same-unit or backward routes use the doing document's durable repeatable-invocation lifecycle; a heading is not complete until its terminal cursor/acceptance predicate holds. Use strict test-then-implement-then-coverage sequencing.
 - Reviewer convergence requires two consecutive fresh no-context scrutiny passes: Tinfoil Hat, then Stranger With Candy. Any finding or reviewed-tree change resets the sequence.
 - Do not start implementation while the doing document is `NEEDS_REVIEW`.
 
@@ -14,7 +14,7 @@ This repository is Spoonjoy's public cross-client delivery control plane. It own
 
 - Before a protected owner-release handoff validates, this delivery task may change only this delivery repository and explicitly authorized inert delivery-control-plane resources.
 - The retained source owner may, under its still-exclusive authority, execute only the root-authorized `source-guardian-cutover-v1` and merge the byte-identical receiver acknowledgment through protected web/native mains when required to complete that handoff. Those retained-owner actions are handoff inputs, not authority granted to this task; they may not include product code, deploy, provider-release, TestFlight, notification, cleanup, or unrelated source mutations.
-- This delivery task must not mutate `spoonjoy-v2`, `spoonjoy-apple`, production Cloudflare, App Store Connect, TestFlight, notifications, source worktrees, or source-owned brokers until the complete protected handoff validates.
+- This delivery task must not mutate `spoonjoy-v2`, `spoonjoy-apple`, production Cloudflare, App Store Connect, TestFlight, notifications, source worktrees, or source-owned brokers until the complete protected handoff validates. Its sole pre-handoff source access is Unit 13a3's bounded read-only GitHub verification of exact retained-owner-supplied web/native containing commits, protected-main files, checks, and protection state; that verification may not checkout source, use source/provider-release credentials, rerun work, review, merge, write, or call any mutation endpoint.
 - Provider operations require the exact claimed authorization, reviewed operation graph, authoritative pre/post state, and terminal receipt defined by the doing document.
 
 ## Quality Gates
