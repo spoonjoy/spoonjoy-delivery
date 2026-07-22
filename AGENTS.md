@@ -12,8 +12,9 @@ This repository is Spoonjoy's public cross-client delivery control plane. It own
 
 ## Ownership Boundaries
 
-- Before a protected owner-release handoff validates, change only this delivery repository and explicitly authorized inert delivery-control-plane resources.
-- Do not mutate `spoonjoy-v2`, `spoonjoy-apple`, production Cloudflare, App Store Connect, TestFlight, notifications, source worktrees, or source-owned brokers before that handoff.
+- Before a protected owner-release handoff validates, this delivery task may change only this delivery repository and explicitly authorized inert delivery-control-plane resources.
+- The retained source owner may, under its still-exclusive authority, execute only the root-authorized `source-guardian-cutover-v1` and merge the byte-identical receiver acknowledgment through protected web/native mains when required to complete that handoff. Those retained-owner actions are handoff inputs, not authority granted to this task; they may not include product code, deploy, provider-release, TestFlight, notification, cleanup, or unrelated source mutations.
+- This delivery task must not mutate `spoonjoy-v2`, `spoonjoy-apple`, production Cloudflare, App Store Connect, TestFlight, notifications, source worktrees, or source-owned brokers until the complete protected handoff validates.
 - Provider operations require the exact claimed authorization, reviewed operation graph, authoritative pre/post state, and terminal receipt defined by the doing document.
 
 ## Quality Gates
