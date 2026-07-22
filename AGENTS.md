@@ -6,7 +6,7 @@ This repository is Spoonjoy's public cross-client delivery control plane. It own
 
 - Use the installed `work-planner` and `work-doer` skills for substantial work.
 - Keep planning and doing documents under `<agent>/tasks/` on an agent-scoped branch in a dedicated worktree.
-- The adjacent doing document is the implementation source of truth. Follow lexical document order for each unit's first eligible invocation, then follow only the document's explicit exact-successor routes. Same-unit or backward routes use the doing document's durable repeatable-invocation lifecycle; a heading is not complete until its terminal cursor/acceptance predicate holds. Use strict test-then-implement-then-coverage sequencing.
+- The adjacent doing document is the implementation source of truth. Follow lexical document order for each unit's first eligible invocation. A closed result without a declared route derives exactly the next executable heading; a declared exact-successor route overrides that lexical successor. Unit 67 alone may emit successful `stop`, while Unit 64a3 alone may emit fail-closed `planning_revision_required` stop. Same-unit, backward, and blocked-resume routes use the doing document's durable repeatable-invocation lifecycle; a heading is not complete until its terminal cursor/acceptance predicate holds. Use strict test-then-implement-then-coverage sequencing.
 - Reviewer convergence requires two consecutive fresh no-context scrutiny passes: Tinfoil Hat, then Stranger With Candy. Any finding or reviewed-tree change resets the sequence.
 - Do not start implementation while the doing document is `NEEDS_REVIEW`.
 
