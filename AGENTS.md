@@ -40,6 +40,8 @@ This repository is Spoonjoy's public cross-client delivery control plane. It own
 
 ## Completion
 
+Notification is a post-completion root-host epilogue, not part of the execution ledger or post-stop cleanup transaction. First require exact `RootTaskPostStopCleanupCompletedV1(stopReason="completed")`, final terminal-ledger equality, zero residue, and no remaining cleanup action. Then fsync one private retained `CompletionNotificationAttemptV1(state="dispatch_started")` marker bound to that receipt and run the command below once as the final non-transactional action before the human completion report. Treat the whole Ouro child command, including queue and wake behavior, as Ouro-owned; do not inspect its queue internals, infer delivery, or retry after the marker exists. Report nonzero exit, fallback output, response loss, or crash as notification `attempted_unknown_or_failed` without reopening the genuine completion receipt. A planning-revision stop is incomplete and must not notify.
+
 When the task is genuinely complete, notify Slugger with:
 
 ```bash
