@@ -1,0 +1,16 @@
+{
+  "name": "spoonjoy-delivery",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Cross-surface delivery coordination and read-only shipment verification for Spoonjoy.",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "deliver": "bin/deliver.mjs"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}

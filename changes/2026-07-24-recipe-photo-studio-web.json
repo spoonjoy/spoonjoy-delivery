@@ -1,0 +1,15 @@
+{
+  "id": "2026-07-24-recipe-photo-studio-web",
+  "productChange": "Recipe Photo Studio",
+  "description": "Pilot Product Change: prove the Recipe Photo Studio change is live on the web / Cloudflare Workers surface by matching the deployed source SHA that /api/v1/health reports.",
+  "status": "pending-deploy",
+  "note": "Set surfaces[0].expected to the 40-char git SHA that ships to production once spoonjoy-v2 Increment 1 (deployed source SHA on /api/v1/health) merges and deploys. Until then `deliver verify` correctly reports NOT VERIFIED, because production /api/v1/health does not yet expose data.sourceSha.",
+  "surfaces": [
+    {
+      "surface": "web",
+      "endpoint": "https://spoonjoy.app/api/v1/health",
+      "path": "data.sourceSha",
+      "expected": "0000000000000000000000000000000000000000"
+    }
+  ]
+}
